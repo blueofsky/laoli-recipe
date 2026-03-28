@@ -1,6 +1,6 @@
 ---
 name: laoli-picgo
-description: Upload images to GitHub repository as an image hosting service using picgo-core. Use when the user mentions uploading images to GitHub, needs to host images externally, or asks for image URL generation from GitHub. This skill handles the complete workflow of configuring picgo-core with GitHub settings and uploading images with automatic timestamp-based filename renaming and URL retrieval. CRITICAL: Before asking user to configure PicGo, always check if the configuration file exists at ~/.picgo/config.json and contains valid GitHub settings. If configuration exists and is valid, use it directly without asking user to reconfigure.
+description: "Upload images to GitHub repository as an image hosting service using picgo-core. Use when user mentions uploading images to GitHub, needs to host images externally, or asks for image URL generation from GitHub. This skill handles the complete workflow of configuring picgo-core with GitHub settings and uploading images with automatic timestamp-based filename renaming and URL retrieval. CRITICAL - Before asking user to configure PicGo, always check if the configuration file exists at ~/.picgo/config.json and contains valid GitHub settings. If configuration exists and is valid, use it directly without asking user to reconfigure."
 ---
 
 # Laoli PicGo GitHub Upload
@@ -39,17 +39,6 @@ picgo set github.branch <branch>  # defaults to "main"
 picgo install picgo-plugin-rename-image
 picgo set rename-image.format {Y}{m}{d}{H}{M}{S}{ms}
 picgo set rename-image.disable false
-```
-
-Or in JSON configuration:
-
-```bash
-picgo set uploader github
-picgo set github.repo <owner>/<repo>
-picgo set github.token <personal-access-token>
-picgo set github.path <path-in-repo>  # e.g., "assets/images"
-picgo set github.customUrl <custom-domain>  # optional
-picgo set github.branch <branch>  # defaults to "main"
 ```
 
 Alternative configuration method: create a `picgo.config.json` file:
