@@ -1,0 +1,24 @@
+{
+  "name": "laoli-recipe",
+  "owner": {
+    "name": "Laoli (老李)",
+    "email": "blueofsky2008@gmail.com"
+  },
+  "metadata": {
+    "description": "Skills shared by Laoli for improving daily work efficiency",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "laoli-recipe",
+      "description": "A collection of delicious recipes",
+      "source": "./",
+      "strict": false,
+      "commands": [
+        "./commands/gitship.md"
+      ],
+      "skills": [
+        "./skills/laoli-picgo"
+      ]
+    }
+  ]
