@@ -10,16 +10,14 @@
   },
   "plugins": [
     {
-      "name": "home-style",
-      "description": "Commonly used skills and utilities for daily development tasks",
-      "source": "./",
-      "strict": false,
-      "commands": [
-        "./commands/gitship.md"
-      ],
-      "skills": [
-        "./skills/laoli-picgo"
-      ]
+      "name": "git",
+      "description": "Git插件",
+      "source": "./plugins/git"
+    },
+    {
+      "name": "aigc",
+      "description": "AI内容生成",
+      "source": "./plugins/aigc"
     }
   ]
 }

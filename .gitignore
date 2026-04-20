@@ -208,3 +208,6 @@ __marimo__/
 
 # CodeBuddy
 .codebuddy/
+.plugins-test
+.plugins-cache.json
+.laoli-recipe
