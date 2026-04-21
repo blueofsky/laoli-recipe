@@ -10,24 +10,29 @@
   },
   "plugins": [
     {
+      "name": "content",
+      "description": "内容插件",
+      "source": "./plugins/content"
+    },
+    {
+      "name": "crawler",
+      "description": "爬虫插件",
+      "source": "./plugins/crawler"
+    },
+    {
+      "name": "generate",
+      "description": "AI生成插件",
+      "source": "./plugins/generate"
+    },
+    {
       "name": "git",
       "description": "Git插件",
       "source": "./plugins/git"
     },
     {
-      "name": "aigc",
-      "description": "AIGC应用层",
-      "source": "./plugins/aigc"
-    },
-    {
-      "name": "generate",
-      "description": "AIGC底层",
-      "source": "./plugins/generate"
-    },
-    {
-      "name": "crawler",
-      "description": "网页爬虫",
-      "source": "./plugins/crawler"
+      "name": "utility",
+      "description": "工具插件",
+      "source": "./plugins/utility"
     }
   ]
 }
