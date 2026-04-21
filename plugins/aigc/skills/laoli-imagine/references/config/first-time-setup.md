@@ -57,6 +57,8 @@ options:
     description: "GLM-image, strong poster and text-heavy image generation"
   - label: "MiniMax"
     description: "MiniMax image generation with subject-reference character workflows"
+  - label: "Tuzi"
+    description: "Tuzi image generation with subject-reference character workflows"
   - label: "Replicate"
     description: "Curated Replicate image families - nano-banana-2, Seedream, and Wan image models"
 ```
@@ -135,6 +137,18 @@ options:
     description: "Legacy Z.AI image model on the same endpoint"
 ```
 
+### Question 2f: Default Tuzi Model
+
+Only show if user selected Tuzi.
+
+```yaml
+header: "Tuzi Model"
+question: "Default Tuzi image generation model?"
+options:
+  - label: "gemini-3-pro-image-preview (Recommended)"
+    description: "Best default, supports aspect ratios and custom width/height"
+```
+
 ### Question 3: Default Quality
 
 ```yaml
@@ -184,6 +198,7 @@ default_model:
   dashscope: null
   zai: [selected Z.AI model or null]
   minimax: [selected minimax model or null]
+  tuzi: [selected tuzi model or null]
   replicate: null
 ---
 ```
@@ -329,6 +344,22 @@ Notes for MiniMax setup:
 - `image-01-live` is useful when the user prefers faster generation and can work with aspect-ratio-based sizing.
 - MiniMax subject reference currently uses `subject_reference[].type = character`; docs recommend front-facing portrait references in JPG/JPEG/PNG under 10MB.
 
+
+### Tuzi Model Selection
+
+```yaml
+header: "Tuzi Model"
+question: "Choose a default Tuzi image generation model?"
+options:
+  - label: "gemini-3-pro-image-preview (Recommended)"
+    description: "Best general-purpose Tuzi image model with custom width/height support"
+```
+
+Notes for Tuzi setup:
+
+- `gemini-3-pro-image-preview` is the safest default. It supports official `aspect_ratio` values and documented custom `width` / `height` output sizes.
+- Tuzi subject reference currently uses `subject_reference[].type = character`; docs recommend front-facing portrait references in JPG/JPEG/PNG under 10MB.
+
 ### Update EXTEND.md
 
 After user selects a model:
@@ -346,6 +377,7 @@ default_model:
   dashscope: [value or null]
   zai: [value or null]
   minimax: [value or null]
+  tuzi: [value or null]
   replicate: [value or null]
 ```
 

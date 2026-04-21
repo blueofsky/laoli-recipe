@@ -60,6 +60,12 @@ ${BUN_X} {baseDir}/scripts/main.ts --prompt "A fashion editorial portrait" --ima
 # MiniMax with subject reference (character/portrait consistency)
 ${BUN_X} {baseDir}/scripts/main.ts --prompt "A girl by the library window" --image out.jpg --provider minimax --model image-01 --ref portrait.png --ar 16:9
 
+# Tuzi
+${BUN_X} {baseDir}/scripts/main.ts --prompt "A fashion editorial portrait" --image out.jpg --provider tuzi
+
+# Tuzi with subject reference (character/portrait consistency)
+${BUN_X} {baseDir}/scripts/main.ts --prompt "A girl by the library window" --image out.jpg --provider tuzi --model gemini-3-pro-image-preview --ref portrait.png --ar 16:9
+
 # Replicate (default: google/nano-banana-2)
 ${BUN_X} {baseDir}/scripts/main.ts --prompt "A cat" --image out.png --provider replicate
 

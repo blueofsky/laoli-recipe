@@ -64,6 +64,7 @@ const DEFAULT_PROVIDER_RATE_LIMITS: Record<Provider, ProviderRateLimit> = {
   jimeng: { concurrency: 3, startIntervalMs: 1100 },
   seedream: { concurrency: 3, startIntervalMs: 1100 },
   azure: { concurrency: 3, startIntervalMs: 1100 },
+  tuzi: { concurrency: 3, startIntervalMs: 1100 },
 };
 
 function printUsage(): void {
@@ -78,14 +79,14 @@ Options:
   --image <path>            Output image path (required in single-image mode)
   --batchfile <path>        JSON batch file for multi-image generation
   --jobs <count>            Worker count for batch mode (default: auto, max from config, built-in default 10)
-  --provider google|openai|openrouter|dashscope|zai|minimax|replicate|jimeng|seedream|azure  Force provider (auto-detect by default)
+  --provider google|openai|openrouter|dashscope|zai|minimax|replicate|jimeng|seedream|azure|tuzi  Force provider (auto-detect by default)
   -m, --model <id>          Model ID
   --ar <ratio>              Aspect ratio (e.g., 16:9, 1:1, 4:3)
   --size <WxH>              Size (e.g., 1024x1024)
   --quality normal|2k       Quality preset (default: 2k)
   --imageSize 1K|2K|4K      Image size for Google/OpenRouter (default: from quality)
   --imageApiDialect <id>    OpenAI-compatible image dialect: openai-native|ratio-metadata
-  --ref <files...>          Reference images (Google, OpenAI, Azure, OpenRouter, Replicate supported families, MiniMax, or Seedream 4.0/4.5/5.0)
+  --ref <files...>          Reference images (Google, OpenAI, Azure, Tuzi, OpenRouter, Replicate supported families, MiniMax, or Seedream 4.0/4.5/5.0)
   --n <count>               Number of images for the current task (default: 1; Replicate currently requires 1)
   --json                    JSON output
   -h, --help                Show help
@@ -120,6 +121,7 @@ Environment variables:
   ZAI_API_KEY               Z.AI API key
   BIGMODEL_API_KEY          Backward-compatible alias for Z.AI API key
   MINIMAX_API_KEY           MiniMax API key
+  TUZI_API_KEY              TUZI  API  key
   REPLICATE_API_TOKEN       Replicate API token
   JIMENG_ACCESS_KEY_ID      Jimeng Access Key ID
   JIMENG_SECRET_ACCESS_KEY  Jimeng Secret Access Key
@@ -134,6 +136,7 @@ Environment variables:
   REPLICATE_IMAGE_MODEL     Default Replicate model (google/nano-banana-2)
   JIMENG_IMAGE_MODEL        Default Jimeng model (jimeng_t2i_v40)
   SEEDREAM_IMAGE_MODEL      Default Seedream model (doubao-seedream-5-0-260128)
+  TUZI_IMAGE_MODEL          Default Tuzi  model (gemini-3-pro-image-preview)
   OPENAI_BASE_URL           Custom OpenAI endpoint
   OPENAI_IMAGE_API_DIALECT  OpenAI-compatible image dialect (openai-native|ratio-metadata)
   OPENAI_IMAGE_USE_CHAT     Use /chat/completions instead of /images/generations (true|false)
@@ -145,6 +148,7 @@ Environment variables:
   ZAI_BASE_URL              Custom Z.AI endpoint
   BIGMODEL_BASE_URL         Backward-compatible alias for Z.AI endpoint
   MINIMAX_BASE_URL          Custom MiniMax endpoint
+  TUZI_BASE_URL             Custom Tuzi endpoint
   REPLICATE_BASE_URL        Custom Replicate endpoint
   JIMENG_BASE_URL           Custom Jimeng endpoint
   AZURE_OPENAI_API_KEY      Azure OpenAI API key
@@ -258,7 +262,8 @@ export function parseArgs(argv: string[]): CliArgs {
         v !== "replicate" &&
         v !== "jimeng" &&
         v !== "seedream" &&
-        v !== "azure"
+        v !== "azure"  &&
+        v !== "tuzi"
       ) {
         throw new Error(`Invalid provider: ${v}`);
       }
@@ -430,6 +435,7 @@ export function parseSimpleYaml(yaml: string): Partial<ExtendConfig> {
           jimeng: null,
           seedream: null,
           azure: null,
+          tuzi: null,
         };
         currentKey = "default_model";
         currentProvider = null;
@@ -458,7 +464,8 @@ export function parseSimpleYaml(yaml: string): Partial<ExtendConfig> {
           key === "replicate" ||
           key === "jimeng" ||
           key === "seedream" ||
-          key === "azure"
+          key === "azure"  ||
+          key === "tuzi"
         )
       ) {
         config.batch ??= {};
@@ -477,7 +484,8 @@ export function parseSimpleYaml(yaml: string): Partial<ExtendConfig> {
           key === "replicate" ||
           key === "jimeng" ||
           key === "seedream" ||
-          key === "azure"
+          key === "azure" ||
+          key === "tuzi"
         )
       ) {
         const cleaned = value.replace(/['"]/g, "");
@@ -527,28 +535,11 @@ function getExtendConfigPathPairs(cwd: string, home: string): ExtendConfigPathPa
   ];
 }
 
-async function exists(filePath: string): Promise<boolean> {
-  try {
-    await access(filePath);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function migrateLegacyExtendConfig(cwd: string, home: string): Promise<void> {
-  for (const { current } of getExtendConfigPathPairs(cwd, home)) {
-    const [hasCurrent] = await Promise.all([exists(current)]);
-    if (hasCurrent) continue;
-    await mkdir(path.dirname(current), { recursive: true });
-  }
-}
 
 export async function loadExtendConfig(
   cwd = process.cwd(),
   home = homedir(),
 ): Promise<Partial<ExtendConfig>> {
-  await migrateLegacyExtendConfig(cwd, home);
 
   const paths = getExtendConfigPathPairs(cwd, home).map(({ current }) => current);
 
@@ -626,9 +617,10 @@ export function getConfiguredProviderRateLimits(
     jimeng: { ...DEFAULT_PROVIDER_RATE_LIMITS.jimeng },
     seedream: { ...DEFAULT_PROVIDER_RATE_LIMITS.seedream },
     azure: { ...DEFAULT_PROVIDER_RATE_LIMITS.azure },
+    tuzi: { ...DEFAULT_PROVIDER_RATE_LIMITS.tuzi },
   };
 
-  for (const provider of ["replicate", "google", "openai", "openrouter", "dashscope", "zai", "minimax", "jimeng", "seedream", "azure"] as Provider[]) {
+  for (const provider of ["replicate", "google", "openai", "openrouter", "dashscope", "zai", "minimax", "jimeng", "seedream", "azure", "tuzi"] as Provider[]) {
     const envPrefix = `LAOLI_IMAGE_GEN_${provider.toUpperCase()}`;
     const extendLimit = extendConfig.batch?.provider_limits?.[provider];
     configured[provider] = {
@@ -694,10 +686,11 @@ export function detectProvider(args: CliArgs): Provider {
     args.provider !== "openrouter" &&
     args.provider !== "replicate" &&
     args.provider !== "seedream" &&
-    args.provider !== "minimax"
+    args.provider !== "minimax" &&
+    args.provider !== "tuzi"
   ) {
     throw new Error(
-      "Reference images require a ref-capable provider. Use --provider google (Gemini multimodal), --provider openai (GPT Image edits), --provider azure (Azure OpenAI), --provider openrouter (OpenRouter multimodal), --provider replicate, --provider seedream for supported Seedream models, or --provider minimax for MiniMax subject-reference workflows."
+      "Reference images require a ref-capable provider. Use --provider google (Gemini multimodal), --provider openai (GPT Image edits), --provider azure (Azure OpenAI), --provider openrouter (OpenRouter multimodal), --provider replicate, --provider seedream for supported Seedream models, or --provider minimax for MiniMax subject-reference workflows, or --provider tuzi (Tuzi)."
     );
   }
 
@@ -713,6 +706,7 @@ export function detectProvider(args: CliArgs): Provider {
   const hasReplicate = !!process.env.REPLICATE_API_TOKEN;
   const hasJimeng = !!(process.env.JIMENG_ACCESS_KEY_ID && process.env.JIMENG_SECRET_ACCESS_KEY);
   const hasSeedream = !!process.env.ARK_API_KEY;
+  const hasTuzi = !!process.env.TUZI_API_KEY
   const modelProvider = inferProviderFromModel(args.model);
 
   if (modelProvider === "seedream") {
@@ -737,19 +731,21 @@ export function detectProvider(args: CliArgs): Provider {
   }
 
   if (args.referenceImages.length > 0) {
+     if (hasTuzi) return "tuzi";
     if (hasGoogle) return "google";
     if (hasOpenai) return "openai";
     if (hasAzure) return "azure";
     if (hasOpenrouter) return "openrouter";
     if (hasReplicate) return "replicate";
     if (hasSeedream) return "seedream";
-    if (hasMinimax) return "minimax";
+    if (hasMinimax) return "minimax";   
     throw new Error(
-      "Reference images require Google, OpenAI, Azure, OpenRouter, Replicate, supported Seedream models, or MiniMax. Set GOOGLE_API_KEY/GEMINI_API_KEY, OPENAI_API_KEY, AZURE_OPENAI_API_KEY+AZURE_OPENAI_BASE_URL, OPENROUTER_API_KEY, REPLICATE_API_TOKEN, ARK_API_KEY, or MINIMAX_API_KEY, or remove --ref."
+      "Reference images require Google, OpenAI, Azure, OpenRouter, Replicate, supported Seedream models, or MiniMax. Set GOOGLE_API_KEY/GEMINI_API_KEY, OPENAI_API_KEY, AZURE_OPENAI_API_KEY+AZURE_OPENAI_BASE_URL, OPENROUTER_API_KEY, REPLICATE_API_TOKEN, ARK_API_KEY, or MINIMAX_API_KEY, TUZI_API_KEY, or remove --ref."
     );
   }
 
   const available = [
+    hasTuzi && "tuzi",
     hasGoogle && "google",
     hasOpenai && "openai",
     hasAzure && "azure",
@@ -766,7 +762,7 @@ export function detectProvider(args: CliArgs): Provider {
   if (available.length > 1) return available[0]!;
 
   throw new Error(
-    "No API key found. Set GOOGLE_API_KEY, GEMINI_API_KEY, OPENAI_API_KEY, AZURE_OPENAI_API_KEY+AZURE_OPENAI_BASE_URL, OPENROUTER_API_KEY, DASHSCOPE_API_KEY, ZAI_API_KEY, MINIMAX_API_KEY, REPLICATE_API_TOKEN, JIMENG keys, or ARK_API_KEY.\n" +
+    "No API key found. Set TUZI_API_KEY,GOOGLE_API_KEY, GEMINI_API_KEY, OPENAI_API_KEY, AZURE_OPENAI_API_KEY+AZURE_OPENAI_BASE_URL, OPENROUTER_API_KEY, DASHSCOPE_API_KEY, ZAI_API_KEY, MINIMAX_API_KEY, REPLICATE_API_TOKEN, JIMENG keys or ARK_API_KEY.\n" +
       "Create ~/.laoli-recipe/.env or <cwd>/.laoli-recipe/.env with your keys."
   );
 }
@@ -813,6 +809,7 @@ async function loadProviderModule(provider: Provider): Promise<ProviderModule> {
   if (provider === "jimeng") return (await import("./providers/jimeng")) as ProviderModule;
   if (provider === "seedream") return (await import("./providers/seedream")) as ProviderModule;
   if (provider === "azure") return (await import("./providers/azure")) as ProviderModule;
+  if (provider === "tuzi") return (await import("./providers/tuzi")) as ProviderModule;
   return (await import("./providers/openai")) as ProviderModule;
 }
 
@@ -844,6 +841,7 @@ function getModelForProvider(
     if (provider === "jimeng" && extendConfig.default_model.jimeng) return extendConfig.default_model.jimeng;
     if (provider === "seedream" && extendConfig.default_model.seedream) return extendConfig.default_model.seedream;
     if (provider === "azure" && extendConfig.default_model.azure) return extendConfig.default_model.azure;
+    if (provider === "tuzi" && extendConfig.default_model.tuzi) return extendConfig.default_model.tuzi;
   }
   return providerModule.getDefaultModel();
 }
@@ -1066,7 +1064,7 @@ async function runBatchTasks(
   const acquireProvider = createProviderGate(providerRateLimits);
   const workerCount = getWorkerCount(tasks.length, jobs, maxWorkers);
   console.error(`Batch mode: ${tasks.length} tasks, ${workerCount} workers, parallel mode enabled.`);
-  for (const provider of ["replicate", "google", "openai", "openrouter", "dashscope", "zai", "minimax", "jimeng", "seedream", "azure"] as Provider[]) {
+  for (const provider of ["replicate", "google", "openai", "openrouter", "dashscope", "zai", "minimax", "jimeng", "seedream", "azure", "tuzi"] as Provider[]) {
     const limit = providerRateLimits[provider];
     console.error(`- ${provider}: concurrency=${limit.concurrency}, startIntervalMs=${limit.startIntervalMs}`);
   }
