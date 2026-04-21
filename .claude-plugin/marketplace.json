@@ -18,6 +18,11 @@
       "name": "aigc",
       "description": "AI内容生成",
       "source": "./plugins/aigc"
+    },
+    {
+      "name": "crawler",
+      "description": "网页爬虫",
+      "source": "./plugins/crawler"
     }
   ]
 }
