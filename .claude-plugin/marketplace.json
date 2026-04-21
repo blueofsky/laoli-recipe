@@ -16,8 +16,13 @@
     },
     {
       "name": "aigc",
-      "description": "AI内容生成",
+      "description": "AIGC应用层",
       "source": "./plugins/aigc"
+    },
+    {
+      "name": "generate",
+      "description": "AIGC底层",
+      "source": "./plugins/generate"
     },
     {
       "name": "crawler",

@@ -1,5 +1,5 @@
 {
   "name": "aigc",
   "version": "1.0.0",
-  "description": "AIGC插件"
+  "description": "AIGC应用层插件"
 }
