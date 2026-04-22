@@ -12,27 +12,27 @@
     {
       "name": "content",
       "description": "内容插件",
-      "source": "./plugins/content"
+      "source": "./content"
     },
     {
       "name": "crawler",
       "description": "爬虫插件",
-      "source": "./plugins/crawler"
+      "source": "./crawler"
     },
     {
       "name": "generate",
       "description": "AI生成插件",
-      "source": "./plugins/generate"
+      "source": "./generate"
     },
     {
       "name": "git",
       "description": "Git插件",
-      "source": "./plugins/git"
+      "source": "./git"
     },
     {
       "name": "utility",
       "description": "工具插件",
-      "source": "./plugins/utility"
+      "source": "./utility"
     }
   ]
 }
