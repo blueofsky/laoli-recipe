@@ -1,5 +1,5 @@
 ---
-description: "根据 draft 文章目录生成 content 发布稿，并串行上传正文图片到 GitHub 图床后回填 CDN 地址"
+description: "准备文章发布文件：从 draft 生成 content 发布稿，上传图片到 CDN 并回填地址"
 argument-hint: "[draft-dir]"
 allowed-tools: Read,Edit,Write,Bash(picgo:*)
 disable-model-invocation: true
@@ -8,8 +8,8 @@ disable-model-invocation: true
 使用 `$1` 作为 draft 文章目录参数。
 
 用法示例：
-- `/pub draft/07_2026多Agent已经分叉`
-- `/pub @draft/07_2026多Agent已经分叉`
+- `/prepare draft/07_2026多Agent已经分叉`
+- `/prepare @draft/07_2026多Agent已经分叉`
 
 执行规则：
 1. 先读取 `$1`。如果没有提供参数，先提示正确用法，不要自行猜测目录。
