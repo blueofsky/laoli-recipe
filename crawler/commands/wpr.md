@@ -22,7 +22,7 @@ disable-model-invocation: true
    - 内容格式：
      ```markdown
      ---
-     index: 序号-关键词
+     title: 关键词
      source: $1
      extracted_at: [当前时间,精确到秒]
      ---

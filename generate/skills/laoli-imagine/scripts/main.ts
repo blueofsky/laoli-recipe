@@ -731,7 +731,7 @@ export function detectProvider(args: CliArgs): Provider {
   }
 
   if (args.referenceImages.length > 0) {
-     if (hasTuzi) return "tuzi";
+    if (hasTuzi) return "tuzi";
     if (hasGoogle) return "google";
     if (hasOpenai) return "openai";
     if (hasAzure) return "azure";
