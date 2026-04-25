@@ -1,6 +1,6 @@
 ---
 description: "从网页提取 prompt 列表，保存为多个md文件"
-argument-hint: "<url> <output-dir>"
+argument-hint: "[url] [output-dir]"
 allowed-tools: WebFetch,Read,Write,execute_command
 ---
 

@@ -1,6 +1,6 @@
 ---
 description: "同步文章到多个平台：读取 md 文件并发布到指定平台"
-argument-hint: "<article-file> [platforms...]"
+argument-hint: "[article-file] [platforms...]"
 allowed-tools: Read, execute_command, use_skill
 ---
 
