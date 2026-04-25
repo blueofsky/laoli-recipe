@@ -13,9 +13,9 @@ disable-model-invocation: true
 
 1. **读取文章** → 分析标题、结构、论点分布
 2. **规划配图** → 确定插图位置和类型（总览图/对比图/流程图/框架图）
-3. **生成图片** → 调用技能：
-   - 封面图 → `laoli-cover-image`
-   - 正文插图 → `laoli-article-illustrator`
+3. **生成图片** → 调用skills：
+   - 封面图 → 调用 `laoli-cover-image` skill 
+   - 正文插图 → 调用 `laoli-article-illustrator` skill
 4. **审校回填** → 检查图片质量，插入正文
 
 ## 输出目录
