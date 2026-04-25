@@ -2,7 +2,6 @@
 description: "准备文章发布文件：从 draft 生成 content 发布稿，上传图片到 CDN 并回填地址"
 argument-hint: "[draft-dir]"
 allowed-tools: Read,Edit,Write,Bash(picgo:*)
-disable-model-invocation: true
 ---
 
 使用 `$1` 作为 draft 文章目录参数。

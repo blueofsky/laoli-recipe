@@ -2,7 +2,6 @@
 description: 为文章配图：规划插图、生成封面、插入正文、审校重做。
 argument-hint: "<article-file>"
 allowed-tools: list_dir, read_file, replace_in_file, write_to_file, execute_command, use_skill
-disable-model-invocation: true
 ---
 
 # 文章配图

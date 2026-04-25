@@ -2,7 +2,6 @@
 description: "从网页提取 prompt 列表，保存为多个md文件"
 argument-hint: "<url> <output-dir>"
 allowed-tools: WebFetch,Read,Write,execute_command
-disable-model-invocation: true
 ---
 
 使用 `$1` 作为网页 URL，`$2` 作为输出目录。
