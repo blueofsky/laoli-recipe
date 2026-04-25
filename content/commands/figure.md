@@ -17,10 +17,10 @@ allowed-tools: list_dir, read_file, replace_in_file, write_to_file, execute_comm
    - 正文插图 → 调用 `laoli-article-illustrator` skill
 4. **审校回填** → 检查图片质量，插入正文
 
-## 输出目录
+## 输出: 
 
 ```
-$(dirname "$1")/
+!`dirname $1`/
 ├── index.md                # 插入图片后的正文
 └── assets/
     ├── illustration-plan.md    # 配图规划
