@@ -22,7 +22,7 @@ Concrete `AskUserQuestion` references below are examples — substitute the loca
 
 When this skill needs to render an image:
 
-- **Use whatever image-generation tool or skill is available** in the current runtime — e.g., Codex `imagegen`, Hermes `image_generate`, `laoli-imagine`, or any equivalent the user has installed.
+- **Use whatever image-generation tool or skill is available** in the current runtime — `laoli-imagine`, or any equivalent the user has installed.
 - **If multiple are available**, ask the user **once** at the start which to use (batch with any other initial questions).
 - **If none are available**, tell the user and ask how to proceed.
 
