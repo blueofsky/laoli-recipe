@@ -1,6 +1,17 @@
 ---
 name: laoli-gc
 description: 'Execute git commit with conventional commit message analysis, intelligent staging, and message generation. Use when user asks to commit changes, create a git commit, or mentions "/commit". Supports: (1) Auto-detecting type and scope from changes, (2) Generating conventional commit messages from diff, (3) Interactive commit with optional type/scope/description overrides, (4) Intelligent file staging for logical grouping'
+version: 1.56.1
+dependencies:
+  runtime:
+    - name: git
+      version: ">=2.0.0"
+      optional: false
+      reason: "Git 操作依赖"
+    - name: bun
+      version: ">=1.0.0"
+      optional: true
+      reason: "可选的脚本运行时"
 license: MIT
 allowed-tools: Bash
 ---

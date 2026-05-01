@@ -2,6 +2,11 @@
 name: laoli-image-cards
 description: 图片卡片系列生成器，Generates infographic image card series with 12 visual styles, 8 layouts, and 3 color palettes. Breaks content into 1-10 cartoon-style image cards optimized for social media engagement. Use when user mentions "小红书图片", "小红书种草", "小绿书", "微信图文", "微信贴图", "image cards", "图片卡片", or wants social media infographic series.
 version: 1.56.1
+dependencies:
+  skills:
+    - name: laoli-imagine
+      version: ">=1.56.0"
+      reason: "图片生成后端，用于生成卡片图片"
 ---
 
 # Image Card Series Generator

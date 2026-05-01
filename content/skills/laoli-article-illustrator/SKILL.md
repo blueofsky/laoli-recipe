@@ -2,6 +2,11 @@
 name: laoli-article-illustrator
 description: 智能文章插图技能，Analyzes article structure, identifies positions requiring visual aids, generates illustrations with Type × Style × Palette three-dimension approach. Use when user asks to "illustrate article", "add images", "generate images for article", or "为文章配图".
 version: 1.57.0
+dependencies:
+  skills:
+    - name: laoli-imagine
+      version: ">=1.57.0"
+      reason: "图片生成后端，用于生成文章插图"
 ---
 
 # Article Illustrator

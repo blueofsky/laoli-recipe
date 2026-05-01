@@ -1,6 +1,21 @@
 ---
 name: laoli-videoize
 description: 视频生成技能。支持 Veo、Sora、Kling、Seedance 等模型，单视频和长视频（多段合成）模式。当用户要求生成视频、创建视频或需要视频生成后端时使用。
+version: 1.57.0
+dependencies:
+  runtime:
+    - name: bun
+      version: ">=1.0.0"
+      optional: false
+      reason: "脚本运行时"
+  env:
+    - name: TUZI_API_KEY
+      reason: "Tuzi 视频生成 API 密钥"
+  skills:
+    - name: laoli-imagine
+      version: ">=1.57.0"
+      optional: true
+      reason: "可选的图片生成后端（如需生成视频封面）"
 ---
 
 # Video Generation (AI SDK)

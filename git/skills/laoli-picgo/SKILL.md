@@ -1,6 +1,22 @@
 ---
 name: laoli-picgo
 description: "Upload images to GitHub repository as an image hosting service using picgo-core. Use when user mentions uploading images to GitHub, needs to host images externally, or asks for image URL generation from GitHub. This skill handles the complete workflow of configuring picgo-core with GitHub settings and uploading images with automatic timestamp-based filename renaming and URL retrieval. CRITICAL - Before asking user to configure PicGo, always check if the configuration file exists at ~/.picgo/config.json and contains valid GitHub settings. If configuration exists and is valid, use it directly without asking user to reconfigure."
+version: 1.56.1
+dependencies:
+  runtime:
+    - name: node
+      version: ">=18.0.0"
+      optional: false
+      reason: "picgo 运行时要求"
+  external:
+    - name: picgo
+      version: ">=1.6.0"
+      install: "npm install -g picgo"
+      reason: "图片上传核心工具"
+    - name: picgo-plugin-rename-image
+      version: "latest"
+      install: "picgo install picgo-plugin-rename-image"
+      reason: "可选的时间戳重命名插件"
 ---
 
 # Laoli PicGo GitHub Upload

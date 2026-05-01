@@ -1,6 +1,17 @@
 ---
 name: laoli-url-to-markdown
 description: 通过 Chrome CDP 抓取任意 URL 并转换为 Markdown。优先提取微信公众号正文区域（#js_content），自动下载图片到 assets/ 目录，输出格式为自定义头部（标题+来源+链接）。当用户要求将网页保存为 Markdown 时使用。
+version: 1.56.1
+dependencies:
+  runtime:
+    - name: bun
+      version: ">=1.0.0"
+      optional: false
+      reason: "脚本运行时"
+  external:
+    - name: Chrome or Chromium
+      version: "latest"
+      reason: "CDP 协议依赖浏览器"
 ---
 
 # URL to Markdown

@@ -2,6 +2,11 @@
 name: laoli-infographic
 description: 专业信息图生成器，Generate professional infographics with 21 layout types and 21 visual styles. Analyzes content, recommends layout×style combinations, and generates publication-ready infographics. Use when user asks to create "infographic", "信息图", "visual summary", "可视化", or "高密度信息大图".
 version: 1.56.1
+dependencies:
+  skills:
+    - name: laoli-imagine
+      version: ">=1.56.0"
+      reason: "图片生成后端，用于生成信息图"
 ---
 
 # Infographic Generator

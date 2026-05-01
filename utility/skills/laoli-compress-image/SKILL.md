@@ -2,6 +2,25 @@
 name: laoli-compress-image
 description: 压缩图片技能，Compresses images to WebP (default) or PNG with automatic tool selection. Use when user asks to "compress image", "optimize image", "convert to webp", or reduce image file size.
 version: 1.56.1
+dependencies:
+  runtime:
+    - name: bun
+      version: ">=1.0.0"
+      optional: false
+      reason: "脚本运行时"
+  external:
+    - name: cwebp
+      version: "latest"
+      install: "apt install webp or brew install webp"
+      reason: "WebP 压缩工具（macOS/Linux）"
+    - name: ImageMagick
+      version: "latest"
+      install: "apt install imagemagick or brew install imagemagick"
+      reason: "图片处理备选工具"
+    - name: sharp
+      version: ">=0.33.0"
+      install: "npm install -g sharp"
+      reason: "Node.js 图片处理库"
 ---
 
 # Image Compressor

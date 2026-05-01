@@ -2,6 +2,11 @@
 name: laoli-cover-image
 description: 文章封面图生成技能，Generates article cover images with 5 dimensions (type, palette, rendering, text, mood) combining 11 color palettes and 7 rendering styles. Supports cinematic (2.35:1), widescreen (16:9), and square (1:1) aspects. Use when user asks to "generate cover image", "create article cover", or "make cover".
 version: 1.56.1
+dependencies:
+  skills:
+    - name: laoli-imagine
+      version: ">=1.56.0"
+      reason: "图片生成后端，用于生成封面图"
 ---
 
 # Cover Image Generator

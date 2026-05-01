@@ -2,6 +2,16 @@
 name: laoli-imagine
 description: 图像生成技能，AI image generation with Tuzi, OpenAI, Azure OpenAI, Google, OpenRouter, DashScope, Z.AI GLM-Image, MiniMax, Jimeng, Seedream and Replicate APIs. Supports text-to-image, reference images, aspect ratios, and batch generation from saved prompt files. Sequential by default; use batch parallel generation when the user already has multiple prompts or wants stable multi-image throughput. Use when user asks to generate, create, or draw images.
 version: 1.57.0
+dependencies:
+  runtime:
+    - name: bun
+      version: ">=1.0.0"
+      optional: false
+      reason: "首选脚本运行时"
+    - name: npx
+      version: ">=10.0.0"
+      optional: true
+      reason: "bun 不可用时的备选运行时"
 metadata:
   openclaw:
     homepage: https://github.com/blueofsky/laoli-recipe

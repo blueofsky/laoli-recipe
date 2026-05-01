@@ -2,6 +2,11 @@
 name: laoli-comic
 description: 知识漫画创作器，Knowledge comic creator supporting multiple art styles and tones. Creates original educational comics with detailed panel layouts and sequential image generation. Use when user asks to create "知识漫画", "教育漫画", "biography comic", "tutorial comic", or "Logicomix-style comic".
 version: 1.56.1
+dependencies:
+  skills:
+    - name: laoli-imagine
+      version: ">=1.56.0"
+      reason: "图片生成后端，用于生成漫画页面和角色表"
 ---
 
 # Knowledge Comic Creator
