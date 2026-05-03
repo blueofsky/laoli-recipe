@@ -119,22 +119,23 @@ EXTEND.md 字段说明见 `references/config/preferences-schema.md`。
 - 群众/配角不需要角色卡，但需要在prompt中与主角做出外貌区分（如"different face from [角色ID]"）
 - 角色描述**同时用中英文**：中文写角色卡（人阅读），英文片段嵌入IMAGE PROMPT（AI生图）
 - **定妆照提示词**在第4步直接读取并使用，生成后保存为 `素材/参考/ref_角色ID.jpg`，第5步生成分镜图时作为参考图传入
+- **文化特征前置**：在描述外貌时，必须首先明确角色的种族、时代及地域特征。随后的具体面部、体型、发肤特征描述，应自然体现此背景，并与角色独特的视觉识别点（视觉锚点）结合。
 
 **定妆照提示词规范**：参见方案配置（`references/profiles/<default_profile>`）中的「定妆照视觉要求」章节，获取定妆照的构图、背景、光影等约束。
 
 **定妆照提示词模板**：
 ```
-Portrait of [角色ID], a [age]-year-old [build] [person] with [visual anchor features], wearing [signature outfit], [signature accessories], half-body portrait from chest up, facing slightly left, dark solid background, [character's core气质 in English], [风格后缀], no background elements
+Portrait of [角色ID], a [age]-year-old [build] [cultural/ethnic descriptor, e.g., East Asian] [person] with [distinctive physical features that reflect the character's cultural background and visual identity, e.g., monolid eyes, sharp cheekbones], wearing [signature outfit], [signature accessories], half-body portrait from chest up, facing slightly left, dark solid background, [character's core气质 in English], [风格后缀], no background elements
 ```
 
 **示例**（萨拉热窝选题·普林西普，风格后缀取自方案配置）：
 ```markdown
 - **普林西普 [角色ID: PRN01]**:
-  - **年龄外貌**：19岁，体型瘦削，深色眼窝，黑色凌乱短发，下巴尖削，面色苍白
+  - **年龄外貌**：19岁，**具有典型的巴尔干地区斯拉夫青年特征**，体型瘦削，深色眼窝，黑色凌乱短发，下巴尖削，面色苍白
   - **核心气质**：瘦弱但眼神偏执，像一只被逼到角落的困兽
   - **标志性服饰**：深色旧西装，领口微敞，袖口磨白
   - **视觉锚点**：深色眼窝+凌乱黑发+苍白尖下巴
-  - **定妆照提示词**：Portrait of PRN01, a 19-year-old gaunt young man with deep dark eye sockets, messy black hair and pale sharp chin, wearing a worn dark suit with collar slightly open and frayed cuffs, half-body portrait from chest up, facing slightly left, dark solid background, intense paranoid eyes like a cornered animal, [风格后缀], no background elements
+  - **定妆照提示词**：Portrait of PRN01, a 19-year-old gaunt **South Slavic** young man with deep dark eye sockets, messy black hair and pale sharp chin, wearing a worn dark suit with collar slightly open and frayed cuffs, half-body portrait from chest up, facing slightly left, dark solid background, intense paranoid eyes like a cornered animal, [风格后缀], no background elements
 ```
 
 #### 2b. 通用视觉准则
@@ -156,7 +157,7 @@ Portrait of [角色ID], a [age]-year-old [build] [person] with [visual anchor fe
 
 ### 核心角色设定
 - **[角色名] [角色ID: XXX01]**:
-  - **年龄外貌**：[具体年龄、体型、面部特征、肤色、发型]
+  - **年龄外貌**：[具体年龄，具有XX地区/文化/时代背景的典型特征（如：东亚、地中海、南亚等），体型、面部特征、肤色、发型]
   - **核心气质**：[一句话概括此人给观者的第一印象]
   - **标志性服饰**：[时代服饰的具体描写，包括材质、颜色、配饰]
   - **视觉锚点**：[此角色最突出的1-2个视觉特征，用于跨分镜识别和写入IMAGE PROMPT]
@@ -177,7 +178,7 @@ Portrait of [角色ID], a [age]-year-old [build] [person] with [visual anchor fe
 1. **输入**：你已获得第1步输出的“节奏段”列表（每个节奏段都包含名称和情节描述），以及第2步的“角色设定”与“视觉风格”。
 
 2. **核心任务**：为每一个“节奏段”创作分镜脚本。节奏段与分镜不是1对1关系。你需要根据以下规则进行创作
-  - **拆分规划**：根据该节奏段的情节密度、情绪转折点和视觉焦点变化，你必须根据其情节密度，将其规划为1个或多个‘分镜’（即可生成的视频单元），情节复杂的段落可能需要多个分镜，简单的段落可能只需一个。
+  - **拆分规划**：根据该节奏段的情节密度、情绪转折点和视觉焦点变化，你必须根据其情节密度，将其规划为1个或多个‘分镜’（即可生成的视频单元），情节复杂的段落可能需要多个分镜，简单的段落可能只需一个。在最终输出分镜列表前，可简要说明拆分逻辑，例如：‘【观察眼·外部压力】段落（预设18秒）情节密集，拆分为3个分镜，总时长约18秒（8+8+2秒）。’
   - **命名格式**：每个分镜的标题格式必须为：## 分镜 N / [节奏段名]-[镜头描述]。其中，[节奏段名]必须直接使用第1步输出中对应的节奏段名称（如 【暴击钩子】）。
   - **时长约束**：每个“分镜”的预设时长严禁超过方案中定义的「单镜头生成限制」（如8秒）。你需合理分配各分镜时长，确保该节奏段的总时长与预设范围基本吻合。
   - **叙事连贯**：跨分镜的台词需保持语言和情绪的连贯，形成完整的叙事流。金句和互动钩子需放在你设计的最具冲击力的分镜中。
@@ -199,14 +200,14 @@ Portrait of [角色ID], a [age]-year-old [build] [person] with [visual anchor fe
 
 **格式规范**：
 ```
-[主体：引用角色卡中的视觉锚点+英文外貌片段] + [动作/状态] + [环境/背景] + [风格后缀] + [负向排除]
+[主体：引用角色卡中的文化特征与视觉锚点] + [动作/状态] + [环境/背景] + [风格后缀] + [负向排除]
 ```
 
 **要点**：
 
-1. **角色引用**：每个出场的核心角色，在prompt中必须包含其**视觉锚点的英文描述**，从角色卡直接翻译嵌入
-   - 正确：`a 19-year-old gaunt young man with dark eye sockets, messy black hair and pale sharp chin (PRN01), gripping a pistol...`
-   - 错误：`a young man gripping a pistol...`（没有区分度）
+1. **角色引用**：每个出场的核心角色，在prompt中必须包含其文化/种族特征（如 East Asian, South Slavic 等）以及**视觉锚点的英文描述**，从角色卡的定妆照提示词中直接引用或适配。
+   - 正确：`a gaunt **South Slavic** young man with dark eye sockets, messy black hair and pale sharp chin (PRN01), gripping a pistol...`
+   - 错误：`a young man holding a sword...（缺少文化与视觉识别信息）`
 2. **多人场景差异化**：当画面有多个角色时，每个角色的英文描述必须包含其独特的视觉锚点，且明确标注"different person"
 3. **具体胜过抽象**：不写"一个宏伟的场景"，写"巴戎寺四张微笑石雕巨脸特写，金色晨曦从左侧照亮"
 4. **环境描写要丰富**：光源方向、天气、时间、建筑风格、材质质感
@@ -256,7 +257,7 @@ VIDEO MOTION 是图生视频（i2v）的 prompt，描述从分镜图出发的画
 > 具体台词内容（★金句标注）
 
 **IMAGE PROMPT**：
-> 英文生图指令，一行写完（必须包含角色视觉锚点+风格后缀）
+> 英文生图指令，一行写完（必须包含角色文化特征、视觉锚点+风格后缀）
 
 **VIDEO MOTION**：
 > 视频运动描述，一行写完
