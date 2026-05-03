@@ -189,6 +189,7 @@ Portrait of [角色ID], a [age]-year-old [build] [person] with [visual anchor fe
 
 #### 3a. 台词
 
+- 台词创作需严格遵循所选方案中「制作规范」或「风格铁律」中对**台词**的特别要求。
 - 每段1-3句话，总字数按方案配置中的台词总字数控制（参见 `references/profiles/<default_profile>` 中的「制作规范」）
 - 必须包含感官细节（不说"他很愤怒"，而说"他指关节发白，死死攥着那封信"）
 - 金句位置明确标注（★金句）
