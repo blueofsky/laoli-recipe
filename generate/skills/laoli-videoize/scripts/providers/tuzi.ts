@@ -1,8 +1,8 @@
 import { readFile, unlink } from "node:fs/promises"
 import { tmpdir } from "node:os"
-import { spawn } from "node:child_process"
 import path from "node:path"
 import type { CliArgs } from "../types"
+import { isNetworkError, download } from "../shared"
 
 const DEFAULT_MODEL = "veo3.1"
 const POLL_INTERVAL_MS = 5000
@@ -36,13 +36,7 @@ function parseError(error: unknown): string {
   return String(error)
 }
 
-function isNetworkError(e: unknown): boolean {
-  const msg = e instanceof Error ? e.message : String(e)
-  const networkMarkers = ["fetch failed", "ECONNREFUSED", "ETIMEDOUT", "ENOTFOUND", "network", "socket"]
-  return networkMarkers.some((m) => msg.toLowerCase().includes(m.toLowerCase()))
-}
-
-const MAX_REF_IMAGE_BYTES = 1024 * 1024
+const MAX_REF_IMAGE_BYTES = 1024 * 1024 // 1MB
 
 function mimeFromExt(filePath: string): string {
   const ext = path.extname(filePath).toLowerCase()
@@ -61,14 +55,20 @@ function extFromMime(mime: string): string {
   return ".png"
 }
 
+/**
+ * 使用 Bun.spawn 运行外部命令（统一风格，替代 node:child_process.spawn）
+ */
 function runCmd(cmd: string, args: string[]): Promise<{ code: number; stderr: string }> {
-  return new Promise((res) => {
-    const proc = spawn(cmd, args, { stdio: ["ignore", "ignore", "pipe"] })
-    let stderr = ""
-    proc.stderr?.on("data", (d: Buffer) => (stderr += d.toString()))
-    proc.on("close", (code) => res({ code: code ?? 1, stderr }))
-    proc.on("error", (e) => res({ code: 1, stderr: e.message }))
-  })
+  try {
+    const proc = Bun.spawn([cmd, ...args], { stdout: "pipe", stderr: "pipe" })
+    return new Promise(async (res) => {
+      const exitCode = await proc.exited
+      const stderr = await new Response(proc.stderr).text()
+      res({ code: exitCode ?? 1, stderr })
+    })
+  } catch (e) {
+    return Promise.resolve({ code: 1, stderr: e instanceof Error ? e.message : String(e) })
+  }
 }
 
 async function compressImage(filePath: string): Promise<{ bytes: Uint8Array; mime: string }> {
@@ -81,10 +81,19 @@ async function compressImage(filePath: string): Promise<{ bytes: Uint8Array; mim
         return { bytes: new Uint8Array(compressed), mime: "image/jpeg" }
       }
     }
-    const { code } = await runCmd("convert", [filePath, "-quality", "70", tmp])
-    if (code === 0) {
+    // Linux: ImageMagick convert
+    const { code: imgCode } = await runCmd("convert", [filePath, "-quality", "70", tmp])
+    if (imgCode === 0) {
       const compressed = await readFile(tmp)
       return { bytes: new Uint8Array(compressed), mime: "image/jpeg" }
+    }
+    // Windows: ffmpeg 作为图片转码备选
+    if (process.platform === "win32") {
+      const { code: ffCode } = await runCmd("ffmpeg", ["-y", "-i", filePath, "-q:v", "5", tmp])
+      if (ffCode === 0) {
+        const compressed = await readFile(tmp)
+        return { bytes: new Uint8Array(compressed), mime: "image/jpeg" }
+      }
     }
     const original = await readFile(filePath)
     return { bytes: new Uint8Array(original), mime: mimeFromExt(filePath) }
@@ -110,16 +119,11 @@ async function readRefImage(filePath: string): Promise<{ blob: Blob; filename: s
   return { blob: new Blob([bytes], { type: mime }), filename: `reference${ext}` }
 }
 
-async function download(url: string): Promise<Uint8Array> {
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`视频下载失败: ${res.status}`)
-  return new Uint8Array(await res.arrayBuffer())
-}
-
 export async function generateVideo(
   prompt: string,
   model: string,
-  args: CliArgs
+  args: CliArgs,
+  _opts: { taskId?: string } = {}  // Tuzi 不支持 taskId 恢复，参数仅用于兼容
 ): Promise<Uint8Array> {
   const apiKey = getApiKey()
   if (!apiKey) throw new Error("TUZI_API_KEY 未配置。请前往 https://api.tu-zi.com/token 获取（视频教程：https://www.bilibili.com/video/BV1k4PqzPEKz/）")
@@ -130,7 +134,7 @@ export async function generateVideo(
   form.append("model", model)
   form.append("prompt", prompt)
 
-  if (args.seconds) form.append("seconds", args.seconds)
+  if (args.seconds != null) form.append("seconds", String(args.seconds))
   if (args.size) form.append("size", args.size)
 
   if (args.referenceImages.length > 0) {
@@ -168,6 +172,7 @@ export async function generateVideo(
 
   const startTime = Date.now()
   let backoff = POLL_INTERVAL_MS
+  let lastLogTime = 0
 
   while (Date.now() - startTime < MAX_POLL_MS) {
     await new Promise((r) => setTimeout(r, backoff))
@@ -196,8 +201,10 @@ export async function generateVideo(
     const status = (await pollRes.json()) as PollResponse
     const elapsed = Math.round((Date.now() - startTime) / 1000)
 
-    if (elapsed % 30 < 6) {
+    // 每 15 秒输出一次进度日志
+    if (elapsed - lastLogTime >= 15) {
       console.log(`轮询中... 状态=${status.status}, 进度=${status.progress ?? 0}, 已用时=${elapsed}s`)
+      lastLogTime = elapsed
     }
 
     if (status.status === "completed") {
