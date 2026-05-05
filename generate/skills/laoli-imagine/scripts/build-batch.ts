@@ -36,7 +36,7 @@ Options:
   --output <path>      Path to output batch.json
   --images-dir <path>  Directory for generated images
   --refs-dir <path>    Directory holding reference images, relative to batch file (default: references)
-  --provider <name>    Provider for laoli-imagine batch tasks (default: replicate)
+  --provider <name>    Provider for laoli-imagine batch tasks (default: apimart)
   --model <id>         Explicit model for laoli-imagine batch tasks (default: resolved by laoli-imagine config/env)
   --ar <ratio>         Aspect ratio for all tasks (default: 16:9)
   --quality <level>    Quality for all tasks (default: 2k)
@@ -51,7 +51,7 @@ function parseArgs(argv: string[]): CliArgs {
     outputPath: null,
     imagesDir: null,
     refsDir: "references",
-    provider: "replicate",
+    provider: "apimart",
     model: null,
     aspectRatio: "16:9",
     quality: "2k",

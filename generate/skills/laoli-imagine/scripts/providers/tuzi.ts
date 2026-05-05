@@ -34,7 +34,6 @@ function isAsyncModel(model: string): boolean {
 }
 
 const QUALITY_MODELS = [
-  "gemini-3.1-flash-image-preview",
   "gemini-3-pro-image-preview",
 ];
 
@@ -86,8 +85,12 @@ function parseError(error: unknown): string {
   if (typeof error === "string") return error;
   if (typeof error === "object" && error !== null) {
     const e = error as Record<string, unknown>;
-    if (typeof e.message === "string") return e.message;
-    if (typeof e.code === "string" && typeof e.message === "string") return `${e.code}: ${e.message}`;
+    const code = e.code;
+    const msg = e.message;
+    if (typeof msg === "string") {
+      if (typeof code === "string") return `${code}: ${msg}`;
+      return msg;
+    }
   }
   return String(error);
 }
@@ -107,7 +110,11 @@ async function compressToJpeg(filePath: string): Promise<Buffer | null> {
   try {
     if (process.platform === "darwin") {
       const { code } = await runCmd("sips", ["-s", "format", "jpeg", "-s", "formatOptions", "70", filePath, "--out", tmp]);
-      if (code === 0) return await readFile(tmp);
+      if (code === 0) {
+        const result = await readFile(tmp);
+        console.log(`参考图 ${path.basename(filePath)} 已压缩 (macOS sips): ${await readFile(filePath).then(b => b.length)} → ${result.length} bytes`);
+        return result;
+      }
     }
     const { code } = await runCmd("convert", [filePath, "-quality", "70", tmp]);
     if (code === 0) return await readFile(tmp);
@@ -144,6 +151,11 @@ export async function generateImage(
 ): Promise<Uint8Array> {
   const apiKey = getApiKey();
   if (!apiKey) throw new Error("TUZI_API_KEY 未配置。请前往 https://api.tu-zi.com/token 获取（视频教程：https://www.bilibili.com/video/BV1k4PqzPEKz/）");
+
+  // Prompt 长度警告
+  if (prompt.length > 4000) {
+    console.error(`[Tuzi] 警告: prompt 长度 ${prompt.length} 字符，超过建议的 4000 字符限制`);
+  }
 
   const baseURL = getBaseUrl();
 

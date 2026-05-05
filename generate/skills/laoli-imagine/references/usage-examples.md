@@ -17,63 +17,39 @@ ${BUN_X} {baseDir}/scripts/main.ts --prompt "A cat" --image out.png --quality 2k
 # Prompt from files
 ${BUN_X} {baseDir}/scripts/main.ts --promptfiles system.md content.md --image out.png
 
-# With reference images (any provider family that supports refs)
+# With reference images
 ${BUN_X} {baseDir}/scripts/main.ts --prompt "Make blue" --image out.png --ref source.png
 ```
 
 ## Per-Provider
 
+### Tuzi
+
 ```bash
-# OpenAI
-${BUN_X} {baseDir}/scripts/main.ts --prompt "A cat" --image out.png --provider openai
-
-# Azure OpenAI (model = deployment name)
-${BUN_X} {baseDir}/scripts/main.ts --prompt "A cat" --image out.png --provider azure --model gpt-image-1.5
-
-# Google with explicit model
-${BUN_X} {baseDir}/scripts/main.ts --prompt "Make blue" --image out.png --provider google --model gemini-3-pro-image-preview --ref source.png
-
-# OpenRouter (recommended default)
-${BUN_X} {baseDir}/scripts/main.ts --prompt "A cat" --image out.png --provider openrouter
-
-# OpenRouter with reference
-${BUN_X} {baseDir}/scripts/main.ts --prompt "Make blue" --image out.png --provider openrouter --model google/gemini-3.1-flash-image-preview --ref source.png
-
-# DashScope (default model)
-${BUN_X} {baseDir}/scripts/main.ts --prompt "一只可爱的猫" --image out.png --provider dashscope
-
-# DashScope Qwen-Image 2.0 Pro (custom size, Chinese text)
-${BUN_X} {baseDir}/scripts/main.ts --prompt "为咖啡品牌设计一张 21:9 横幅海报，包含清晰中文标题" --image out.png --provider dashscope --model qwen-image-2.0-pro --size 2048x872
-
-# DashScope legacy fixed-size
-${BUN_X} {baseDir}/scripts/main.ts --prompt "一张电影感海报" --image out.png --provider dashscope --model qwen-image-max --size 1664x928
-
-# Z.AI GLM-image
-${BUN_X} {baseDir}/scripts/main.ts --prompt "一张带清晰中文标题的科技海报" --image out.png --provider zai
-
-# Z.AI with custom size
-${BUN_X} {baseDir}/scripts/main.ts --prompt "A science illustration with labels" --image out.png --provider zai --model glm-image --size 1472x1088
-
-# MiniMax
-${BUN_X} {baseDir}/scripts/main.ts --prompt "A fashion editorial portrait" --image out.jpg --provider minimax
-
-# MiniMax with subject reference (character/portrait consistency)
-${BUN_X} {baseDir}/scripts/main.ts --prompt "A girl by the library window" --image out.jpg --provider minimax --model image-01 --ref portrait.png --ar 16:9
-
-# Tuzi
+# Tuzi (default model)
 ${BUN_X} {baseDir}/scripts/main.ts --prompt "A fashion editorial portrait" --image out.jpg --provider tuzi
 
-# Tuzi with subject reference (character/portrait consistency)
+# Tuzi with explicit model
+${BUN_X} {baseDir}/scripts/main.ts --prompt "A fashion editorial portrait" --image out.jpg --provider tuzi --model gemini-3-pro-image-preview
+
+# Tuzi with reference image
 ${BUN_X} {baseDir}/scripts/main.ts --prompt "A girl by the library window" --image out.jpg --provider tuzi --model gemini-3-pro-image-preview --ref portrait.png --ar 16:9
+```
 
-# Replicate (default: google/nano-banana-2)
-${BUN_X} {baseDir}/scripts/main.ts --prompt "A cat" --image out.png --provider replicate
+### APIMart
 
-# Replicate Seedream 4.5
-${BUN_X} {baseDir}/scripts/main.ts --prompt "A cinematic portrait" --image out.png --provider replicate --model bytedance/seedream-4.5 --ar 3:2
+```bash
+# APIMart (default: gpt-image-2)
+${BUN_X} {baseDir}/scripts/main.ts --prompt "一只可爱的猫" --image out.png --provider apimart
 
-# Replicate Wan 2.7 Image Pro
-${BUN_X} {baseDir}/scripts/main.ts --prompt "A concept frame" --image out.png --provider replicate --model wan-video/wan-2.7-image-pro --size 2048x1152
+# APIMart with Gemini model
+${BUN_X} {baseDir}/scripts/main.ts --prompt "A cinematic landscape" --image out.png --provider apimart --model gemini-3.1-flash-image-preview
+
+# APIMart with reference image
+${BUN_X} {baseDir}/scripts/main.ts --prompt "Make it blue" --image out.png --provider apimart --model gpt-image-2 --ref source.png
+
+# APIMart Seedream model (2K/3K only)
+${BUN_X} {baseDir}/scripts/main.ts --prompt "A poster with Chinese text" --image out.png --provider apimart --model seedream-5.0-lite --ar 16:9
 ```
 
 ## Batch Mode
@@ -96,16 +72,18 @@ ${BUN_X} {baseDir}/scripts/main.ts --batchfile batch.json --jobs 4 --json
       "id": "hero",
       "promptFiles": ["prompts/hero.md"],
       "image": "out/hero.png",
-      "provider": "replicate",
-      "model": "google/nano-banana-2",
+      "provider": "apimart",
+      "model": "gpt-image-2",
       "ar": "16:9",
       "quality": "2k"
     },
     {
-      "id": "diagram",
-      "promptFiles": ["prompts/diagram.md"],
-      "image": "out/diagram.png",
-      "ref": ["references/original.png"]
+      "id": "portrait",
+      "promptFiles": ["prompts/portrait.md"],
+      "image": "out/portrait.png",
+      "provider": "tuzi",
+      "model": "gemini-3-pro-image-preview",
+      "ref": ["references/ref.png"]
     }
   ]
 }

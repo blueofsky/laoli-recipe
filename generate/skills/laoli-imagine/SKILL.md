@@ -1,7 +1,7 @@
 ---
 name: laoli-imagine
-description: 图像生成技能，AI image generation with Tuzi, OpenAI, Azure OpenAI, Google, OpenRouter, DashScope, Z.AI GLM-Image, MiniMax, Jimeng, Seedream and Replicate APIs. Supports text-to-image, reference images, aspect ratios, and batch generation from saved prompt files. Sequential by default; use batch parallel generation when the user already has multiple prompts or wants stable multi-image throughput. Use when user asks to generate, create, or draw images.
-version: 1.57.0
+description: 图像生成技能，AI image generation with Tuzi and APIMart APIs. Supports text-to-image, reference images, aspect ratios, and batch generation from saved prompt files. Sequential by default; use batch parallel generation when the user already has multiple prompts or wants stable multi-image throughput. Use when user asks to generate, create, or draw images.
+version: 1.59.0
 dependencies:
   runtime:
     - name: bun
@@ -23,7 +23,7 @@ metadata:
 
 # Image Generation (AI SDK)
 
-Official API-based image generation. Supports Tuzi, OpenAI, Azure OpenAI, Google, OpenRouter, DashScope (阿里通义万象), Z.AI GLM-Image, MiniMax, Jimeng (即梦), Seedream (豆包) and Replicate.
+支持 Tuzi 和 APIMart 两大 provider 的图片生成。两者均为全异步（提交任务 → 轮询状态 → 下载结果）。
 
 ## User Input Tools
 
@@ -39,22 +39,22 @@ Concrete `AskUserQuestion` references below are examples — substitute the loca
 
 `{baseDir}` = this SKILL.md's directory. Main script: `{baseDir}/scripts/main.ts`. Resolve `${BUN_X}`: prefer `bun`; else `npx -y bun`; else suggest `brew install oven-sh/bun/bun`.
 
-## Step 0: Load Preferences ⛔ BLOCKING
+## Step 0: Load Preferences
 
-This step MUST complete before any image generation — generation is blocked until EXTEND.md exists.
+EXTEND.md 配置文件用于设置默认值，可跳过（脚本会使用内置默认值继续执行）。
 
-Check these paths in order; first hit wins:
+**查找路径**（按顺序，首个匹配的文件生效）：
 
-| Path | Scope |
+| 路径 | Scope |
 |------|-------|
-| `.laoli-recipe/laoli-imagine/EXTEND.md` | Project |
-| `$HOME/.laoli-recipe/laoli-imagine/EXTEND.md` | User home |
+| `{cwd}/.laoli-recipe/laoli-imagine/EXTEND.md` | 项目级（当前工作目录） |
+| `$HOME/.laoli-recipe/laoli-imagine/EXTEND.md` | 用户级（全系统） |
 
-- **Found** → load, parse, apply. If `default_model.[provider]` is null → ask model only.
-- **Not found** → run first-time setup (`references/config/first-time-setup.md`) using AskUserQuestion to collect provider + model + quality + save location. Save EXTEND.md, then continue. Do not generate images before this completes.
+**行为**：
+- 找到配置 → 加载并应用默认值
+- 未找到配置 → 使用内置默认值继续执行（**不会阻塞或触发 setup**）
 
-
-**EXTEND.md keys**: default provider, default quality, default aspect ratio, default image size, OpenAI image API dialect, default models, batch worker cap, provider-specific batch limits. Schema: `references/config/preferences-schema.md`.
+> 注意：脚本不会自动创建 EXTEND.md。如需持久化偏好设置，请手动创建。参见 `references/config/preferences-schema.md`。
 
 ## Usage
 
@@ -74,7 +74,7 @@ ${BUN_X} {baseDir}/scripts/main.ts --promptfiles system.md content.md --image ou
 ${BUN_X} {baseDir}/scripts/main.ts --prompt "Make blue" --image out.png --ref source.png
 
 # Specific provider
-${BUN_X} {baseDir}/scripts/main.ts --prompt "A cat" --image out.png --provider dashscope --model qwen-image-2.0-pro
+${BUN_X} {baseDir}/scripts/main.ts --prompt "A cat" --image out.png --provider tuzi --model gemini-3-pro-image-preview
 
 # Batch mode
 ${BUN_X} {baseDir}/scripts/main.ts --batchfile batch.json --jobs 4
@@ -89,109 +89,73 @@ ${BUN_X} {baseDir}/scripts/main.ts --batchfile batch.json --jobs 4
 | `--image <path>` | Output image path (required in single-image mode) |
 | `--batchfile <path>` | JSON batch file for multi-image generation |
 | `--jobs <count>` | Worker count for batch mode (default: auto, max from config, built-in default 10) |
-| `--provider google\|openai\|azure\|openrouter\|dashscope\|zai\|tuzi\|minimax\|jimeng\|seedream\|replicate` | Force provider (default: auto-detect) |
-| `--model <id>`, `-m` | Model ID — see provider references for defaults and allowed values |
+| `--provider tuzi\|apimart` | Force provider (default: auto-detect) |
+| `--model <id>`, `-m` | Model ID — see `references/providers/tuzi.md` and `references/providers/apimart.md` for model lists |
 | `--ar <ratio>` | Aspect ratio (`16:9`, `1:1`, `4:3`, …) |
 | `--size <WxH>` | Explicit size (e.g., `1024x1024`) |
 | `--quality normal\|2k` | Quality preset (default: `2k`) |
-| `--imageSize 1K\|2K\|4K` | Image size for Google/OpenRouter (default: from quality) |
-| `--imageApiDialect openai-native\|ratio-metadata` | OpenAI-compatible endpoint dialect — use `ratio-metadata` for gateways that expect aspect-ratio `size` plus `metadata.resolution` |
-| `--ref <files...>` | Reference images. Supported by Google multimodal, OpenAI GPT Image edits, Azure OpenAI edits (PNG/JPG only), OpenRouter multimodal models,Tuzi multimodal models, Replicate supported families, MiniMax subject-reference, Seedream 5.0/4.5/4.0. Not supported by Jimeng, Seedream 3.0, SeedEdit 3.0 |
-| `--n <count>` | Number of images. Replicate requires `--n 1` (single-output save semantics) |
+| `--imageSize 1K\|2K\|4K` | Image size (default: from quality) |
+| `--ref <files...>` | Reference images. Supported by Tuzi multimodal and APIMart (GPT-Image-2, Gemini, Seedream) |
+| `--n <count>` | Number of images (default: 1) |
 | `--json` | JSON output |
 
 ## Environment Variables
 
 | Variable | Description |
 |----------|-------------|
-| `OPENAI_API_KEY` | OpenAI API key |
-| `AZURE_OPENAI_API_KEY` | Azure OpenAI API key |
-| `OPENROUTER_API_KEY` | OpenRouter API key |
-| `GOOGLE_API_KEY` | Google API key |
-| `DASHSCOPE_API_KEY` | DashScope API key |
-| `ZAI_API_KEY` (alias `BIGMODEL_API_KEY`) | Z.AI API key |
-| `MINIMAX_API_KEY` | MiniMax API key |
 | `TUZI_API_KEY` | Tuzi API key |
-| `REPLICATE_API_TOKEN` | Replicate API token |
-| `JIMENG_ACCESS_KEY_ID`, `JIMENG_SECRET_ACCESS_KEY` | Jimeng (即梦) Volcengine credentials |
-| `ARK_API_KEY` | Seedream (豆包) Volcengine ARK API key |
-| `<PROVIDER>_IMAGE_MODEL` | Per-provider model override (`OPENAI_IMAGE_MODEL`, `GOOGLE_IMAGE_MODEL`, `DASHSCOPE_IMAGE_MODEL`, `ZAI_IMAGE_MODEL`/`BIGMODEL_IMAGE_MODEL`,  `TUZI_IMAGE_MODEL`, `MINIMAX_IMAGE_MODEL`, `OPENROUTER_IMAGE_MODEL`, `REPLICATE_IMAGE_MODEL`, `JIMENG_IMAGE_MODEL`, `SEEDREAM_IMAGE_MODEL`) |
-| `AZURE_OPENAI_DEPLOYMENT` (alias `AZURE_OPENAI_IMAGE_MODEL`) | Azure default deployment |
-| `<PROVIDER>_BASE_URL` | Per-provider endpoint override |
-| `AZURE_API_VERSION` | Azure image API version (default `2025-04-01-preview`) |
-| `JIMENG_REGION` | Jimeng region (default `cn-north-1`) |
-| `OPENAI_IMAGE_API_DIALECT` | `openai-native` \| `ratio-metadata` |
-| `OPENROUTER_HTTP_REFERER`, `OPENROUTER_TITLE` | Optional OpenRouter attribution |
+| `APIMART_API_KEY` | APIMart API key |
+| `TUZI_IMAGE_MODEL` | Default Tuzi model (gemini-3-pro-image-preview) |
+| `APIMART_IMAGE_MODEL` | Default APIMart model (gpt-image-2) |
+| `TUZI_BASE_URL` | Custom Tuzi endpoint |
+| `APIMART_BASE_URL` | Custom APIMart endpoint (default: https://api.apimart.ai/v1) |
 | `LAOLI_IMAGE_GEN_MAX_WORKERS` | Override batch worker cap |
-| `LAOLI_IMAGE_GEN_<PROVIDER>_CONCURRENCY` | Per-provider concurrency (e.g., `LAOLI_IMAGE_GEN_REPLICATE_CONCURRENCY`) |
+| `LAOLI_IMAGE_GEN_<PROVIDER>_CONCURRENCY` | Per-provider concurrency (e.g., `LAOLI_IMAGE_GEN_APIMART_CONCURRENCY`) |
 | `LAOLI_IMAGE_GEN_<PROVIDER>_START_INTERVAL_MS` | Per-provider start-gap |
 
-**Load priority**: CLI args > EXTEND.md > env vars > `<cwd>/.laoli-recipe/.env` > `~/.laoli-recipe/.env`
+**Load priority**: CLI args > process.env > `~/.laoli-recipe/.env` > `<cwd>/.laoli-recipe/.env` (EXTEND.md is loaded separately)
 
 ## Model Resolution
 
-Priority (highest → lowest) applies to every provider:
+Priority (highest → lowest):
 
 1. CLI flag `--model <id>`
 2. EXTEND.md `default_model.[provider]`
 3. Env var `<PROVIDER>_IMAGE_MODEL`
 4. Built-in default
 
-For Azure, `--model` / `default_model.azure` is the Azure deployment name. `AZURE_OPENAI_DEPLOYMENT` is the preferred env var; `AZURE_OPENAI_IMAGE_MODEL` is kept as a backward-compatible alias.
-
-EXTEND.md overrides env vars: if EXTEND.md sets `default_model.google: "gemini-3-pro-image-preview"` and the env var sets `GOOGLE_IMAGE_MODEL=gemini-3.1-flash-image-preview`, EXTEND.md wins.
-
 **Display model info before each generation**:
 
 - `Using [provider] / [model]`
 - `Switch model: --model <id> | EXTEND.md default_model.[provider] | env <PROVIDER>_IMAGE_MODEL`
 
-## OpenAI-Compatible Gateway Dialects
-
-`provider=openai` means the auth and routing entrypoint is OpenAI-compatible. It does **not** guarantee the upstream image API uses OpenAI native semantics. When a gateway expects a different wire format, set `default_image_api_dialect` in EXTEND.md, `OPENAI_IMAGE_API_DIALECT`, or `--imageApiDialect`:
-
-- `openai-native`: pixel `size` (`1536x1024`) and native OpenAI quality fields
-- `ratio-metadata`: aspect-ratio `size` (`16:9`) plus `metadata.resolution` (`1K|2K|4K`) and `metadata.orientation`
-
-Use `openai-native` for the OpenAI native API or strict clones; try `ratio-metadata` for compatibility gateways in front of Gemini or similar models. Current limitation: `ratio-metadata` applies only to text-to-image; reference-image edits still need `openai-native` or a provider with first-class edit support.
-
 ## Provider-Specific Guides
-
-Each provider has its own quirks (model families, size rules, ref support, limits). Read these when the user picks that provider or asks for non-default behavior:
 
 | Provider | Reference |
 |----------|-----------|
-| DashScope (Qwen-Image families, custom sizes) | `references/providers/dashscope.md` |
-| Z.AI (GLM-Image, cogview-4) | `references/providers/zai.md` |
-| MiniMax (image-01, subject-reference) | `references/providers/minimax.md` |
-| OpenRouter (multimodal models, `/chat/completions` flow) | `references/providers/openrouter.md` |
-| Replicate (nano-banana, Seedream, Wan) | `references/providers/replicate.md` |
+| Tuzi (gemini-3-pro-image-preview, subject-reference character workflow) | Gemini 原生 API，详见 `references/providers/tuzi.md` |
+| APIMart (GPT-Image-2, Gemini, Seedream, Grok Imagine, Wan) | OpenAI 兼容网关，详见 `references/providers/apimart.md` |
 
 ## Provider Selection
 
-1. `--ref` provided + no `--provider` → auto-select Google → OpenAI → Azure → OpenRouter → Replicate → Seedream → MiniMax (MiniMax's subject reference is more specialized toward character/portrait consistency)
-2. `--provider` specified → use it (if `--ref`, must be google/openai/azure/openrouter/replicate/seedream/minimax)
+1. `--ref` provided + no `--provider` → auto-select Tuzi → APIMart
+2. `--provider` specified → use it
 3. Only one API key present → use that provider
-4. Multiple keys → default priority: Google → OpenAI → Azure → OpenRouter → DashScope → Z.AI → MiniMax → Replicate → Jimeng → Seedream
+4. Multiple keys → default priority: Tuzi → APIMart
 
 ## Quality Presets
 
-| Preset | Google imageSize | OpenAI size | OpenRouter size | Replicate resolution | Use case |
-|--------|------------------|-------------|-----------------|----------------------|----------|
-| `normal` | 1K | 1024px | 1K | 1K | Quick previews |
-| `2k` (default) | 2K | 2048px | 2K | 2K | Covers, illustrations, infographics |
-
-Google/OpenRouter `imageSize` can be overridden with `--imageSize 1K|2K|4K`.
+| Preset | imageSize | Use case |
+|--------|-----------|----------|
+| `normal` | 1K | Quick previews |
+| `2k` (default) | 2K | Covers, illustrations, infographics |
 
 ## Aspect Ratios
 
 Supported: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `2.35:1`.
 
-- Google multimodal: `imageConfig.aspectRatio`
-- OpenAI: closest supported size
-- OpenRouter: `imageGenerationOptions.aspect_ratio`; if only `--size <WxH>` is given, the ratio is inferred
-- Replicate: behavior is model-specific — `google/nano-banana*` uses `aspect_ratio`, `bytedance/seedream-*` uses documented Replicate ratios, Wan 2.7 maps `--ar` to a concrete `size`
-- MiniMax: official `aspect_ratio` values; if `--size <WxH>` is given without `--ar`, sends `width`/`height` for `image-01`
+- Tuzi: `imageConfig.aspectRatio`
+- APIMart: `size` field; 4K resolution has limited aspect ratio support for GPT-Image-2
 
 ## Generation Mode
 
@@ -219,21 +183,19 @@ Rule of thumb: once prompt files are saved and the task is "generate all of thes
 - Missing API key → error with setup instructions
 - Generation failure → auto-retry up to 3 attempts per image
 - Invalid aspect ratio → warning, proceed with default
-- Reference images with unsupported provider/model → error with fix hint
+- Reference images with unsupported provider → error with fix hint
 
 ## References
 
 | File | Content |
 |------|---------|
 | `references/usage-examples.md` | Extended CLI examples across providers and batch mode |
-| `references/providers/dashscope.md` | DashScope families, sizes, limits |
-| `references/providers/zai.md` | Z.AI GLM-image / cogview-4 |
-| `references/providers/minimax.md` | MiniMax image-01 + subject reference |
-| `references/providers/openrouter.md` | OpenRouter multimodal flow |
-| `references/providers/replicate.md` | Replicate supported families + guardrails |
-| `references/config/preferences-schema.md` | EXTEND.md schema |
-| `references/config/first-time-setup.md` | First-time setup flow |
+| `references/providers/apimart.md` | APIMart supported models, sizes, limits |
+| `references/providers/tuzi.md` | Tuzi supported models and usage |
+| `references/config/preferences-schema.md` | EXTEND.md schema (manual creation guide) |
 
 ## Extension Support
 
 Custom configurations via EXTEND.md. See Step 0 for paths and schema.
+
+> **Manual Setup**: If you want to persist preferences, create EXTEND.md manually at one of the paths above. See `references/config/preferences-schema.md` for the schema.

@@ -5,6 +5,10 @@ description: First-time setup and default model selection flow for laoli-imagine
 
 # First-Time Setup
 
+> ⚠️ **状态**: 此功能当前**未实现**于脚本中。EXTEND.md 查找失败时，脚本会使用内置默认值继续执行，不会触发此 setup 流程。
+>
+> 此文档保留作为未来自动 setup 功能的设计参考。
+
 ## Overview
 
 Triggered when:
@@ -43,101 +47,38 @@ Use AskUserQuestion with ALL questions in ONE call:
 header: "Provider"
 question: "Default image generation provider?"
 options:
-  - label: "Google (Recommended)"
-    description: "Gemini multimodal - high quality, reference images, flexible sizes"
-  - label: "OpenAI"
-    description: "GPT Image - consistent quality, reliable output"
-  - label: "Azure OpenAI"
-    description: "Azure-hosted GPT Image deployments with resource-specific routing"
-  - label: "OpenRouter"
-    description: "Router for Gemini/FLUX/OpenAI-compatible image models"
-  - label: "DashScope"
-    description: "Alibaba Cloud - Qwen-Image, strong Chinese/English text rendering"
-  - label: "Z.AI"
-    description: "GLM-image, strong poster and text-heavy image generation"
-  - label: "MiniMax"
-    description: "MiniMax image generation with subject-reference character workflows"
+  - label: "APIMart (Recommended)"
+    description: "OpenAI-compatible gateway — GPT-Image-2, Gemini, Seedream, Grok Imagine, and more"
   - label: "Tuzi"
-    description: "Tuzi image generation with subject-reference character workflows"
-  - label: "Replicate"
-    description: "Curated Replicate image families - nano-banana-2, Seedream, and Wan image models"
+    description: "Gemini-based image generation with subject-reference character workflows"
 ```
 
-### Question 2: Default Google Model
+### Question 2: Default APIMart Model
 
-Only show if user selected Google or auto-detect (no explicit provider).
+Only show if user selected APIMart.
 
 ```yaml
-header: "Google Model"
-question: "Default Google image generation model?"
+header: "APIMart Model"
+question: "Default APIMart image generation model?"
 options:
-  - label: "gemini-3-pro-image-preview (Recommended)"
-    description: "Highest quality, best for production use"
+  - label: "gpt-image-2 (Recommended)"
+    description: "OpenAI GPT-Image-2 — best overall quality, supports all aspect ratios and reference images"
+  - label: "gemini-3-pro-image-preview"
+    description: "Google Gemini 3 Pro Image — high quality, supports reference images"
   - label: "gemini-3.1-flash-image-preview"
-    description: "Fast generation, good quality, lower cost"
-  - label: "gemini-3-flash-preview"
-    description: "Fast generation, balanced quality and speed"
+    description: "Google Gemini 3.1 Flash Image — fast generation speed"
+  - label: "seedream-5.0-lite"
+    description: "Seedream 5.0 Lite — supports 2K/3K resolution only"
+  - label: "grok-imagine-1.0"
+    description: "xAI Grok Imagine — does NOT support reference images"
 ```
 
-### Question 2b: Default OpenRouter Model
+Notes for APIMart setup:
+- APIMart is fully async: submit job → poll task status → download result.
+- Reference images (`--ref`) are supported by GPT-Image-2, Gemini, and Seedream; **not** supported by Grok Imagine and Wan.
+- Seedream models only support 2K/3K resolution.
 
-Only show if user selected OpenRouter.
-
-```yaml
-header: "OpenRouter Model"
-question: "Default OpenRouter image generation model?"
-options:
-  - label: "google/gemini-3.1-flash-image-preview (Recommended)"
-    description: "Best general-purpose OpenRouter image model with reference-image workflows"
-  - label: "google/gemini-2.5-flash-image-preview"
-    description: "Fast Gemini preview model on OpenRouter"
-  - label: "black-forest-labs/flux.2-pro"
-    description: "Strong text-to-image quality through OpenRouter"
-```
-
-### Question 2c: Default Azure Deployment
-
-Only show if user selected Azure OpenAI.
-
-```yaml
-header: "Azure Deploy"
-question: "Default Azure image deployment name?"
-options:
-  - label: "gpt-image-1.5 (Recommended)"
-    description: "Best default if your Azure deployment uses the same name"
-  - label: "gpt-image-1"
-    description: "Previous GPT Image deployment name"
-```
-
-### Question 2d: Default MiniMax Model
-
-Only show if user selected MiniMax.
-
-```yaml
-header: "MiniMax Model"
-question: "Default MiniMax image generation model?"
-options:
-  - label: "image-01 (Recommended)"
-    description: "Best default, supports aspect ratios and custom width/height"
-  - label: "image-01-live"
-    description: "Faster variant, use aspect ratio instead of custom size"
-```
-
-### Question 2e: Default Z.AI Model
-
-Only show if user selected Z.AI.
-
-```yaml
-header: "Z.AI Model"
-question: "Default Z.AI image generation model?"
-options:
-  - label: "glm-image (Recommended)"
-    description: "Best default for posters, diagrams, and text-heavy images"
-  - label: "cogview-4-250304"
-    description: "Legacy Z.AI image model on the same endpoint"
-```
-
-### Question 2f: Default Tuzi Model
+### Question 2b: Default Tuzi Model
 
 Only show if user selected Tuzi.
 
@@ -146,8 +87,12 @@ header: "Tuzi Model"
 question: "Default Tuzi image generation model?"
 options:
   - label: "gemini-3-pro-image-preview (Recommended)"
-    description: "Best default, supports aspect ratios and custom width/height"
+    description: "Google Gemini 3 Pro Image — best quality, supports quality parameters and reference images"
 ```
+
+Notes for Tuzi setup:
+- `gemini-3-pro-image-preview` is the safest default. It supports official `aspect_ratio` values and documented custom `width` / `height` output sizes.
+- Tuzi subject reference uses `subject_reference[].type = character`; docs recommend front-facing portrait references in JPG/JPEG/PNG under **1MB** (larger images are auto-compressed).
 
 ### Question 3: Default Quality
 
@@ -161,7 +106,43 @@ options:
     description: "1024px - quick previews, drafts"
 ```
 
-### Question 4: Save Location
+### Question 4: Default Aspect Ratio
+
+```yaml
+header: "Aspect Ratio"
+question: "Default aspect ratio? (skip to use none)"
+options:
+  - label: "No default (Recommended)"
+    description: "Use model default (16:9 for most models)"
+  - label: "16:9"
+    description: "Widescreen - YouTube thumbnails, presentations"
+  - label: "1:1"
+    description: "Square - Instagram posts, social cards"
+  - label: "9:16"
+    description: "Vertical - Mobile wallpapers, stories"
+  - label: "4:3"
+    description: "Standard - Blog headers, documentation"
+  - label: "3:2"
+    description: "Photo - Photography, prints"
+```
+
+### Question 5: Default Image Size
+
+```yaml
+header: "Image Size"
+question: "Default image resolution? (skip to use quality default)"
+options:
+  - label: "Use quality default (Recommended)"
+    description: "2K → 2048px, Normal → 1024px"
+  - label: "1K"
+    description: "1024px - fast generation, previews"
+  - label: "2K"
+    description: "2048px - balanced quality and speed"
+  - label: "4K"
+    description: "4096px - maximum detail (slower)"
+```
+
+### Question 6: Save Location
 
 ```yaml
 header: "Save"
@@ -185,165 +166,46 @@ options:
 ```yaml
 ---
 version: 1
-default_provider: [selected provider or null]
-default_quality: [selected quality]
-default_aspect_ratio: null
-default_image_size: null
-default_image_api_dialect: null
+default_provider: apimart          # tuzi | apimart
+default_quality: 2k               # normal | 2k
+default_aspect_ratio: null         # "16:9" | "1:1" | "9:16" | "4:3" | "3:2" | null
+default_image_size: null           # 1K | 2K | 4K | null (null = 由 quality 控制)
 default_model:
-  google: [selected google model or null]
-  openai: null
-  azure: [selected azure deployment or null]
-  openrouter: [selected openrouter model or null]
-  dashscope: null
-  zai: [selected Z.AI model or null]
-  minimax: [selected minimax model or null]
-  tuzi: [selected tuzi model or null]
-  replicate: null
+  tuzi: null                       # 用户选 Tuzi 时填入
+  apimart: gpt-image-2            # 用户选 APIMart 时填入
 ---
 ```
 
-If the user selects `OpenAI` but says their endpoint is only OpenAI-compatible and fronts another image model family, save `default_image_api_dialect: ratio-metadata` when they explicitly confirm the gateway expects aspect-ratio `size` plus metadata-based resolution. Otherwise leave it `null` / `openai-native`.
+**说明**：
+- `null` 表示"无默认值"
+- `default_image_size` 为 null 时，由 `default_quality` 控制分辨率
+- 首次设置后可用 `laoli-imagine --setup` 重新配置
 
 ## Flow 2: EXTEND.md Exists, Model Null
 
 When EXTEND.md exists but `default_model.[current_provider]` is null, ask ONLY the model question for the current provider.
 
-### Google Model Selection
+### APIMart Model Selection
 
 ```yaml
-header: "Google Model"
-question: "Choose a default Google image generation model?"
+header: "APIMart Model"
+question: "Choose a default APIMart image generation model?"
 options:
-  - label: "gemini-3-pro-image-preview (Recommended)"
-    description: "Highest quality, best for production use"
+  - label: "gpt-image-2 (Recommended)"
+    description: "OpenAI GPT-Image-2 — best overall quality, supports all aspect ratios and reference images"
+  - label: "gemini-3-pro-image-preview"
+    description: "Google Gemini 3 Pro Image — high quality, supports reference images"
   - label: "gemini-3.1-flash-image-preview"
-    description: "Fast generation, good quality, lower cost"
-  - label: "gemini-3-flash-preview"
-    description: "Fast generation, balanced quality and speed"
+    description: "Google Gemini 3.1 Flash Image — fast generation speed"
+  - label: "seedream-5.0-lite"
+    description: "Seedream 5.0 Lite — supports 2K/3K resolution only"
+  - label: "grok-imagine-1.0"
+    description: "xAI Grok Imagine — does NOT support reference images"
 ```
 
-### OpenAI Model Selection
-
-```yaml
-header: "OpenAI Model"
-question: "Choose a default OpenAI image generation model?"
-options:
-  - label: "gpt-image-1.5 (Recommended)"
-    description: "Latest GPT Image model, high quality"
-  - label: "gpt-image-1"
-    description: "Previous generation GPT Image model"
-```
-
-### Azure Deployment Selection
-
-```yaml
-header: "Azure Deploy"
-question: "Choose a default Azure image deployment name?"
-options:
-  - label: "gpt-image-1.5 (Recommended)"
-    description: "Use when your Azure deployment name matches the GPT-image-1.5 model"
-  - label: "gpt-image-1"
-    description: "Use when your Azure deployment name matches GPT-image-1"
-```
-
-Notes for Azure setup:
-
-- In `laoli-imagine`, Azure `--model` / `default_model.azure` should be the Azure deployment name, not just the underlying model family.
-- If the deployment name is custom, save that exact deployment name in `default_model.azure`.
-
-### OpenRouter Model Selection
-
-```yaml
-header: "OpenRouter Model"
-question: "Choose a default OpenRouter image generation model?"
-options:
-  - label: "google/gemini-3.1-flash-image-preview (Recommended)"
-    description: "Recommended for image output and reference-image edits"
-  - label: "google/gemini-2.5-flash-image-preview"
-    description: "Fast preview-oriented image generation"
-  - label: "black-forest-labs/flux.2-pro"
-    description: "High-quality text-to-image through OpenRouter"
-```
-
-### DashScope Model Selection
-
-```yaml
-header: "DashScope Model"
-question: "Choose a default DashScope image generation model?"
-options:
-  - label: "qwen-image-2.0-pro (Recommended)"
-    description: "Best DashScope model for text rendering and custom sizes"
-  - label: "qwen-image-2.0"
-    description: "Faster 2.0 variant with flexible output size"
-  - label: "qwen-image-max"
-    description: "Legacy Qwen model with five fixed output sizes"
-  - label: "qwen-image-plus"
-    description: "Legacy Qwen model, same current capability as qwen-image"
-  - label: "z-image-turbo"
-    description: "Legacy DashScope model for compatibility"
-  - label: "z-image-ultra"
-    description: "Legacy DashScope model, higher quality but slower"
-```
-
-Notes for DashScope setup:
-
-- Prefer `qwen-image-2.0-pro` when the user needs custom `--size`, uncommon ratios like `21:9`, or strong Chinese/English text rendering.
-- `qwen-image-max` / `qwen-image-plus` / `qwen-image` only support five fixed sizes: `1664*928`, `1472*1104`, `1328*1328`, `1104*1472`, `928*1664`.
-- In `laoli-imagine`, `quality` is a compatibility preset. It is not a native DashScope parameter.
-
-### Z.AI Model Selection
-
-```yaml
-header: "Z.AI Model"
-question: "Choose a default Z.AI image generation model?"
-options:
-  - label: "glm-image (Recommended)"
-    description: "Current flagship image model with better text rendering and poster layouts"
-  - label: "cogview-4-250304"
-    description: "Legacy model on the sync image endpoint"
-```
-
-Notes for Z.AI setup:
-
-- Prefer `glm-image` for posters, diagrams, and Chinese/English text-heavy layouts.
-- In `laoli-imagine`, Z.AI currently exposes text-to-image only; reference images are not wired for this provider.
-- The sync Z.AI image API returns a downloadable image URL, which the runtime saves locally after download.
-
-### Replicate Model Selection
-
-```yaml
-header: "Replicate Model"
-question: "Choose a default Replicate image generation model?"
-options:
-  - label: "google/nano-banana-2 (Recommended)"
-    description: "Current default for general Replicate image generation in laoli-imagine"
-  - label: "bytedance/seedream-4.5"
-    description: "Replicate Seedream 4.5 with validated local size/ref guardrails"
-  - label: "bytedance/seedream-5-lite"
-    description: "Replicate Seedream 5 Lite with validated local size/ref guardrails"
-  - label: "wan-video/wan-2.7-image-pro"
-    description: "Replicate Wan 2.7 Image Pro with 4K text-to-image support"
-```
-
-### MiniMax Model Selection
-
-```yaml
-header: "MiniMax Model"
-question: "Choose a default MiniMax image generation model?"
-options:
-  - label: "image-01 (Recommended)"
-    description: "Best general-purpose MiniMax image model with custom width/height support"
-  - label: "image-01-live"
-    description: "Lower-latency MiniMax image model using aspect ratios"
-```
-
-Notes for MiniMax setup:
-
-- `image-01` is the safest default. It supports official `aspect_ratio` values and documented custom `width` / `height` output sizes.
-- `image-01-live` is useful when the user prefers faster generation and can work with aspect-ratio-based sizing.
-- MiniMax subject reference currently uses `subject_reference[].type = character`; docs recommend front-facing portrait references in JPG/JPEG/PNG under 10MB.
-
+Notes for APIMart setup:
+- APIMart is fully async: submit job → poll task status → download result.
+- Reference images (`--ref`) are supported by GPT-Image-2, Gemini, and Seedream; **not** supported by Grok Imagine and Wan.
 
 ### Tuzi Model Selection
 
@@ -352,13 +214,12 @@ header: "Tuzi Model"
 question: "Choose a default Tuzi image generation model?"
 options:
   - label: "gemini-3-pro-image-preview (Recommended)"
-    description: "Best general-purpose Tuzi image model with custom width/height support"
+    description: "Google Gemini 3 Pro Image — best quality, supports quality parameters and reference images"
 ```
 
 Notes for Tuzi setup:
-
 - `gemini-3-pro-image-preview` is the safest default. It supports official `aspect_ratio` values and documented custom `width` / `height` output sizes.
-- Tuzi subject reference currently uses `subject_reference[].type = character`; docs recommend front-facing portrait references in JPG/JPEG/PNG under 10MB.
+- Tuzi subject reference currently uses `subject_reference[].type = character`; docs recommend front-facing portrait references in JPG/JPEG/PNG under **1MB** (larger images are auto-compressed).
 
 ### Update EXTEND.md
 
@@ -370,15 +231,8 @@ After user selects a model:
 
 ```yaml
 default_model:
-  google: [value or null]
-  openai: [value or null]
-  azure: [value or null]
-  openrouter: [value or null]
-  dashscope: [value or null]
-  zai: [value or null]
-  minimax: [value or null]
   tuzi: [value or null]
-  replicate: [value or null]
+  apimart: [value or null]
 ```
 
 Only set the selected provider's model; leave others as their current value or null.
