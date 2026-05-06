@@ -17,6 +17,8 @@ default_seconds: null      # "8"|"5"|"10"|"12"|null (null = model default)
 
 default_size: null          # "16:9"|"9:16"|"1:1"|"1280x720"|null (null = model default)
 
+default_resolution: null    # "720p"|"1080p"|"4k"|null (null = model default)
+
 default_model:
   tuzi: null                # e.g., "veo3.1", "kling-v1-6"
   apimart: null             # e.g., "doubao-seedance-1-0-pro-fast", "doubao-seedance-2.0-fast", "sora-2-preview"
@@ -31,6 +33,7 @@ default_model:
 | `default_provider` | string\|null | null | Default provider (null = auto-detect) |
 | `default_seconds` | string\|null | null | Default duration in seconds |
 | `default_size` | string\|null | null | Default video size |
+| `default_resolution` | string\|null | null | Default video resolution |
 | `default_model.tuzi` | string\|null | null | Tuzi default model |
 | `default_model.apimart` | string\|null | null | APIMart default model |
 

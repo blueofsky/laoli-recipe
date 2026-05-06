@@ -68,7 +68,7 @@ test -f "$HOME/.laoli-recipe/laoli-videoize/EXTEND.md" && echo "user"
 | `.laoli-recipe/laoli-videoize/EXTEND.md` | Project directory |
 | `$HOME/.laoli-recipe/laoli-videoize/EXTEND.md` | User home |
 
-**EXTEND.md Supports**: `default_provider` | `default_model.{provider}` | `default_seconds` | `default_size`
+**EXTEND.md Supports**: `default_provider` | `default_model.{provider}` | `default_seconds` | `default_size` | `default_resolution`
 
 Schema: `references/config/preferences-schema.md`
 

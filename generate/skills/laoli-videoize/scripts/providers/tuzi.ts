@@ -136,6 +136,7 @@ export async function generateVideo(
 
   if (args.seconds != null) form.append("seconds", String(args.seconds))
   if (args.size) form.append("size", args.size)
+  if (args.resolution) form.append("resolution", args.resolution)
 
   if (args.referenceImages.length > 0) {
     const mode = args.refMode || "reference"

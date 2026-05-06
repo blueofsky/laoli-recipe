@@ -77,6 +77,27 @@ export const APIMART_MODELS = [
     resolution: ["480p", "720p", "1080p"],
     refMode: "image_urls",
   },
+  // Wan2.6 I2V Flash (https://docs.apimart.ai/cn/api-reference/videos/wan2.6/i2v-flash-generation)
+  // 注意: Wan2.6 图生视频不支持 aspect_ratio，宽高比由输入图片决定
+  {
+    id: "wan2.6-i2v-flash",
+    name: "Wan2.6 I2V Flash",
+    sizeField: "",
+    duration: { min: 2, max: 15, default: 5 },
+    size: [],
+    resolution: ["720p", "1080p"],
+    refMode: "image_urls",
+  },
+  // Wan2.6 I2V (https://docs.apimart.ai/cn/api-reference/videos/wan2.6/i2v-generation)
+  {
+    id: "wan2.6-i2v",
+    name: "Wan2.6 I2V",
+    sizeField: "",
+    duration: { min: 2, max: 15, default: 5 },
+    size: [],
+    resolution: ["720p", "1080p"],
+    refMode: "image_urls",
+  },
 ] as const
 
 export type ApimartModel = (typeof APIMART_MODELS)[number]["id"]
@@ -261,15 +282,21 @@ async function buildApiParams(
     }
 
     // 根据模型选择正确的参数字段名
-    const sizeField = modelInfo?.sizeField || "aspect_ratio"
+    // sizeField 为 "" 表示模型不接收尺寸参数（如 Wan2.6 图生视频）
+    const sizeField = modelInfo?.sizeField ?? "aspect_ratio"
 
-    // 检查尺寸是否受支持
-    if (modelInfo && !(modelInfo.size as readonly string[]).includes(sizeValue)) {
-      console.warn(`警告: ${model} 不支持尺寸 ${sizeValue}，使用默认 16:9`)
-      sizeValue = "16:9"
+    // 如果 sizeField 为空字符串，跳过尺寸参数（宽高比由输入图片决定）
+    if (sizeField === "") {
+      // 不传尺寸参数
+    } else {
+      // 检查尺寸是否受支持
+      if (modelInfo && !(modelInfo.size as readonly string[]).includes(sizeValue)) {
+        console.warn(`警告: ${model} 不支持尺寸 ${sizeValue}，使用默认 16:9`)
+        sizeValue = "16:9"
+      }
+
+      params[sizeField] = sizeValue
     }
-
-    params[sizeField] = sizeValue
   }
 
   // 分辨率 - 部分 API 支持 resolution 参数

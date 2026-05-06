@@ -267,6 +267,8 @@ function parseSimpleYaml(yaml: string): Partial<ExtendConfig> {
         config.default_seconds = cleanedValue === "null" ? null : cleanedValue
       } else if (key === "default_size") {
         config.default_size = cleanedValue === "null" ? null : cleanedValue
+      } else if (key === "default_resolution") {
+        config.default_resolution = cleanedValue === "null" ? null : cleanedValue
       } else if (key === "default_model") {
         config.default_model = { tuzi: null, apimart: null }
         currentKey = "default_model"
@@ -307,6 +309,7 @@ function mergeConfig(args: CliArgs, extend: Partial<ExtendConfig>): CliArgs {
     model: args.model ?? null,
     seconds: args.seconds ?? (extend.default_seconds != null ? parseInt(extend.default_seconds, 10) : null),
     size: args.size ?? extend.default_size ?? null,
+    resolution: args.resolution ?? extend.default_resolution ?? null,
   }
 }
 

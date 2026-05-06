@@ -29,4 +29,5 @@ export type ExtendConfig = {
   }
   default_seconds: string | null
   default_size: string | null
+  default_resolution: string | null
 }
