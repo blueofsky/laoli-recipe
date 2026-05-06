@@ -327,7 +327,19 @@ async function buildApiParams(
           params.image_with_roles = urls.map((url) => ({ url, role: "last_frame" }))
         }
       } else {
+        // VEO3, Sora, Wan2.6 使用 image_urls 传参考图
         params.image_urls = urls
+
+        // VEO3: 显式指定 generation_type，1张图为 reference 模式
+        // 文档: https://docs.apimart.ai/cn/api-reference/videos/veo3/generation
+        // 注意: veo3.1-quality 不支持 reference; veo3.1-lite 不支持此参数
+        if (modelInfo?.id === "veo3.1-fast") {
+          if (urls.length === 1) {
+            params.generation_type = "reference"
+          } else if (urls.length === 2) {
+            params.generation_type = "frame"
+          }
+        }
       }
     }
   }
