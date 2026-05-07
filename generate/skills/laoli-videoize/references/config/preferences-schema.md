@@ -46,6 +46,7 @@ default_model:
 | `doubao-seedance-1-0-pro-fast` | Doubao Seedance 1.0 Pro Fast | 5s (2-12s) | 16:9, 9:16, 1:1, 4:3, 3:4, 21:9 | 480p, 720p, 1080p |
 | `doubao-seedance-1-5-pro` | Doubao Seedance 1.5 Pro | 5s (4-12s) | 16:9, 9:16, 1:1, 4:3, 3:4, 21:9 | 480p, 720p, 1080p |
 | `doubao-seedance-2.0-fast` | Doubao Seedance 2.0 Fast | 5s (4-15s) | 16:9, 9:16, 1:1, 4:3, 3:4, 21:9 | 480p, 720p, 1080p |
+| `veo3.1-lite` | VEO3.1 Lite | 8s | 16:9, 9:16 | 720p, 1080p, 4k |
 | `veo3.1-fast` | VEO3.1 Fast | 8s | 16:9, 9:16 | 720p, 1080p, 4k |
 | `sora-2-preview` | Sora 2 Preview | 4/8/12s | 16:9, 9:16 | 480p, 720p, 1080p |
 

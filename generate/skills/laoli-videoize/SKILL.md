@@ -136,6 +136,7 @@ npx -y bun ${SKILL_DIR}/scripts/main.ts --video long.mp4 --segments 3 --segment-
 | `doubao-seedance-1-0-pro-fast` | 5s (2-12s) | 16:9, 9:16, 1:1, 4:3, 3:4, 21:9 | 480p, 720p, 1080p |
 | `doubao-seedance-1-5-pro` | 5s (4-12s) | 16:9, 9:16, 1:1, 4:3, 3:4, 21:9 | 480p, 720p, 1080p |
 | `doubao-seedance-2.0-fast` | 5s (4-15s) | 16:9, 9:16, 1:1, 4:3, 3:4, 21:9 | 480p, 720p, 1080p |
+| `veo3.1-lite` | 8s | 16:9, 9:16 | 720p, 1080p, 4k |
 | `veo3.1-fast` | 8s | 16:9, 9:16 | 720p, 1080p, 4k |
 | `sora-2-preview` | 4/8/12s (仅支持这三个值) | 16:9, 9:16 | 480p, 720p, 1080p |
 

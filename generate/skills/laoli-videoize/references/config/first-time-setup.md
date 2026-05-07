@@ -90,6 +90,8 @@ options:
     description: "豆包 Seedance 2.0 快速版 - 4-15s, 支持音频生成"
   - label: "doubao-seedance-1-5-pro"
     description: "豆包 Seedance 1.5 Pro - 4-12s"
+  - label: "veo3.1-lite"
+    description: "Google VEO3.1 轻量版 - 8s"
   - label: "veo3.1-fast"
     description: "Google VEO3.1 快速版 - 8s"
   - label: "sora-2-preview"

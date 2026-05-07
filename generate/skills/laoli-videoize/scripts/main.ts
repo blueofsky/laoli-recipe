@@ -31,7 +31,7 @@ function printUsage(): void {
   -h, --help                       显示帮助
 
 Provider 与模型:
-  apimart: doubao-seedance-1-0-pro-fast, doubao-seedance-2.0-fast, veo3.1-fast, sora-2-preview, ...
+  apimart: doubao-seedance-1-0-pro-fast, doubao-seedance-2.0-fast, veo3.1-fast,veo3.1-lite, sora-2-preview, ...
   tuzi:    veo3.1, kling-v1-6, ...
 
 环境变量:
@@ -322,6 +322,7 @@ function inferProviderFromModel(model: string | null): Provider | null {
     m.includes("doubao") ||
     m.includes("seedance") ||
     m === "veo3.1-fast" ||
+    m === "veo3.1-lite" ||
     m.includes("sora")
   ) {
     return "apimart"

@@ -67,6 +67,16 @@ export const APIMART_MODELS = [
     resolution: ["720p", "1080p", "4k"],
     refMode: "image_urls",
   },
+  // VEO3-Lite (https://docs.apimart.ai/cn/api-reference/videos/veo3/generation)
+  {
+    id: "veo3.1-lite",
+    name: "VEO3.1 Lite",
+    sizeField: "aspect_ratio",
+    duration: { min: 8, max: 8, default: 8 }, // 固定8秒
+    size: ["16:9", "9:16"],
+    resolution: ["720p", "1080p", "4k"],
+    refMode: "image_urls",
+  },
   // Sora 2 (https://docs.apimart.ai/cn/api-reference/videos/sora-2)
   {
     id: "sora-2-preview",
@@ -333,12 +343,13 @@ async function buildApiParams(
         // VEO3: 显式指定 generation_type，1张图为 reference 模式
         // 文档: https://docs.apimart.ai/cn/api-reference/videos/veo3/generation
         // 注意: veo3.1-quality 不支持 reference; veo3.1-lite 不支持此参数
-        if (modelInfo?.id === "veo3.1-fast") {
-          if (urls.length === 1) {
-            params.generation_type = "reference"
-          } else if (urls.length === 2) {
+        if (modelInfo?.id === "veo3.1-fast" || modelInfo?.id === "veo3.1-lite") {
+          // if (urls.length === 1) {
+            // params.generation_type = "reference"
+          // } else if (urls.length === 2) {
+            // veo3.1-fast 的 reference 模式太发散，所以使用 frame 模式传1张图片
             params.generation_type = "frame"
-          }
+          // }
         }
       }
     }
