@@ -2,6 +2,7 @@
 
 | 版本 | 变更 |
 |------|------|
+| 2.13.0 | 管线扩至11步：新增第9步提取台词文稿（输出 `文稿_剪映.txt`，一句一换行无标点）、第10步生成封面图（调用 laoli-imagine，竖版3:4）、第11步设计发布文稿（标题6-16字+四段式描述）；项目目录结构同步新增对应文件；分镜标题回退为 h2 层级 |
 | 2.12.1 | 移除 `default_projects_dir`：项目目录固定为 `<workspace>/项目`，不再需要配置；同步更新 SKILL.md（删除所有 `default_projects_dir` 引用，项目目录说明改为固定路径）、`preferences-schema.md`（删除 `default_projects_dir` 字段及示例）、`first-time-setup.md`（删除 Step 2，Step 3 重编号为 Step 2）；版本号升级 |
 | 2.12.0 | 架构重构：`backends/` 目录内容合并进 SKILL.md（3b节图片生成指令+3c节视频运动指令+第7步TTS参数表），删除 `backends/` 目录；删除 EXTEND.md 中 `default_image_prompt`/`default_video_prompt`/`default_tts_backend` 三个字段（图片/视频提示词通用原则已合并进 SKILL.md，TTS参数直接写在第7步）；`preferences-schema.md` 和 `first-time-setup.md` 同步更新（删除 Step 3/4/5 及对应示例字段）；第4/5/6步调用方式改为直接声明底层 skill 名 |
 | 2.11.2 | `seedance-1.5-pro.md` 重命名为 `seedance.md`（文件名不绑版本号）；SKILL.md 第4/5/6步改为读配置文件「调用方式」章节（与第7步架构一致）；修复第2/3步产出格式路径占位符（`项目/` → `<projects_dir>/`） |
