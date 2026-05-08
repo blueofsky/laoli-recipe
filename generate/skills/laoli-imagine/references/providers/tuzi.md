@@ -11,7 +11,8 @@ description: Tuzi image generation — Gemini native API with sync and async mod
 
 | Model ID | Mode | Ref Images | Notes |
 |----------|------|------------|-------|
-| `gemini-3-pro-image-preview` | 同步 | ✅ | 主力模型，支持质量参数 (`quality`) |
+| `gpt-image-2` | 同步 | ✅ | 主力模型，支持质量参数 (`quality`) |
+| `gemini-3-pro-image-preview` | 同步 | ✅ | 同步版，支持质量参数 (`quality`) |
 | `gemini-3-pro-image-preview-async` | 异步 | ✅ | 异步版 2K |
 | `gemini-3-pro-image-preview-2k-async` | 异步 | ✅ | 显式 2K 异步 |
 | `gemini-3-pro-image-preview-4k-async` | 异步 | ✅ | 显式 4K 异步 |
@@ -25,7 +26,7 @@ description: Tuzi image generation — Gemini native API with sync and async mod
 
 - 端点: `POST /images/generations`
 - 轮询: 无（直接返回）
-- 适用模型: `gemini-3-pro-image-preview`
+- 适用模型: `gpt-image-2`, `gemini-3-pro-image-preview`
 
 ### 异步模式（Async）
 
@@ -47,7 +48,7 @@ description: Tuzi image generation — Gemini native API with sync and async mod
 | `prompt` | string | 提示词 |
 | `response_format` | string | `url`（固定） |
 | `size` | string | 可选，如 `1024x1024`、`1280x720`。可由 `--ar` 自动转换 |
-| `quality` | string | 仅 `gemini-3-pro-image-preview` 支持：`1k`、`2k` |
+| `quality` | string | 仅 `gpt-image-2`、`gemini-3-pro-image-preview` 支持：`1k`、`2k` |
 | `image` | array | 参考图 base64 data URL（可选），最多多张 |
 | `n` | integer | 生成数量（可选） |
 
@@ -84,7 +85,7 @@ description: Tuzi image generation — Gemini native API with sync and async mod
 
 ## Quality
 
-仅 `gemini-3-pro-image-preview`（同步）支持 `--quality` 参数：
+仅 `gpt-image-2`、`gemini-3-pro-image-preview`（同步）支持 `--quality` 参数：
 
 | CLI `--quality` | API `quality` | 说明 |
 |----------------|--------------|------|
@@ -103,7 +104,7 @@ description: Tuzi image generation — Gemini native API with sync and async mod
 | Variable | Description |
 |----------|-------------|
 | `TUZI_API_KEY` | Tuzi API Key（必需） |
-| `TUZI_IMAGE_MODEL` | 默认模型（默认: `gemini-3-pro-image-preview`） |
+| `TUZI_IMAGE_MODEL` | 默认模型（默认: `gpt-image-2`） |
 | `TUZI_BASE_URL` | 自定义端点（默认: `https://api.tu-zi.com/v1`） |
 
 ## Error Handling

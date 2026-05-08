@@ -22,7 +22,7 @@ default_aspect_ratio: null  # "16:9"|"1:1"|"4:3"|"3:4"|"2.35:1"|null
 default_image_size: null    # 1K|2K|4K|null (overrides quality)
 
 default_model:
-  tuzi: null                # e.g., "gemini-3-pro-image-preview"
+  tuzi: null                # e.g., "gpt-image-2"
   apimart: null             # e.g., "gpt-image-2", "gpt-image-2-official"
 
 batch:
@@ -72,7 +72,7 @@ default_quality: 2k
 default_aspect_ratio: "16:9"
 default_image_size: 2K
 default_model:
-  tuzi: "gemini-3-pro-image-preview"
+  tuzi: "gpt-image-2"
   apimart: "gpt-image-2"
 batch:
   max_workers: 10

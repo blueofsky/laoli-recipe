@@ -86,12 +86,12 @@ Only show if user selected Tuzi.
 header: "Tuzi Model"
 question: "Default Tuzi image generation model?"
 options:
-  - label: "gemini-3-pro-image-preview (Recommended)"
-    description: "Google Gemini 3 Pro Image — best quality, supports quality parameters and reference images"
+  - label: "gpt-image-2 (Recommended)"
+    description: "OpenAI GPT-Image-2 — best overall quality, supports quality parameters and reference images"
 ```
 
 Notes for Tuzi setup:
-- `gemini-3-pro-image-preview` is the safest default. It supports official `aspect_ratio` values and documented custom `width` / `height` output sizes.
+- `gpt-image-2` is the default model. Supports quality parameters and reference images.
 - Tuzi subject reference uses `subject_reference[].type = character`; docs recommend front-facing portrait references in JPG/JPEG/PNG under **1MB** (larger images are auto-compressed).
 
 ### Question 3: Default Quality
@@ -213,12 +213,12 @@ Notes for APIMart setup:
 header: "Tuzi Model"
 question: "Choose a default Tuzi image generation model?"
 options:
-  - label: "gemini-3-pro-image-preview (Recommended)"
-    description: "Google Gemini 3 Pro Image — best quality, supports quality parameters and reference images"
+  - label: "gpt-image-2 (Recommended)"
+    description: "OpenAI GPT-Image-2 — best overall quality, supports quality parameters and reference images"
 ```
 
 Notes for Tuzi setup:
-- `gemini-3-pro-image-preview` is the safest default. It supports official `aspect_ratio` values and documented custom `width` / `height` output sizes.
+- `gpt-image-2` is the default model. Supports quality parameters and reference images.
 - Tuzi subject reference currently uses `subject_reference[].type = character`; docs recommend front-facing portrait references in JPG/JPEG/PNG under **1MB** (larger images are auto-compressed).
 
 ### Update EXTEND.md

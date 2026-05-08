@@ -74,7 +74,7 @@ ${BUN_X} {baseDir}/scripts/main.ts --promptfiles system.md content.md --image ou
 ${BUN_X} {baseDir}/scripts/main.ts --prompt "Make blue" --image out.png --ref source.png
 
 # Specific provider
-${BUN_X} {baseDir}/scripts/main.ts --prompt "A cat" --image out.png --provider tuzi --model gemini-3-pro-image-preview
+${BUN_X} {baseDir}/scripts/main.ts --prompt "A cat" --image out.png --provider tuzi --model gpt-image-2
 
 # Batch mode
 ${BUN_X} {baseDir}/scripts/main.ts --batchfile batch.json --jobs 4
@@ -105,7 +105,7 @@ ${BUN_X} {baseDir}/scripts/main.ts --batchfile batch.json --jobs 4
 |----------|-------------|
 | `TUZI_API_KEY` | Tuzi API key |
 | `APIMART_API_KEY` | APIMart API key |
-| `TUZI_IMAGE_MODEL` | Default Tuzi model (gemini-3-pro-image-preview) |
+| `TUZI_IMAGE_MODEL` | Default Tuzi model (gpt-image-2) |
 | `APIMART_IMAGE_MODEL` | Default APIMart model (gpt-image-2) |
 | `TUZI_BASE_URL` | Custom Tuzi endpoint |
 | `APIMART_BASE_URL` | Custom APIMart endpoint (default: https://api.apimart.ai/v1) |
@@ -133,7 +133,7 @@ Priority (highest → lowest):
 
 | Provider | Reference |
 |----------|-----------|
-| Tuzi (gemini-3-pro-image-preview, subject-reference character workflow) | Gemini 原生 API，详见 `references/providers/tuzi.md` |
+| Tuzi (gpt-image-2, subject-reference character workflow) | Gemini 原生 API，详见 `references/providers/tuzi.md` |
 | APIMart (GPT-Image-2, Gemini, Seedream, Grok Imagine, Wan) | OpenAI 兼容网关，详见 `references/providers/apimart.md` |
 
 ## Provider Selection
@@ -160,6 +160,8 @@ Supported: `1:1`, `16:9`, `9:16`, `4:3`, `3:4`, `2.35:1`.
 ## Generation Mode
 
 **Default**: sequential. **Batch parallel**: enabled automatically when `--batchfile` contains 2+ pending tasks.
+
+> **生成 batch.json 前请务必查阅 `references/batch-schema.md`**，其中包含完整的字段定义、可行值和常见错误对照。
 
 | Situation | Prefer | Why |
 |-----------|--------|-----|
@@ -189,6 +191,7 @@ Rule of thumb: once prompt files are saved and the task is "generate all of thes
 
 | File | Content |
 |------|---------|
+| `references/batch-schema.md` | **Batch JSON 完整 schema — AI 生成 batch.json 前必读** |
 | `references/usage-examples.md` | Extended CLI examples across providers and batch mode |
 | `references/providers/apimart.md` | APIMart supported models, sizes, limits |
 | `references/providers/tuzi.md` | Tuzi supported models and usage |

@@ -30,10 +30,10 @@ ${BUN_X} {baseDir}/scripts/main.ts --prompt "Make blue" --image out.png --ref so
 ${BUN_X} {baseDir}/scripts/main.ts --prompt "A fashion editorial portrait" --image out.jpg --provider tuzi
 
 # Tuzi with explicit model
-${BUN_X} {baseDir}/scripts/main.ts --prompt "A fashion editorial portrait" --image out.jpg --provider tuzi --model gemini-3-pro-image-preview
+${BUN_X} {baseDir}/scripts/main.ts --prompt "A fashion editorial portrait" --image out.jpg --provider tuzi --model gpt-image-2
 
 # Tuzi with reference image
-${BUN_X} {baseDir}/scripts/main.ts --prompt "A girl by the library window" --image out.jpg --provider tuzi --model gemini-3-pro-image-preview --ref portrait.png --ar 16:9
+${BUN_X} {baseDir}/scripts/main.ts --prompt "A girl by the library window" --image out.jpg --provider tuzi --model gpt-image-2 --ref portrait.png --ar 16:9
 ```
 
 ### APIMart
@@ -64,6 +64,8 @@ ${BUN_X} {baseDir}/scripts/main.ts --batchfile batch.json --jobs 4 --json
 
 ### Batch File Format
 
+> ⚠️ **完整的字段定义、所有可选值、常见错误对照表请查阅 `references/batch-schema.md`**。以下仅作快速示例。
+
 ```json
 {
   "jobs": 4,
@@ -82,7 +84,7 @@ ${BUN_X} {baseDir}/scripts/main.ts --batchfile batch.json --jobs 4 --json
       "promptFiles": ["prompts/portrait.md"],
       "image": "out/portrait.png",
       "provider": "tuzi",
-      "model": "gemini-3-pro-image-preview",
+      "model": "gpt-image-2",
       "ref": ["references/ref.png"]
     }
   ]

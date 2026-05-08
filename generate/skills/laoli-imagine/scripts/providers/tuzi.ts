@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { spawn } from "node:child_process";
 import type { CliArgs } from "../types";
 
-const DEFAULT_MODEL = "gemini-3-pro-image-preview";
+const DEFAULT_MODEL = "gpt-image-2";
 const POLL_INTERVAL_MS = 5000;
 const MAX_POLL_ATTEMPTS = 360;
 
