@@ -41,12 +41,22 @@ function supportsQuality(model: string): boolean {
   return QUALITY_MODELS.some((id) => model === id);
 }
 
-function arToSize(ar: string | null): string | null {
+function arToSize(ar: string | null, baseSize: number = 2048): string | null {
   if (!ar) return null;
   const match = ar.match(/^(\d+(?:\.\d+)?):(\d+(?:\.\d+)?)$/);
   if (!match) return null;
-  const w = Math.round(parseFloat(match[1]!));
-  const h = Math.round(parseFloat(match[2]!));
+  const ratioW = parseFloat(match[1]!);
+  const ratioH = parseFloat(match[2]!);
+  let w: number, h: number;
+  if (ratioW >= ratioH) {
+    w = baseSize;
+    h = Math.round(baseSize * (ratioH / ratioW));
+  } else {
+    h = baseSize;
+    w = Math.round(baseSize * (ratioW / ratioH));
+  }
+  w = Math.round(w / 16) * 16;
+  h = Math.round(h / 16) * 16;
   return `${w}x${h}`;
 }
 
@@ -178,7 +188,9 @@ async function generateSync(
     response_format: "url",
   };
 
-  const size = args.size || arToSize(args.aspectRatio);
+  const baseSizeMap: Record<string, number> = { "1k": 1024, "2k": 2048, "4k": 4096 };
+  const arBaseSize = baseSizeMap[mapQuality(args)?.toLowerCase() ?? ""] || 2048;
+  const size = args.size || arToSize(args.aspectRatio, arBaseSize);
   if (size) body.size = size;
 
   if (supportsQuality(model)) {
@@ -237,7 +249,7 @@ async function generateAsync(
   form.append("model", model);
   form.append("prompt", prompt);
 
-  const size = args.size || arToSize(args.aspectRatio) || "1:1";
+  const size = args.size || arToSize(args.aspectRatio, 2048) || "1:1";
   form.append("size", size);
 
   if (args.referenceImages.length > 0) {
