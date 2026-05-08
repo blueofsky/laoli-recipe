@@ -1,3 +1,5 @@
+import path from "node:path";
+import { readFile } from "node:fs/promises";
 import type { CliArgs } from "../types";
 
 // Models that DO NOT support reference images (dash-normalized)
@@ -94,10 +96,38 @@ function parseError(error: unknown): string {
   return String(error);
 }
 
+async function uploadImage(filePath: string, apiKey: string): Promise<string> {
+  const fileBuffer = await readFile(filePath);
+  const formData = new FormData();
+  const blob = new Blob([fileBuffer]);
+  formData.append("file", blob, path.basename(filePath));
+
+  const res = await fetch(`${BASE_URL}/uploads/images`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${apiKey}` },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`APIMart 参考图上传失败 (${res.status}): ${err}`);
+  }
+
+  const data = (await res.json()) as {
+    url: string;
+    filename: string;
+    content_type: string;
+    bytes: number;
+    created_at: number;
+  };
+  return data.url;
+}
+
 async function buildGenerationBody(
   model: string,
   prompt: string,
-  args: CliArgs
+  args: CliArgs,
+  apiKey: string
 ): Promise<Record<string, unknown>> {
   const body: Record<string, unknown> = { model, prompt };
 
@@ -119,7 +149,21 @@ async function buildGenerationBody(
   }
 
   if (args.referenceImages.length > 0) {
-    body.image_urls = args.referenceImages;
+    // Upload local reference images to APIMart to get public URLs
+    const imageUrls: string[] = [];
+    for (const ref of args.referenceImages) {
+      if (ref.startsWith("http://") || ref.startsWith("https://")) {
+        // Already a URL, use directly
+        imageUrls.push(ref);
+      } else {
+        // Local file path — upload first
+        console.error(`[APIMart] 正在上传参考图片: ${path.basename(ref)}`);
+        const url = await uploadImage(ref, apiKey);
+        console.error(`[APIMart] 参考图片已上传 (有效期 72h): ${url}`);
+        imageUrls.push(url);
+      }
+    }
+    body.image_urls = imageUrls;
   }
 
   return body;
@@ -138,7 +182,7 @@ export async function generateImage(
     console.error(`[APIMart] 警告: prompt 长度 ${prompt.length} 字符，超过建议的 4000 字符限制`);
   }
 
-  const body = await buildGenerationBody(model, prompt, args);
+  const body = await buildGenerationBody(model, prompt, args, apiKey);
 
   console.log(`正在通过 APIMart 生成图片 (${model})...`);
 

@@ -49,7 +49,12 @@ description: APIMart image generation — OpenAI-compatible gateway aggregating 
 
 ## Reference Images
 
-通过 `image_urls` 数组传递。推荐 JPG/PNG，文件小于 10MB。GPT-Image-2 最多 16 张，其他模型最多 14 张（TODO: 验证上限）。
+通过 `--ref <files...>` 传入参考图。支持两种类型的传入方式：
+
+- **本地文件路径**：脚本会自动调用 `POST /v1/uploads/images` 上传至 APIMart，获取公开 URL（有效期 72 小时）后传入 `image_urls`
+- **公网 URL**（`http://` 或 `https://` 开头）：直接透传至 `image_urls`
+
+支持 JPG, PNG, WebP, GIF 格式，单文件最大 20MB。GPT-Image-2 最多 16 张参考图，其他模型最多 14 张（TODO: 验证上限）。
 
 ## Limits
 
