@@ -1,6 +1,6 @@
 ---
 name: laoli-tts
-version: 2.1.0
+version: 3.0.0
 description: TTS 配音生成 - 支持多种 TTS 提供商
 argument-hint: "[text] [output-directory]"
 triggers:
@@ -66,7 +66,19 @@ default_provider: minimax
 1. 解析 provider 文档中的**所有参数**
 2. 将 `[text]` 和 `[output-directory]` 映射到对应参数
 3. **所有未在用户输入中指定的参数，必须使用文档中定义的值**
-4. 调用对应的 MCP 工具
+4. 执行对应 Provider 的 TypeScript 脚本：
+
+```bash
+cd <skill-root-directory>
+npx -y bun scripts/main.ts \
+  --text "[text]" \
+  --output "[output-directory]" \
+  [以及其他参数，从 provider 文档获取]
+```
+
+**提示**：脚本支持 `--provider` 参数指定提供商，同时也自动读取 EXTEND.md 中的配置。若未指定参数，会从 EXTEND.md 合并默认值，再由 provider 内部填充最终默认值。
+
+脚本输出为生成的音频文件路径，用于后续处理。
 
 ## 参数
 
@@ -83,5 +95,6 @@ default_provider: minimax
 
 ## 注意事项
 
-- **禁止使用 MCP 工具的默认值**：必须严格遵循 provider 文档中的参数值
-- **output_directory 必须使用用户指定的路径**，不得使用工具的桌面默认路径
+- **必须严格遵循 provider 文档中的参数值**
+- **output_directory 必须使用用户指定的路径**
+- **API Key 通过环境变量 `MINIMAX_API_KEY` 配置**（或写入 `~/.laoli-recipe/.env` / 项目 `.laoli-recipe/.env`）
