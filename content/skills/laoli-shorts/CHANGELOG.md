@@ -2,6 +2,7 @@
 
 | 版本 | 变更 |
 |------|------|
+| 2.15.0 | 新增进度管理（Pipeline Hooks机制 + 制作进度.md）；第8步重命名为视频剪辑（8b去水印改为按需执行）；第9步重命名为提取台词；第10步重写为选取配乐（10a关键词搜索/10b人工生成/10c自动生成三级策略），移除重点音效字段；移除冗余的封面图/封面标题/发布文案占位字段；第11/12步修正输入来源；进度模板补全12步完整列表 |
 | 2.14.0 | 管线重构为12步：第8步改为视频预处理（8a变速对齐+8b去水印，输出 `视频处理报告.md`）；新增第10步剪辑指南（`剪辑指南.md`，汇总BGM/音效/封面/标题/文案）；第9步重命名为字幕文稿；封面图移至第11步，发布文稿移至第12步；项目目录新增 `素材/视频/sync/`、`sync_crop/`、`文案/视频处理报告.md`、`文案/剪辑指南.md` |
 | 2.12.1 | 移除 `default_projects_dir`：项目目录固定为 `<workspace>/项目`，不再需要配置；同步更新 SKILL.md（删除所有 `default_projects_dir` 引用，项目目录说明改为固定路径）、`preferences-schema.md`（删除 `default_projects_dir` 字段及示例）、`first-time-setup.md`（删除 Step 2，Step 3 重编号为 Step 2）；版本号升级 |
 | 2.12.0 | 架构重构：`backends/` 目录内容合并进 SKILL.md（3b节图片生成指令+3c节视频运动指令+第7步TTS参数表），删除 `backends/` 目录；删除 EXTEND.md 中 `default_image_prompt`/`default_video_prompt`/`default_tts_backend` 三个字段（图片/视频提示词通用原则已合并进 SKILL.md，TTS参数直接写在第7步）；`preferences-schema.md` 和 `first-time-setup.md` 同步更新（删除 Step 3/4/5 及对应示例字段）；第4/5/6步调用方式改为直接声明底层 skill 名 |
