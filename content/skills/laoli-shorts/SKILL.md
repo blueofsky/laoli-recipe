@@ -189,14 +189,14 @@ EXTEND.md 字段说明见 `references/config/preferences-schema.md`。
 - 角色数量控制在方案配置的角色数上限内（参见 `references/profiles/<default_profile>` 中的「制作规范」）
 - 群众/配角无需在《核心角色设定》中创建独立条目，但需要在prompt中与主角做出外貌区分（如"different face from [角色ID]"）
 - 角色描述**同时用中英文**：中文用于撰写第2步《核心角色设定》​ 中的完整描述（供人审阅），英文则需提取关键特征并嵌入IMAGE PROMPT（供AI生图）。
-- **定妆照提示词**在第4步直接读取并使用，生成后保存为 `素材/参考/ref_角色ID.jpg`，第5步生成分镜图时作为参考图传入
+- **定妆照提示词**在第4步直接读取并使用，生成后保存为 `素材/参考/ref_角色ID.jpg`，第5步生成分镜图时作为角色参考图传入
 - **文化特征前置**：在描述外貌时，必须首先明确角色的种族、时代及地域特征。随后的具体面部、体型、发肤特征描述，应自然体现此背景，并与角色独特的视觉识别点（视觉锚点）结合。
 
 **定妆照提示词规范**：参见方案配置（`references/profiles/<default_profile>`）中的「定妆照视觉要求」章节，获取定妆照的构图、背景、光影等约束。
 
 **定妆照提示词模板**：
 ```
-Portrait of [角色ID], a [age]-year-old [build] [cultural/ethnic descriptor, e.g., East Asian] [person] with [distinctive physical features that reflect the character's cultural background and visual identity, e.g., monolid eyes, sharp cheekbones], wearing [signature outfit], [signature accessories], half-body portrait from chest up, facing slightly left, dark solid background, [character's core气质 in English], [风格后缀], no background elements
+Portrait of a [age]-year-old [build] [cultural/ethnic descriptor, e.g., East Asian] [person] with [distinctive physical features that reflect the character's cultural background and visual identity, e.g., monolid eyes, sharp cheekbones], wearing [signature outfit], [signature accessories], half-body portrait from chest up, facing slightly left, dark solid background, [character's core气质 in English], [风格后缀], no text, no letters, no watermark, no background elements
 ```
 
 **示例**（萨拉热窝选题·普林西普，风格后缀取自方案配置）：
@@ -206,7 +206,7 @@ Portrait of [角色ID], a [age]-year-old [build] [cultural/ethnic descriptor, e.
   - **核心气质**：瘦弱但眼神偏执，像一只被逼到角落的困兽
   - **标志性服饰**：深色旧西装，领口微敞，袖口磨白
   - **视觉锚点**：深色眼窝+凌乱黑发+苍白尖下巴
-  - **定妆照提示词**：Portrait of PRN01, a 19-year-old gaunt **South Slavic** young man with deep dark eye sockets, messy black hair and pale sharp chin, wearing a worn dark suit with collar slightly open and frayed cuffs, half-body portrait from chest up, facing slightly left, dark solid background, intense paranoid eyes like a cornered animal, [风格后缀], no background elements
+  - **定妆照提示词**：Portrait of a 19-year-old gaunt **South Slavic** young man with deep dark eye sockets, messy black hair and pale sharp chin, wearing a worn dark suit with collar slightly open and frayed cuffs, half-body portrait from chest up, facing slightly left, dark solid background, intense paranoid eyes like a cornered animal, [风格后缀], no text, no letters, no watermark, no background elements
 ```
 
 #### 2b. 通用视觉准则
@@ -254,10 +254,10 @@ Portrait of [角色ID], a [age]-year-old [build] [cultural/ethnic descriptor, e.
   - **时长约束**：每个“分镜”的预设时长严禁超过方案中定义的「单镜头生成限制」（如8秒）。你需合理分配各分镜时长，确保该节奏段的总时长与预设范围基本吻合。
   - **叙事连贯**：跨分镜的台词需保持语言和情绪的连贯，形成完整的叙事流。金句和互动钩子需放在你设计的最具冲击力的分镜中。
 
-3. **输出**：为你规划出的每一个分镜独立输出“台词”、“IMAGE PROMPT”和“VIDEO MOTION”。
+3. **输出**：为你规划出的每一个分镜独立输出“台词”、“角色参考图”、“IMAGE PROMPT”和“VIDEO MOTION”。
 
 
-对每个分镜，**同时输出**以下3项：
+对每个分镜，**同时输出**以下4项：
 
 #### 3a. 台词
 
@@ -284,6 +284,8 @@ Portrait of [角色ID], a [age]-year-old [build] [cultural/ethnic descriptor, e.
 4. **环境描写要丰富**：光源方向、天气、时间、建筑风格、材质质感
 5. **禁用动态镜头语言**：不写"镜头推进""航拍"——AI生图只能画静态画面
 6. **负向排除**：排除不需要的元素（如 `no modern buildings, no tourists`）
+   - **默认加入**：`no text, no letters, no watermark`（避免无关文字）
+   - **分镜需要文字时去掉**：如果画面需要显示文字（如电报、报纸、招牌等），则从负向排除中**移除** `no text/no letters/no watermark`
 7. **英文输出**：IMAGE PROMPT 必须为英文
 
 #### 3c. 视频运动指令（VIDEO MOTION）
@@ -327,6 +329,10 @@ VIDEO MOTION 是图生视频（i2v）的 prompt，描述从分镜图出发的画
 **台词**：
 > 具体台词内容（★金句标注）
 
+**角色参考图**：
+> 本分镜出场核心角色的定妆参考图，图生图时传入以提升角色一致性。多个用逗号分隔，格式：`ref_角色ID1.jpg, ref_角色ID2.jpg`
+> 无核心角色出场时填 `无`
+
 **IMAGE PROMPT**：
 > 英文生图指令，一行写完（必须包含角色文化特征、视觉锚点+风格后缀）
 
@@ -367,10 +373,8 @@ VIDEO MOTION 是图生视频（i2v）的 prompt，描述从分镜图出发的画
 **调用**：`laoli-imagine`  skill
 
 - **输入**：第3步的 IMAGE PROMPT
-- **参考图**（可选）：核心角色出场时，传入 `素材/参考/ref_角色ID.jpg`（第4步生成），提升角色一致性
+- **角色参考图**：按第3步每个分镜的「角色参考图」字段列表，传入对应的 `素材/参考/ref_角色ID.jpg`（第4步生成），提升角色一致性
 - **输出**：`素材/图片/scene0x_描述.jpg`，按命名规范生成
-
-> **何时传参考图**：分镜中有核心角色出场 → 传入对应角色的定妆照；纯环境/建筑/无角色分镜 → 不需要参考图
 
 **生成完毕后：图片质量检查（必须人工确认）**
 
