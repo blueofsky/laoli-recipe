@@ -53,6 +53,8 @@ default_provider: minimax
 
 **确认信息**：向用户确认 "配置已保存到 ~/.laoli-recipe/laoli-tts/EXTEND.md"
 
+> 完整的首次配置流程和说明见 `references/config/first-time-setup.md`。配置字段 schema 见 `references/config/preferences-schema.md`。
+
 ## Step 1: 读取 Provider 参考文档
 
 根据 `default_provider` 读取对应实现：
@@ -92,6 +94,14 @@ npx -y bun scripts/main.ts \
 | Provider | 状态 | 参考文档 |
 |----------|------|----------|
 | minimax | ✅ 已实现 | `references/providers/minimax.md` |
+
+## References
+
+| File | Content |
+|------|---------|
+| `references/config/first-time-setup.md` | 首次配置完整引导流程 |
+| `references/config/preferences-schema.md` | EXTEND.md schema（配置字段参考） |
+| `references/providers/minimax.md` | MiniMax TTS 参数文档 |
 
 ## 注意事项
 
