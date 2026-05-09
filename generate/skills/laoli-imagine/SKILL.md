@@ -105,7 +105,7 @@ ${BUN_X} {baseDir}/scripts/main.ts --batchfile batch.json --jobs 4
 |----------|-------------|
 | `TUZI_API_KEY` | Tuzi API key |
 | `APIMART_API_KEY` | APIMart API key |
-| `TUZI_IMAGE_MODEL` | Default Tuzi model (gpt-image-2) |
+| `TUZI_IMAGE_MODEL` | Default Tuzi model (default: `gpt-image-2`; 异步模型不受此变量控制) |
 | `APIMART_IMAGE_MODEL` | Default APIMart model (gpt-image-2) |
 | `TUZI_BASE_URL` | Custom Tuzi endpoint |
 | `APIMART_BASE_URL` | Custom APIMart endpoint (default: https://api.apimart.ai/v1) |
@@ -138,10 +138,17 @@ Priority (highest → lowest):
 
 ## Provider Selection
 
-1. `--ref` provided + no `--provider` → auto-select Tuzi → APIMart
-2. `--provider` specified → use it
-3. Only one API key present → use that provider
-4. Multiple keys → default priority: Tuzi → APIMart
+按以下优先级检测：
+
+1. **CLI `--provider`** → 最高优先级，显式指定即使用
+2. **EXTEND.md `default_provider`** → 其次，用户明确配置
+3. **`--ref` 参考图**（隐式推断）：两者都支持，按 `tuzi` → `apimart` 优先
+4. **API Key 数量**（兜底）：
+   - 只有 `TUZI_API_KEY` → `tuzi`
+   - 只有 `APIMART_API_KEY` → `apimart`
+   - 两个都有 → `tuzi`（默认优先级）
+
+> **为什么 `--ref` 不优先于 `default_provider`？** `--ref` 只是根据"多模态支持更好"的启发式推断，不应覆盖用户在 EXTEND.md 中的显式配置。如果传了 `--ref` 且用户没有明确配置 provider，默认走 `--ref` 推断；有明确配置则尊重配置。
 
 ## Quality Presets
 

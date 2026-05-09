@@ -6,6 +6,7 @@ export type CliArgs = {
   promptFiles: string[];
   imagePath: string | null;
   provider: Provider | null;
+  providerSource: "cli" | "config" | null; // 区分 provider 来源
   model: string | null;
   aspectRatio: string | null;
   aspectRatioSource: "cli" | "task" | "config" | null;

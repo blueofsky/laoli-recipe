@@ -69,7 +69,7 @@ Options:
   --image <path>            Output image path (required in single-image mode)
   --batchfile <path>        JSON batch file for multi-image generation
   --jobs <count>            Worker count for batch mode (default: auto, max from config, built-in default 10)
-  --provider tuzi|apimart   Force provider (auto-detect by default)
+  --provider <tuzi|apimart>   Force provider (auto-detect by default)
   -m, --model <id>          Model ID
   --ar <ratio>              Aspect ratio (e.g., 16:9, 1:1, 4:3)
   --size <WxH>              Size (e.g., 1024x1024)
@@ -103,7 +103,7 @@ Behavior:
 Environment variables:
   TUZI_API_KEY             Tuzi API key
   APIMART_API_KEY          APIMart API key
-  TUZI_IMAGE_MODEL         Default Tuzi model (gemini-3-pro-image-preview)
+  TUZI_IMAGE_MODEL         Default Tuzi model (default: gpt-image-2, 异步模型不受此变量控制)
   APIMART_IMAGE_MODEL      Default APIMart model (gpt-image-2)
   APIMART_BASE_URL         Custom APIMart endpoint (default: https://api.apimart.ai/v1)
   TUZI_BASE_URL            Custom Tuzi endpoint
@@ -120,6 +120,7 @@ export function parseArgs(argv: string[]): CliArgs {
     promptFiles: [],
     imagePath: null,
     provider: null,
+    providerSource: null,
     model: null,
     aspectRatio: null,
     aspectRatioSource: null,
@@ -445,6 +446,8 @@ export function mergeConfig(args: CliArgs, extend: Partial<ExtendConfig>): CliAr
   return {
     ...args,
     provider: args.provider ?? extend.default_provider ?? null,
+    providerSource:
+      args.providerSource ?? (args.provider !== null ? "cli" : extend.default_provider !== null ? "config" : null),
     quality: args.quality ?? extend.default_quality ?? null,
     aspectRatio,
     aspectRatioSource:
@@ -535,26 +538,20 @@ export function normalizeOutputImagePath(p: string, defaultExtension = ".png"): 
   return `${full}${defaultExtension}`;
 }
 
-function inferProviderFromModel(model: string | null): Provider | null {
-  if (!model) return null;
-  const m = model.toLowerCase();
-  // Gemini family → tuzi
-  if (m.includes("gemini")) return "tuzi";
-  // Everything else → apimart (gpt-image, grok, wan, seedream, etc.)
-  return "apimart";
-}
-
+/**
+ * 按优先级检测实际使用的 provider：
+ * 1. CLI --provider（已在 mergeConfig 中合并入 args.provider）
+ * 2. EXTEND.md default_provider（同上）
+ * 3. API Key 数量：只有 1 个 → 用那个；2 个都配置 → 默认 tuzi
+ * 注意：--model 不参与 provider 选择，避免隐式覆盖用户意图。
+ */
 export function detectProvider(args: CliArgs): Provider {
-  if (args.provider) return args.provider;
+  if (args.provider) return args.provider; // CLI --provider 或 EXTEND.md default_provider
 
   const hasTuzi = !!process.env.TUZI_API_KEY;
   const hasApimart = !!process.env.APIMART_API_KEY;
 
-  // Infer from explicit --model if present
-  const inferred = inferProviderFromModel(args.model);
-  if (inferred === "tuzi" && hasTuzi) return "tuzi";
-  if (inferred === "apimart" && hasApimart) return "apimart";
-
+  // --ref 图生图推断（仅在 provider 未被显式配置时生效）
   if (args.referenceImages.length > 0) {
     if (hasTuzi) return "tuzi";
     if (hasApimart) return "apimart";
@@ -694,6 +691,7 @@ export function createTaskArgs(baseArgs: CliArgs, task: BatchTaskInput, batchDir
     promptFiles: task.promptFiles ? task.promptFiles.map((filePath) => resolveBatchPath(batchDir, filePath)) : [],
     imagePath: task.image ? resolveBatchPath(batchDir, task.image) : null,
     provider: task.provider ?? baseArgs.provider ?? null,
+    providerSource: task.provider != null ? "task" : baseArgs.providerSource,
     model: task.model ?? baseArgs.model ?? null,
     aspectRatio: task.ar ?? baseArgs.aspectRatio ?? null,
     aspectRatioSource: task.ar != null ? "task" : (baseArgs.aspectRatioSource ?? null),
