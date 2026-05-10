@@ -19,6 +19,8 @@ question: "选择默认方案配置？"
 options:
   - label: "history-oil"
     description: "历史油画风格"
+  - label: "history_outsider"
+    description: "历史局外人风格"
 ```
 
 - 默认值：如果只有 `history-oil.md`，直接设为默认
