@@ -1,5 +1,7 @@
 # Creator 评审指南
 
+> 指南版本：v1 | 对应 Reviewer 协议：[review-protocol.md](../laoli-reviewer/references/review-protocol.md) v1
+>
 > laoli-shorts 专用的评审流程与提交规范
 
 ## 这是什么
