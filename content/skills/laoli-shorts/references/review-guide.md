@@ -11,8 +11,9 @@
 | 角色 | 是谁 | 做什么 |
 |------|------|--------|
 | **Creator** | 你（laoli-shorts 调用者） | 创作产出物 + 提交评审 |
-| **Reviewer** | 另一 AI Agent | 检查产出物质量，给出评审结论 |
-| **Owner** | laoli（项目 Owner） | 充当协调者通知各方；在 Reviewer 无法判断时做最终决策 |
+| **Reviewer** | 另一 AI Agent | 按 L1/L2/L3 分级检查产出物质量，给出评审结论 |
+| **Owner** | laoli（项目 Owner） | 通知 Reviewer 接审；在 Reviewer 无法判断时做最终决策；评审完成后通知 Creator 查看评审记录 |
+
 
 ## 评审流程
 
