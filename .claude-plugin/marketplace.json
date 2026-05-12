@@ -1,5 +1,5 @@
 {
-  "name": "laoli-recipe",
+  "name": "laoli",
   "owner": {
     "name": "Laoli (老李)",
     "email": "blueofsky2008@gmail.com"
@@ -10,29 +10,9 @@
   },
   "plugins": [
     {
-      "name": "content",
+      "name": "recipe",
       "description": "内容插件",
-      "source": "./content"
-    },
-    {
-      "name": "crawler",
-      "description": "爬虫插件",
-      "source": "./crawler"
-    },
-    {
-      "name": "generate",
-      "description": "AI生成插件",
-      "source": "./generate"
-    },
-    {
-      "name": "git",
-      "description": "Git插件",
-      "source": "./git"
-    },
-    {
-      "name": "utility",
-      "description": "工具插件",
-      "source": "./utility"
+      "source": "."
     }
   ]
 }
