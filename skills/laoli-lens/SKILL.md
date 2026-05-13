@@ -79,7 +79,7 @@ triggers:
 1. **加载步骤文件** → 读取 `references/steps/0N-xxx.md`（如第3步就读 `references/steps/03-script.md`）
 2. **执行** → 按步骤文件指引完成本步制作
 3. **产出物存放到项目目录** → 按「项目目录规范」写入对应位置
-4. **调评审** → 执行完毕后调用 laoli-lens-reviewer 子代理（Task tool，传入 `项目` 和 `步骤`）
+4. **调评审** → 执行完毕后调用 laoli-lens-reviewer 子代理（Task tool，将 `项目` 和 `步骤` 以自然语言写入 prompt 参数中）
 5. **处理评审结果**：
    - ✅ 通过 → 告知 Owner，等待确认后进入下一步
    - ⚠️ 需确认 → 暂停，等待 Owner 决策
