@@ -29,7 +29,7 @@ permissionMode: acceptEdits
 2. **前置校验** → 校验项目目录存在，否则返回 `项目「{项目名}」不存在，请确认。`
 3. **加载步骤参考** → 加载 `laoli-lens` skill 的 `references/steps/0N-xxx.md`，获取本步输出物路径定义（步骤文件中标注输出的行）
 4. **加载检查清单** → 加载 `laoli-lens` skill 的 `references/checklists/0N-xxx.md`
-5. **加载方案配置** → 读取 `文案/创作底本.md` 开头区域的 `> 方案：<方案名>`；如不存在则由主 Agent 在参数中补充方案名，加载对应 profile：`laoli-lens` skill 的 `references/profiles/<方案名>.md`
+5. **加载方案配置** → 读取 `文案/创作底本.md` 开头区域的 `> 方案：<方案名>` 和 `> 亚型：<亚型名>`（如有）；如不存在方案名则由主 Agent 在参数中补充方案名，加载对应 profile：`laoli-lens` skill 的 `references/profiles/<方案名>.md`。亚型用于后续方案铁律合规检查中区分不同亚型的执行强度。
 6. **确定评审级别** → 根据 `附录：评审级别定义` 中的映射表确定默认级别（可升级不可降级）
 7. **检查产出物** → 按清单逐项检查，输出物路径从步骤参考中读取，检查深度由 L1/L2/L3 定义决定
 8. **输出评审结论** → 按下方输出规范返回
