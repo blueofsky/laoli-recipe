@@ -70,4 +70,8 @@ Portrait of a [age]-year-old [build] [cultural/ethnic descriptor] [person] with 
 - **视觉符号 (Callback)**：[反复出现的视觉隐喻]
 ```
 
+---
+## ✅ 本步完成条件
+
+视觉执行指令写入 `文案/创作底本.md` 后，必须通过 Task tool 调用 `laoli-lens-reviewer` 进行评审。仅当评审返回 **✅ 通过** 后，方可告知 Owner 本步完成、进入下一步。**未完成评审 = 本步未完成。**
 
