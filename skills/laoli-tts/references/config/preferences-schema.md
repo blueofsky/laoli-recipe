@@ -13,7 +13,7 @@ version: 1
 
 default_provider: minimax      # 默认 TTS 提供商
 default_model: speech-2.8-hd   # 默认模型
-default_voice: ttv-voice-2025121421155125-EvCDaW5m # 默认音色（男声）
+default_voice: ttv-voice-2026051917163326-rttkUOFO # 默认音色（男声）
 default_speed: 1.0             # 默认语速
 default_vol: 3                 # 默认音量
 default_pitch: 0               # 默认语调
@@ -54,7 +54,7 @@ default_language_boost: Chinese # 默认语言增强
 ---
 version: 1
 default_provider: minimax
-default_voice: ttv-voice-2025121421155125-EvCDaW5m
+default_voice: ttv-voice-2026051917163326-rttkUOFO
 default_speed: 1.2
 default_vol: 3
 ---

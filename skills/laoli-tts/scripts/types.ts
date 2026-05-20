@@ -10,6 +10,7 @@ export type CliArgs = {
   vol: number | null;
   pitch: number | null;
   emotion: string | null;
+  intensity: number | null;
   format: string | null;
   sampleRate: number | null;
   bitrate: number | null;
@@ -27,8 +28,9 @@ export type ExtendConfig = {
   default_speed: number | null;
   default_vol: number | null;
   default_pitch: number | null;
-  default_format: string | null;
   default_emotion: string | null;
+  default_intensity: number | null;
+  default_format: string | null;
   default_sample_rate: number | null;
   default_bitrate: number | null;
   default_channel: number | null;

@@ -31,7 +31,7 @@ npx -y bun scripts/main.ts \
 | 参数 | 默认值 | 说明 |
 |------|--------|------|
 | `--model` | `speech-2.8-hd` | 模型 ID |
-| `--voice` | `ttv-voice-2025121421155125-EvCDaW5m` | 音色 ID（男声）|
+| `--voice` | `ttv-voice-2026051917163326-rttkUOFO` | 音色 ID（男声）|
 | `--speed` | `1.0` | 语速 (0.5~2) |
 | `--vol` | `3` | 音量 (0~10) |
 | `--pitch` | `0` | 语调 (-12~12) |
@@ -50,7 +50,7 @@ npx -y bun scripts/main.ts \
 | `--output` | 用户 `[output-directory]` | 输出目录 |
 | `--provider` | 自动检测 或 EXTEND.md | 提供商名称（可省略，脚本自动检测）|
 | `--model` | **固定值**: `speech-2.8-hd` | 模型 ID |
-| `--voice` | **固定值**: `ttv-voice-2025121421155125-EvCDaW5m` | 音色 ID（男声）|
+| `--voice` | **固定值**: `ttv-voice-2026051917163326-rttkUOFO` | 音色 ID（男声）|
 | `--vol` | **固定值**: `3` | 音量 |
 | `--speed` | **固定值**: `1.0` | 语速 |
 | `--format` | **固定值**: `mp3` | 音频格式 |
@@ -68,7 +68,7 @@ npx -y bun scripts/main.ts \
 
 ## 注意事项
 
-1. **voice_id 默认使用男声 `ttv-voice-2025121421155125-EvCDaW5m`**，可通过 `--voice` 覆盖
+1. **voice_id 默认使用男声 `ttv-voice-2026051917163326-rttkUOFO`**，可通过 `--voice` 覆盖
 2. **language_boost 必须设为 `Chinese`**：确保中文发音准确
 3. **output_directory 必须为完整绝对路径**，确保脚本能正确写入文件
 4. **API Key 优先读取环境变量 `MINIMAX_API_KEY`**，其次从 `.env` 文件中加载

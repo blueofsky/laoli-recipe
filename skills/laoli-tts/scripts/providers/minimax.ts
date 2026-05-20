@@ -12,7 +12,7 @@ function getApiUrl(): string {
 
 const DEFAULTS = {
   model: "speech-2.8-hd",
-  voiceId: "ttv-voice-2025121421155125-EvCDaW5m",
+  voiceId: "ttv-voice-2026051917163326-rttkUOFO",
   speed: 1.0,
   vol: 3,
   pitch: 0,
@@ -79,6 +79,11 @@ export const minimaxProvider: TTSProvider = {
 
     if (args.emotion) {
       (body.voice_setting as Record<string, unknown>).emotion = args.emotion;
+    }
+
+    // voice_modify: 同音色质感微调（intensity 控制力量感/轻柔度）
+    if (args.intensity != null) {
+      body.voice_modify = { intensity: args.intensity };
     }
 
     const response = await callApi(getApiUrl(), body, apiKey);

@@ -27,6 +27,7 @@ Options:
   --vol <0-10>               音量（由 provider 决定默认值）
   --pitch <-12-12>           语调（由 provider 决定默认值）
   --emotion <emotion>        情绪
+  --intensity <value>        强度(-100~100)：正数有力，负数轻柔（由 provider 决定默认值）
   --format <fmt>             音频格式 mp3|pcm|flac|wav（由 provider 决定默认值）
   --sample-rate <hz>         采样率（由 provider 决定默认值）
   --bitrate <bps>            比特率（由 provider 决定默认值）
@@ -56,6 +57,7 @@ export function parseArgs(argv: string[]): CliArgs {
     vol: null,
     pitch: null,
     emotion: null,
+    intensity: null,
     format: null,
     sampleRate: null,
     bitrate: null,
@@ -89,6 +91,7 @@ export function parseArgs(argv: string[]): CliArgs {
       "--vol":          (v) => { const n = parseFloat(v); if (isNaN(n) || n < 0 || n > 10) throw new Error("vol 0-10"); out.vol = n; },
       "--pitch":        (v) => { const n = parseInt(v, 10); if (isNaN(n) || n < -12 || n > 12) throw new Error("pitch -12~12"); out.pitch = n; },
       "--emotion":      (v) => { out.emotion = v; },
+      "--intensity":    (v) => { const n = parseInt(v, 10); if (isNaN(n) || n < -100 || n > 100) throw new Error("intensity -100~100"); out.intensity = n; },
       "--format":       (v) => { if (!["mp3","pcm","flac","wav"].includes(v)) throw new Error("format: mp3|pcm|flac|wav"); out.format = v; },
       "--sample-rate":  (v) => { const n = parseInt(v, 10); if (isNaN(n)) throw new Error("sample-rate 需为数字"); out.sampleRate = n; },
       "--bitrate":      (v) => { const n = parseInt(v, 10); if (isNaN(n)) throw new Error("bitrate 需为数字"); out.bitrate = n; },
@@ -192,6 +195,9 @@ function parseSimpleYaml(yaml: string): Partial<ExtendConfig> {
       case "default_emotion":
         config.default_emotion = value.replace(/['"]/g, "");
         break;
+      case "default_intensity":
+        config.default_intensity = parseInt(value, 10);
+        break;
       case "default_sample_rate":
         config.default_sample_rate = parseInt(value, 10);
         break;
@@ -241,6 +247,7 @@ export function mergeConfig(args: CliArgs, config: Partial<ExtendConfig>): CliAr
     vol: args.vol ?? config.default_vol ?? null,
     pitch: args.pitch ?? config.default_pitch ?? null,
     emotion: args.emotion ?? config.default_emotion ?? null,
+    intensity: args.intensity ?? config.default_intensity ?? null,
     format: args.format ?? config.default_format ?? null,
     sampleRate: args.sampleRate ?? config.default_sample_rate ?? null,
     bitrate: args.bitrate ?? config.default_bitrate ?? null,
@@ -278,6 +285,8 @@ async function main(): Promise<void> {
   if (mergedArgs.speed != null) console.error(`  语速: ${mergedArgs.speed}`);
   if (mergedArgs.vol != null) console.error(`  音量: ${mergedArgs.vol}`);
   if (mergedArgs.pitch != null) console.error(`  语调: ${mergedArgs.pitch}`);
+  if (mergedArgs.emotion) console.error(`  情绪: ${mergedArgs.emotion}`);
+  if (mergedArgs.intensity != null) console.error(`  强度: ${mergedArgs.intensity}`);
 
   const result = await ttsProvider.generate(mergedArgs.text, mergedArgs);
 
