@@ -215,3 +215,6 @@ __marimo__/
 
 # Obsidian
 .obsidian/
+
+# Git
+.worktree
