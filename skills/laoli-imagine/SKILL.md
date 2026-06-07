@@ -1,6 +1,6 @@
 ---
 name: laoli-imagine
-description: 图像生成技能，AI image generation with Tuzi and APIMart APIs. Supports text-to-image, reference images, aspect ratios, and batch generation from saved prompt files. Sequential by default; use batch parallel generation when the user already has multiple prompts or wants stable multi-image throughput. Use when user asks to generate, create, or draw images.
+description: 图像生成技能，AI image generation with Tuzi, APIMart, and Agnes APIs. Supports text-to-image, reference images, aspect ratios, and batch generation from saved prompt files. Sequential by default; use batch parallel generation when the user already has multiple prompts or wants stable multi-image throughput. Use when user asks to generate, create, or draw images.
 version: 1.59.0
 dependencies:
   runtime:
@@ -23,7 +23,7 @@ metadata:
 
 # Image Generation (AI SDK)
 
-支持 Tuzi 和 APIMart 两大 provider 的图片生成。两者均为全异步（提交任务 → 轮询状态 → 下载结果）。
+支持 Tuzi、APIMart 和 Agnes 三大 provider 的图片生成。Tuzi 和 APIMart 使用全异步模式（提交任务 → 轮询状态 → 下载结果）；Agnes 使用同步模式（直接返回图片 URL）。
 
 ## User Input Tools
 
@@ -89,13 +89,13 @@ ${BUN_X} {baseDir}/scripts/main.ts --batchfile batch.json --jobs 4
 | `--image <path>` | Output image path (required in single-image mode) |
 | `--batchfile <path>` | JSON batch file for multi-image generation |
 | `--jobs <count>` | Worker count for batch mode (default: auto, max from config, built-in default 10) |
-| `--provider tuzi\|apimart` | Force provider (default: auto-detect) |
+| `--provider tuzi\|apimart\|agnes` | Force provider (default: auto-detect) |
 | `--model <id>`, `-m` | Model ID — see `references/providers/tuzi.md` and `references/providers/apimart.md` for model lists |
 | `--ar <ratio>` | Aspect ratio (`16:9`, `1:1`, `4:3`, …) |
 | `--size <WxH>` | Explicit size (e.g., `1024x1024`) |
 | `--quality normal\|2k` | Quality preset (default: `2k`) |
 | `--imageSize 1K\|2K\|4K` | Image size (default: from quality) |
-| `--ref <files...>` | Reference images. Supported by Tuzi multimodal and APIMart (GPT-Image-2, Gemini, Seedream) |
+| `--ref <files...>` | Reference images. Supported by Tuzi multimodal, APIMart (GPT-Image-2, Gemini, Seedream), and Agnes (img2img) |
 | `--n <count>` | Number of images (default: 1) |
 | `--json` | JSON output |
 
@@ -105,10 +105,13 @@ ${BUN_X} {baseDir}/scripts/main.ts --batchfile batch.json --jobs 4
 |----------|-------------|
 | `TUZI_API_KEY` | Tuzi API key |
 | `APIMART_API_KEY` | APIMart API key |
+| `AGNES_API_KEY` | Agnes AI API key |
 | `TUZI_IMAGE_MODEL` | Default Tuzi model (default: `gpt-image-2`; 异步模型不受此变量控制) |
 | `APIMART_IMAGE_MODEL` | Default APIMart model (gpt-image-2) |
+| `AGNES_IMAGE_MODEL` | Default Agnes model (default: `agnes-image-2.1-flash`) |
 | `TUZI_BASE_URL` | Custom Tuzi endpoint |
 | `APIMART_BASE_URL` | Custom APIMart endpoint (default: https://api.apimart.ai/v1) |
+| `AGNES_BASE_URL` | Custom Agnes endpoint (default: https://apihub.agnes-ai.com/v1) |
 | `LAOLI_IMAGE_GEN_MAX_WORKERS` | Override batch worker cap |
 | `LAOLI_IMAGE_GEN_<PROVIDER>_CONCURRENCY` | Per-provider concurrency (e.g., `LAOLI_IMAGE_GEN_APIMART_CONCURRENCY`) |
 | `LAOLI_IMAGE_GEN_<PROVIDER>_START_INTERVAL_MS` | Per-provider start-gap |
@@ -135,6 +138,7 @@ Priority (highest → lowest):
 |----------|-----------|
 | Tuzi (gpt-image-2, subject-reference character workflow) | Gemini 原生 API，详见 `references/providers/tuzi.md` |
 | APIMart (GPT-Image-2, Gemini, Seedream, Grok Imagine, Wan) | OpenAI 兼容网关，详见 `references/providers/apimart.md` |
+| Agnes (agnes-image-2.1-flash) | 免费全模态 API，详见 `references/providers/agnes.md` |
 
 ## Provider Selection
 
@@ -142,11 +146,12 @@ Priority (highest → lowest):
 
 1. **CLI `--provider`** → 最高优先级，显式指定即使用
 2. **EXTEND.md `default_provider`** → 其次，用户明确配置
-3. **`--ref` 参考图**（隐式推断）：两者都支持，按 `tuzi` → `apimart` 优先
+3. **`--ref` 参考图**（隐式推断）：三者都支持，按 `tuzi` → `apimart` → `agnes` 优先
 4. **API Key 数量**（兜底）：
    - 只有 `TUZI_API_KEY` → `tuzi`
    - 只有 `APIMART_API_KEY` → `apimart`
-   - 两个都有 → `tuzi`（默认优先级）
+   - 只有 `AGNES_API_KEY` → `agnes`
+   - 多个都有 → `tuzi`（默认优先级）
 
 > **为什么 `--ref` 不优先于 `default_provider`？** `--ref` 只是根据"多模态支持更好"的启发式推断，不应覆盖用户在 EXTEND.md 中的显式配置。如果传了 `--ref` 且用户没有明确配置 provider，默认走 `--ref` 推断；有明确配置则尊重配置。
 
@@ -202,6 +207,7 @@ Rule of thumb: once prompt files are saved and the task is "generate all of thes
 | `references/usage-examples.md` | Extended CLI examples across providers and batch mode |
 | `references/providers/apimart.md` | APIMart supported models, sizes, limits |
 | `references/providers/tuzi.md` | Tuzi supported models and usage |
+| `references/providers/agnes.md` | Agnes supported models, sizes, limits |
 | `references/config/preferences-schema.md` | EXTEND.md schema (manual creation guide) |
 
 ## Extension Support

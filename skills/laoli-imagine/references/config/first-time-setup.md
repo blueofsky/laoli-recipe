@@ -51,6 +51,8 @@ options:
     description: "OpenAI-compatible gateway — GPT-Image-2, Gemini, Seedream, Grok Imagine, and more"
   - label: "Tuzi"
     description: "Gemini-based image generation with subject-reference character workflows"
+  - label: "Agnes"
+    description: "Free Agnes AI image-to-image and text-to-image (platform.agnes-ai.com)"
 ```
 
 ### Question 2: Default APIMart Model
@@ -166,13 +168,14 @@ options:
 ```yaml
 ---
 version: 1
-default_provider: apimart          # tuzi | apimart
+default_provider: apimart          # tuzi | apimart | agnes
 default_quality: 2k               # normal | 2k
 default_aspect_ratio: null         # "16:9" | "1:1" | "9:16" | "4:3" | "3:2" | null
 default_image_size: null           # 1K | 2K | 4K | null (null = 由 quality 控制)
 default_model:
   tuzi: null                       # 用户选 Tuzi 时填入
   apimart: gpt-image-2            # 用户选 APIMart 时填入
+  agnes: null                      # 用户选 Agnes 时填入
 ---
 ```
 
@@ -221,6 +224,23 @@ Notes for Tuzi setup:
 - `gpt-image-2` is the default model. Supports quality parameters and reference images.
 - Tuzi subject reference currently uses `subject_reference[].type = character`; docs recommend front-facing portrait references in JPG/JPEG/PNG under **1MB** (larger images are auto-compressed).
 
+### Agnes Model Selection
+
+Only show if user selected Agnes.
+
+```yaml
+header: "Agnes Model"
+question: "Choose a default Agnes image generation model?"
+options:
+  - label: "agnes-image-2.1-flash (Recommended)"
+    description: "Agnes Image 2.1 Flash — free text-to-image and image-to-image, 20 RPM"
+```
+
+Notes for Agnes setup:
+- `agnes-image-2.1-flash` is the default model. Free API with 20 RPM limit.
+- Image-to-image supported via `--ref` (local files auto-converted to base64).
+- Maximum image size ~1.3MP (e.g. 864x1536 for 9:16, 1024x1024 for 1:1).
+
 ### Update EXTEND.md
 
 After user selects a model:
@@ -233,6 +253,7 @@ After user selects a model:
 default_model:
   tuzi: [value or null]
   apimart: [value or null]
+  agnes: [value or null]
 ```
 
 Only set the selected provider's model; leave others as their current value or null.

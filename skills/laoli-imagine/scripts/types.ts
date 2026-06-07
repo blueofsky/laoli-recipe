@@ -1,4 +1,4 @@
-export type Provider = "tuzi" | "apimart";
+export type Provider = "tuzi" | "apimart" | "agnes";
 export type Quality = "normal" | "2k";
 
 export type CliArgs = {
@@ -53,6 +53,7 @@ export type ExtendConfig = {
   default_model: {
     tuzi: string | null;
     apimart: string | null;
+    agnes: string | null;
   };
   batch?: {
     max_workers?: number | null;

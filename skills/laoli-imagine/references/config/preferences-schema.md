@@ -13,7 +13,7 @@ description: EXTEND.md YAML schema for laoli-imagine user preferences
 ---
 version: 1
 
-default_provider: null      # tuzi|apimart|null (null = auto-detect)
+default_provider: null      # tuzi|apimart|agnes|null (null = auto-detect)
 
 default_quality: null       # normal|2k|null (null = use default: 2k)
 
@@ -24,6 +24,7 @@ default_image_size: null    # 1K|2K|4K|null (overrides quality)
 default_model:
   tuzi: null                # e.g., "gpt-image-2"
   apimart: null             # e.g., "gpt-image-2", "gpt-image-2-official"
+  agnes: null               # e.g., "agnes-image-2.1-flash"
 
 batch:
   max_workers: 10
@@ -32,6 +33,9 @@ batch:
       concurrency: 3
       start_interval_ms: 1100
     apimart:
+      concurrency: 3
+      start_interval_ms: 1100
+    agnes:
       concurrency: 3
       start_interval_ms: 1100
 ---
@@ -48,6 +52,7 @@ batch:
 | `default_image_size` | string\|null | null | Image size (overrides quality) |
 | `default_model.tuzi` | string\|null | null | Tuzi default model |
 | `default_model.apimart` | string\|null | null | APIMart default model |
+| `default_model.agnes` | string\|null | null | Agnes default model |
 | `batch.max_workers` | int\|null | 10 | Batch worker cap |
 | `batch.provider_limits.<provider>.concurrency` | int\|null | provider default | Max simultaneous requests per provider |
 | `batch.provider_limits.<provider>.start_interval_ms` | int\|null | provider default | Minimum gap between request starts per provider |
@@ -74,6 +79,7 @@ default_image_size: 2K
 default_model:
   tuzi: "gpt-image-2"
   apimart: "gpt-image-2"
+  agnes: "agnes-image-2.1-flash"
 batch:
   max_workers: 10
   provider_limits:
@@ -81,6 +87,9 @@ batch:
       concurrency: 3
       start_interval_ms: 1100
     apimart:
+      concurrency: 3
+      start_interval_ms: 1100
+    agnes:
       concurrency: 3
       start_interval_ms: 1100
 ---

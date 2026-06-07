@@ -55,6 +55,7 @@ const POLL_WAIT_MS = 250;
 const DEFAULT_PROVIDER_RATE_LIMITS: Record<Provider, ProviderRateLimit> = {
   tuzi: { concurrency: 3, startIntervalMs: 1100 },
   apimart: { concurrency: 3, startIntervalMs: 1100 },
+  agnes: { concurrency: 3, startIntervalMs: 1100 },
 };
 
 function printUsage(): void {
@@ -69,13 +70,13 @@ Options:
   --image <path>            Output image path (required in single-image mode)
   --batchfile <path>        JSON batch file for multi-image generation
   --jobs <count>            Worker count for batch mode (default: auto, max from config, built-in default 10)
-  --provider <tuzi|apimart>   Force provider (auto-detect by default)
+  --provider <tuzi|apimart|agnes>   Force provider (auto-detect by default)
   -m, --model <id>          Model ID
   --ar <ratio>              Aspect ratio (e.g., 16:9, 1:1, 4:3)
   --size <WxH>              Size (e.g., 1024x1024)
   --quality normal|2k        Quality preset (default: 2k)
   --imageSize 1K|2K|4K      Image size (default: from quality)
-  --ref <files...>          Reference images (Tuzi multimodal, APIMart GPT-Image-2/Gemini/Seedream)
+  --ref <files...>          Reference images. Tuzi multimodal, APIMart (GPT-Image-2, Gemini, Seedream), Agnes (img2img via extra_body)
   --n <count>               Number of images (APIMart GPT-Image-2 only; default: 1)
   --json                    JSON output
   -h, --help                Show help
@@ -103,8 +104,11 @@ Behavior:
 Environment variables:
   TUZI_API_KEY             Tuzi API key
   APIMART_API_KEY          APIMart API key
+  AGNES_API_KEY            Agnes AI API key
   TUZI_IMAGE_MODEL         Default Tuzi model (default: gpt-image-2, 异步模型不受此变量控制)
   APIMART_IMAGE_MODEL      Default APIMart model (gpt-image-2)
+  AGNES_IMAGE_MODEL        Default Agnes model (default: agnes-image-2.1-flash)
+  AGNES_BASE_URL           Custom Agnes endpoint (default: https://apihub.agnes-ai.com/v1)
   APIMART_BASE_URL         Custom APIMart endpoint (default: https://api.apimart.ai/v1)
   TUZI_BASE_URL            Custom Tuzi endpoint
   LAOLI_IMAGE_GEN_MAX_WORKERS  Override batch worker cap
@@ -202,8 +206,8 @@ export function parseArgs(argv: string[]): CliArgs {
 
     if (a === "--provider") {
       const v = argv[++i];
-      if (v !== "tuzi" && v !== "apimart") {
-        throw new Error(`Invalid provider: ${v} (valid: tuzi, apimart)`);
+      if (v !== "tuzi" && v !== "apimart" && v !== "agnes") {
+        throw new Error(`Invalid provider: ${v} (valid: tuzi, apimart, agnes)`);
       }
       out.provider = v;
       continue;
@@ -349,10 +353,11 @@ export function parseSimpleYaml(yaml: string): Partial<ExtendConfig> {
         config.default_aspect_ratio = cleaned === "null" ? null : cleaned;
       } else if (key === "default_image_size") {
         config.default_image_size = value === "null" ? null : value as "1K" | "2K" | "4K";
-      } else if (key === "default_model") {
+      } else       if (key === "default_model") {
         config.default_model = {
           tuzi: null,
           apimart: null,
+          agnes: null,
         };
         currentKey = "default_model";
         currentProvider = null;
@@ -371,7 +376,7 @@ export function parseSimpleYaml(yaml: string): Partial<ExtendConfig> {
       } else if (
         currentKey === "provider_limits" &&
         indent >= 4 &&
-        (key === "tuzi" || key === "apimart")
+        (key === "tuzi" || key === "apimart" || key === "agnes")
       ) {
         config.batch ??= {};
         config.batch.provider_limits ??= {};
@@ -379,7 +384,7 @@ export function parseSimpleYaml(yaml: string): Partial<ExtendConfig> {
         currentProvider = key;
       } else if (
         currentKey === "default_model" &&
-        (key === "tuzi" || key === "apimart")
+        (key === "tuzi" || key === "apimart" || key === "agnes")
       ) {
         const cleaned = value.replace(/['"]/g, "");
         config.default_model![key] = cleaned === "null" ? null : cleaned;
@@ -489,9 +494,10 @@ export function getConfiguredProviderRateLimits(
   const configured: Record<Provider, ProviderRateLimit> = {
     tuzi: { ...DEFAULT_PROVIDER_RATE_LIMITS.tuzi },
     apimart: { ...DEFAULT_PROVIDER_RATE_LIMITS.apimart },
+    agnes: { ...DEFAULT_PROVIDER_RATE_LIMITS.agnes },
   };
 
-  for (const provider of (["tuzi", "apimart"] as Provider[])) {
+  for (const provider of (["tuzi", "apimart", "agnes"] as Provider[])) {
     const envPrefix = `LAOLI_IMAGE_GEN_${provider.toUpperCase()}`;
     const extendLimit = extendConfig.batch?.provider_limits?.[provider];
     configured[provider] = {
@@ -550,22 +556,28 @@ export function detectProvider(args: CliArgs): Provider {
 
   const hasTuzi = !!process.env.TUZI_API_KEY;
   const hasApimart = !!process.env.APIMART_API_KEY;
+  const hasAgnes = !!process.env.AGNES_API_KEY;
 
   // --ref 图生图推断（仅在 provider 未被显式配置时生效）
   if (args.referenceImages.length > 0) {
     if (hasTuzi) return "tuzi";
     if (hasApimart) return "apimart";
+    if (hasAgnes) return "agnes";
     throw new Error(
-      "Reference images require Tuzi or APIMart. Set TUZI_API_KEY or APIMART_API_KEY, or remove --ref."
+      "Reference images require Tuzi, APIMart, or Agnes. Set TUZI_API_KEY, APIMART_API_KEY, or AGNES_API_KEY, or remove --ref."
     );
   }
 
-  if (hasTuzi && !hasApimart) return "tuzi";
-  if (hasApimart && !hasTuzi) return "apimart";
-  if (hasTuzi && hasApimart) return "tuzi";
+  if (hasTuzi && !hasApimart && !hasAgnes) return "tuzi";
+  if (hasApimart && !hasTuzi && !hasAgnes) return "apimart";
+  if (hasAgnes && !hasTuzi && !hasApimart) return "agnes";
+  if (hasTuzi && hasApimart && !hasAgnes) return "tuzi";
+  if (hasTuzi && hasAgnes && !hasApimart) return "tuzi";
+  if (hasApimart && hasAgnes && !hasTuzi) return "apimart";
+  if (hasTuzi && hasApimart && hasAgnes) return "tuzi";
 
   throw new Error(
-    "No API key found. Set TUZI_API_KEY or APIMART_API_KEY.\n" +
+    "No API key found. Set TUZI_API_KEY, APIMART_API_KEY, or AGNES_API_KEY.\n" +
       "Create ~/.laoli-recipe/.env or <cwd>/.laoli-recipe/.env with your keys."
   );
 }
@@ -604,6 +616,7 @@ export function isRetryableGenerationError(error: unknown): boolean {
 async function loadProviderModule(provider: Provider): Promise<ProviderModule> {
   if (provider === "tuzi") return (await import("./providers/tuzi")) as ProviderModule;
   if (provider === "apimart") return (await import("./providers/apimart")) as ProviderModule;
+  if (provider === "agnes") return (await import("./providers/agnes")) as ProviderModule;
   throw new Error(`Unknown provider: ${provider}`);
 }
 
@@ -625,6 +638,7 @@ function getModelForProvider(
   if (extendConfig.default_model) {
     if (provider === "tuzi" && extendConfig.default_model.tuzi) return extendConfig.default_model.tuzi;
     if (provider === "apimart" && extendConfig.default_model.apimart) return extendConfig.default_model.apimart;
+    if (provider === "agnes" && extendConfig.default_model.agnes) return extendConfig.default_model.agnes;
   }
   return providerModule.getDefaultModel();
 }
@@ -847,7 +861,7 @@ async function runBatchTasks(
   const acquireProvider = createProviderGate(providerRateLimits);
   const workerCount = getWorkerCount(tasks.length, jobs, maxWorkers);
   console.error(`Batch mode: ${tasks.length} tasks, ${workerCount} workers, parallel mode enabled.`);
-  for (const provider of (["tuzi", "apimart"] as Provider[])) {
+  for (const provider of (["tuzi", "apimart", "agnes"] as Provider[])) {
     const limit = providerRateLimits[provider];
     console.error(`- ${provider}: concurrency=${limit.concurrency}, startIntervalMs=${limit.startIntervalMs}`);
   }
