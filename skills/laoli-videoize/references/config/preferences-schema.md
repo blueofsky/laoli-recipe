@@ -11,7 +11,7 @@ description: EXTEND.md YAML schema for laoli-videoize user preferences
 ---
 version: 1
 
-default_provider: null      # tuzi|apimart|null (null = auto-detect)
+default_provider: null      # tuzi|apimart|agnes|null (null = auto-detect)
 
 default_seconds: null      # "8"|"5"|"10"|"12"|null (null = model default)
 
@@ -22,6 +22,7 @@ default_resolution: null    # "720p"|"1080p"|"4k"|null (null = model default)
 default_model:
   tuzi: null                # e.g., "veo3.1", "kling-v1-6"
   apimart: null             # e.g., "doubao-seedance-1-0-pro-fast", "doubao-seedance-2.0-fast", "sora-2-preview"
+  agnes: null               # e.g., "agnes-video-v2.0"
 ---
 ```
 
@@ -36,6 +37,7 @@ default_model:
 | `default_resolution` | string\|null | null | Default video resolution |
 | `default_model.tuzi` | string\|null | null | Tuzi default model |
 | `default_model.apimart` | string\|null | null | APIMart default model |
+| `default_model.agnes` | string\|null | null | Agnes default model |
 
 ## Provider Models
 
@@ -58,6 +60,14 @@ default_model:
 |----------|------|----------|---------------|
 | `veo3.1` | VEO3.1 | 8s | 16:9, 9:16 |
 | `kling-v1-6` | Kling v1.6 | 5/10s | 16:9, 9:16, 1:1 |
+
+### Agnes Models
+
+| Model ID | Name | Duration | Aspect Ratios |
+|----------|------|----------|---------------|
+| `agnes-video-v2.0` | Agnes Video V2.0 | 3/4/5/8/10/15s | 16:9, 9:16, 1:1, 4:3, 3:2, 2:3, 21:9 |
+
+> 免费，20 RPM 限制。支持 `--ref` 参考图（图片 URL 或本地文件自动上传）。
 
 ## Examples
 
@@ -102,5 +112,6 @@ version: 1
 default_model:
   tuzi: veo3.1
   apimart: doubao-seedance-1-0-pro-fast
+  agnes: agnes-video-v2.0
 ---
 ```

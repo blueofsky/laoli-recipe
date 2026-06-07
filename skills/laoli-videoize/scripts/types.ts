@@ -1,4 +1,4 @@
-export type Provider = "tuzi" | "apimart";
+export type Provider = "tuzi" | "apimart" | "agnes";
 
 export type CliArgs = {
   prompt: string | null
@@ -26,6 +26,7 @@ export type ExtendConfig = {
   default_model: {
     tuzi: string | null
     apimart: string | null
+    agnes: string | null
   }
   default_seconds: string | null
   default_size: string | null

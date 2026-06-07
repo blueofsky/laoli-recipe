@@ -135,11 +135,12 @@ python scripts/agnes_api.py smoke-test --video-case text-to-video
 - **Parameter isolation**: Pure text-to-image (`agnes-image-2.1-flash`) **must NOT** send `extra_body` with image/edit parameters, otherwise it errors with `UnsupportedParamsError`.
 - **Video URL field**: The video API returns the video URL in `remixed_from_video_id`, not `video_url`. Code must handle both field names.
 - **Frame count constraint**: Video `num_frames` must strictly satisfy `8n + 1` (e.g., 81, 121, 241, 441).
-- **Duration shortcut**: Use `--seconds <N>` (1~15) to set video length without counting frames. The script auto-calculates the optimal `num_frames`.
+- **Duration shortcut**: Use `--seconds <N>` to set video length. Supported durations: 3s, 4s, 5s, 8s, 10s, 15s. The script auto-calculates the optimal `num_frames`.
   ```bash
-  python scripts/agnes_api.py video --prompt "..." --seconds 4 --poll   # ~4秒
-  python scripts/agnes_api.py video --prompt "..." --seconds 8 --poll   # ~8秒
-  python scripts/agnes_api.py video --prompt "..." --seconds 15 --poll  # ~15秒
+  python scripts/agnes_api.py video --prompt "..." --seconds 4 --poll   # 4秒
+  python scripts/agnes_api.py video --prompt "..." --seconds 5 --poll   # 5秒（默认）
+  python scripts/agnes_api.py video --prompt "..." --seconds 8 --poll   # 8秒
+  python scripts/agnes_api.py video --prompt "..." --seconds 10 --poll  # 10秒
+  python scripts/agnes_api.py video --prompt "..." --seconds 15 --poll  # 15秒
   ```
-  Default is ~5秒 (121帧 @24fps).
 - **No payment required**: Registration gives free API access, no credit card needed.

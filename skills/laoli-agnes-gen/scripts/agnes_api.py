@@ -326,8 +326,8 @@ def validate_size(value: str | None, name: str = "size") -> None:
 def validate_video_args(args: argparse.Namespace) -> None:
     # If --seconds is provided, auto-calculate num_frames
     if args.seconds is not None:
-        if args.seconds < 1 or args.seconds > 15:
-            raise SystemExit("Invalid --seconds: supported range is 1-15.")
+        if args.seconds not in (3, 4, 5, 8, 10, 15):
+            raise SystemExit(f"Invalid --seconds: {args.seconds}. Supported durations: 3, 4, 5, 8, 10, 15.")
         target_frames = args.seconds * args.frame_rate
         n = max(10, min(55, round((target_frames - 1) / 8)))
         args.num_frames = 8 * n + 1
@@ -738,7 +738,7 @@ def build_parser() -> argparse.ArgumentParser:
     video.add_argument("--image", action="append", help="Input image URL or local file path. Repeat for multi-image or keyframes. Local files are auto-converted to base64.")
     video.add_argument("--mode", choices=("ti2vid", "keyframes"))
     video.add_argument("--aspect", help="Aspect ratio shorthand, e.g. 16:9, 9:16, 1:1. Overridden by explicit --width/--height.")
-    video.add_argument("--seconds", type=int, help="Target video duration in seconds (1-15). Auto-calculates optimal num_frames.")
+    video.add_argument("--seconds", type=int, help="Target video duration in seconds (3, 4, 5, 8, 10, 15). Auto-calculates optimal num_frames.")
     video.add_argument("--height", type=int)
     video.add_argument("--width", type=int)
     video.add_argument("--num-frames", type=int, default=None)

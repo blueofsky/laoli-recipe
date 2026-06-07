@@ -15,7 +15,7 @@ function printUsage(): void {
   -p, --prompt <text>              提示词文本
   --promptfiles <files...>         从文件读取提示词（多文件拼接）
   --video <path>                   输出视频路径（必填）
-  --provider tuzi|apimart          Provider（默认自动检测）
+  --provider tuzi|apimart|agnes   Provider（默认自动检测）
   -m, --model <id>                 模型 ID
   -s, --seconds <n>                时长（秒）
   --size <WxH>                     尺寸（如 1280x720、16x9）
@@ -33,6 +33,7 @@ function printUsage(): void {
 Provider 与模型:
   apimart: doubao-seedance-1-0-pro-fast, doubao-seedance-2.0-fast, veo3.1-fast,veo3.1-lite, sora-2-preview, ...
   tuzi:    veo3.1, kling-v1-6, ...
+  agnes:   agnes-video-v2.0（免费，20 RPM）
 
 环境变量:
   APIMART_API_KEY                  APIMart API 密钥（https://apimart.ai/keys）
@@ -41,6 +42,9 @@ Provider 与模型:
   TUZI_API_KEY                     Tuzi API 密钥（https://api.tu-zi.com）
   TUZI_VIDEO_MODEL                 默认 Tuzi 视频模型
   TUZI_BASE_URL                    自定义 Tuzi 端点
+  AGNES_API_KEY                    Agnes AI API 密钥（https://platform.agnes-ai.com）
+  AGNES_VIDEO_MODEL                默认 Agnes 视频模型（默认: agnes-video-v2.0）
+  AGNES_BASE_URL                   自定义 Agnes 端点（默认: https://apihub.agnes-ai.com/v1）
 
 加载优先级: 命令行参数 > EXTEND.md > 环境变量 > <cwd>/.laoli-recipe/.env > ~/.laoli-recipe/.env`)
 }
@@ -113,8 +117,8 @@ function parseArgs(argv: string[]): CliArgs {
 
     if (a === "--provider") {
       const v = argv[++i]
-      if (v !== "tuzi" && v !== "apimart") {
-        throw new Error(`无效的 provider: ${v}（有效值: tuzi, apimart）`)
+      if (v !== "tuzi" && v !== "apimart" && v !== "agnes") {
+        throw new Error(`无效的 provider: ${v}（有效值: tuzi, apimart, agnes）`)
       }
       out.provider = v
       continue
@@ -238,7 +242,7 @@ function extractYamlFrontMatter(content: string): string | null {
  */
 function parseSimpleYaml(yaml: string): Partial<ExtendConfig> {
   const config: Partial<ExtendConfig> = {
-    default_model: { tuzi: null, apimart: null },
+    default_model: { tuzi: null, apimart: null, agnes: null },
   }
   let currentKey: string | null = null
 
@@ -270,9 +274,9 @@ function parseSimpleYaml(yaml: string): Partial<ExtendConfig> {
       } else if (key === "default_resolution") {
         config.default_resolution = cleanedValue === "null" ? null : cleanedValue
       } else if (key === "default_model") {
-        config.default_model = { tuzi: null, apimart: null }
+        config.default_model = { tuzi: null, apimart: null, agnes: null }
         currentKey = "default_model"
-      } else if (currentKey === "default_model" && indent >= 2 && (key === "tuzi" || key === "apimart")) {
+      } else if (currentKey === "default_model" && indent >= 2 && (key === "tuzi" || key === "apimart" || key === "agnes")) {
         const cleaned = value.replace(/['"]/g, "")
         config.default_model![key] = cleaned === "null" ? null : cleaned
       }
@@ -333,6 +337,11 @@ function inferProviderFromModel(model: string | null): Provider | null {
     return "tuzi"
   }
 
+  // Agnes 独有模型
+  if (m.includes("agnes") || m === "agnes-video-v2.0") {
+    return "agnes"
+  }
+
   // 通用 veo3 前缀（如未来新版本），有 APIMart key 优先 apimart
   if (m.includes("veo3")) {
     return "apimart"
@@ -346,18 +355,24 @@ function detectProvider(args: CliArgs): Provider {
 
   const hasTuzi = !!process.env.TUZI_API_KEY
   const hasApimart = !!process.env.APIMART_API_KEY
+  const hasAgnes = !!process.env.AGNES_API_KEY
 
   // Infer from explicit --model if present
   const inferred = inferProviderFromModel(args.model)
   if (inferred === "apimart" && hasApimart) return "apimart"
   if (inferred === "tuzi" && hasTuzi) return "tuzi"
+  if (inferred === "agnes" && hasAgnes) return "agnes"
 
-  if (hasApimart && !hasTuzi) return "apimart"
-  if (hasTuzi && !hasApimart) return "tuzi"
-  if (hasTuzi && hasApimart) return "apimart" // Prefer APIMart as default
+  if (hasApimart && !hasTuzi && !hasAgnes) return "apimart"
+  if (hasTuzi && !hasApimart && !hasAgnes) return "tuzi"
+  if (hasAgnes && !hasTuzi && !hasApimart) return "agnes"
+  if (hasTuzi && hasApimart && !hasAgnes) return "apimart"
+  if (hasTuzi && hasAgnes && !hasApimart) return "tuzi"
+  if (hasApimart && hasAgnes && !hasTuzi) return "apimart"
+  if (hasTuzi && hasApimart && hasAgnes) return "apimart"
 
   throw new Error(
-    "未找到 API Key。请设置 APIMART_API_KEY 或 TUZI_API_KEY。\n" +
+    "未找到 API Key。请设置 APIMART_API_KEY、TUZI_API_KEY 或 AGNES_API_KEY。\n" +
       "创建 ~/.laoli-recipe/.env 或 <cwd>/.laoli-recipe/.env 文件配置密钥。"
   )
 }
@@ -372,6 +387,7 @@ function getModelForProvider(
   if (extendConfig.default_model) {
     if (provider === "tuzi" && extendConfig.default_model.tuzi) return extendConfig.default_model.tuzi
     if (provider === "apimart" && extendConfig.default_model.apimart) return extendConfig.default_model.apimart
+    if (provider === "agnes" && extendConfig.default_model.agnes) return extendConfig.default_model.agnes
   }
   return providerModule.getDefaultModel()
 }
@@ -547,16 +563,17 @@ async function main(): Promise<void> {
 
   const tuziModule = await import("./providers/tuzi")
   const apimartModule = await import("./providers/apimart")
+  const agnesModule = await import("./providers/agnes")
 
   // Detect provider and select module
   const provider = detectProvider(mergedArgs)
-  const providerModule = provider === "apimart" ? apimartModule : tuziModule
+  const providerModule = provider === "apimart" ? apimartModule : provider === "agnes" ? agnesModule : tuziModule
 
   // Get model for the selected provider
   const model = getModelForProvider(provider, mergedArgs.model, extendConfig, providerModule)
 
   console.log(`Using ${provider}: ${model}`)
-  console.log(`Switch provider: --provider tuzi|apimart | EXTEND.md default_provider`)
+  console.log(`Switch provider: --provider tuzi|apimart|agnes | EXTEND.md default_provider`)
   console.log(`Switch model: --model <id> | EXTEND.md default_model.${provider} | env ${provider.toUpperCase()}_VIDEO_MODEL`)
 
   const generateVideo = providerModule.generateVideo

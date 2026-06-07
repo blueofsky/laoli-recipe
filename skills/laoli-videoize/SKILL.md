@@ -1,6 +1,6 @@
 ---
 name: laoli-videoize
-description: 视频生成技能。支持 APIMart (VEO3, Sora, Doubao Seedance) 和 Tuzi (VEO3.1, Kling) 多 Provider，单视频和长视频（多段合成）模式。当用户要求生成视频、创建视频或需要视频生成后端时使用。
+description: 视频生成技能。支持 APIMart (VEO3, Sora, Doubao Seedance)、Tuzi (VEO3.1, Kling) 和 Agnes (免费视频) 多 Provider，单视频和长视频（多段合成）模式。当用户要求生成视频、创建视频或需要视频生成后端时使用。
 version: 1.59.0
 dependencies:
   runtime:
@@ -13,6 +13,8 @@ dependencies:
       reason: "APIMart API 密钥（推荐，支持多厂商）"
     - name: TUZI_API_KEY
       reason: "Tuzi API 密钥（备用）"
+    - name: AGNES_API_KEY
+      reason: "Agnes AI API 密钥（免费）"
   skills:
     - name: laoli-imagine
       version: ">=1.57.0"
@@ -22,7 +24,7 @@ dependencies:
 
 # Video Generation (Multi-Provider)
 
-APIMart 和 Tuzi 双 Provider 支持。默认 Provider: APIMart。
+APIMart、Tuzi 和 Agnes 三 Provider 支持。默认 Provider: APIMart。
 
 ## Script Directory
 
@@ -44,6 +46,10 @@ grep -s APIMART_API_KEY .laoli-recipe/.env "$HOME/.laoli-recipe/.env"
 # Fallback to Tuzi
 echo "${TUZI_API_KEY:-not_set}"
 grep -s TUZI_API_KEY .laoli-recipe/.env "$HOME/.laoli-recipe/.env"
+
+# Fallback to Agnes (free)
+echo "${AGNES_API_KEY:-not_set}"
+grep -s AGNES_API_KEY .laoli-recipe/.env "$HOME/.laoli-recipe/.env"
 ```
 
 | Result | Action |
@@ -113,7 +119,7 @@ npx -y bun ${SKILL_DIR}/scripts/main.ts --video long.mp4 --segments 3 --segment-
 | `--prompt <text>`, `-p` | Prompt text |
 | `--promptfiles <files...>` | Read prompt from files (concatenated) |
 | `--video <path>` | Output video path (required) |
-| `--provider tuzi\|apimart` | Force provider (default: auto-detect) |
+| `--provider tuzi\|apimart\|agnes` | Force provider (default: auto-detect) |
 | `--model <id>`, `-m` | Model ID |
 | `--seconds <n>`, `-s` | Duration in seconds |
 | `--size <WxH>` | Video size (e.g., `1280x720`, `16x9`) |
@@ -150,6 +156,15 @@ npx -y bun ${SKILL_DIR}/scripts/main.ts --video long.mp4 --segments 3 --segment-
 | `veo3.1` | 8s | 16:9, 9:16 |
 | `kling-v1-6` | 5/10s | 16:9, 9:16, 1:1 |
 
+### Agnes
+
+| Model | Duration | Sizes |
+|-------|----------|-------|
+| `agnes-video-v2.0` | 3/4/5/8/10/15s | 16:9, 9:16, 1:1, 4:3, 3:2, 21:9 |
+
+> **默认模型**: `agnes-video-v2.0`（免费，20 RPM 限制）
+> **参考图支持**: 通过 `--ref` 传入图片 URL 或本地文件（自动 picgo 上传到 CDN）
+
 ## Long Video Mode
 
 When `--segments N` is specified (N >= 2):
@@ -175,13 +190,16 @@ When `--segments N` is specified (N >= 2):
 | `TUZI_API_KEY` | Tuzi API key (https://api.tu-zi.com) |
 | `TUZI_VIDEO_MODEL` | Default Tuzi model (default: veo3.1) |
 | `TUZI_BASE_URL` | Custom Tuzi endpoint (default: https://api.tu-zi.com) |
+| `AGNES_API_KEY` | Agnes AI API key (https://platform.agnes-ai.com) |
+| `AGNES_VIDEO_MODEL` | Default Agnes model (default: agnes-video-v2.0) |
+| `AGNES_BASE_URL` | Custom Agnes endpoint (default: https://apihub.agnes-ai.com/v1) |
 
 **Load Priority**: CLI args > EXTEND.md > env vars > `<cwd>/.laoli-recipe/.env` > `~/.laoli-recipe/.env`
 
 ## Resolution Priority
 
 **Provider** (highest → lowest):
-1. CLI: `--provider tuzi|apimart`
+1. CLI: `--provider tuzi|apimart|agnes`
 2. EXTEND.md: `default_provider`
 3. Built-in default: `apimart`
 
