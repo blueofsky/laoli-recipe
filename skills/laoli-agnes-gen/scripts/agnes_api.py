@@ -23,27 +23,31 @@ SIZE_RE = re.compile(r"^[1-9]\d*x[1-9]\d*$")
 ASPECT_RE = re.compile(r"^(\d+):(\d+)$")
 
 # Aspect ratio → pixel dimension lookups
-# Default: 1080p benchmark — matches mainstream short-video platform specs (Douyin, Kuaishou, YouTube Shorts)
-# and provides the best balance of quality and processing efficiency for daily AI generation.
+# Default: 1536p benchmark — optimized for Agnes image API pixel limits
+# (the API rejects 2MP+ sizes like 1080x1920 with 500 Internal Server Error).
+# Each mapping keeps total pixels within ~1.3MP for reliable generation.
+# Video generation uses a separate VIDEO_ASPECT_MAP (see below).
 ASPECT_TO_SIZE = {
-    "16:9": "1920x1080",
-    "9:16": "1080x1920",
-    "1:1": "1080x1080",
-    "4:3": "1440x1080",
-    "3:2": "1620x1080",
-    "2:3": "1080x1620",
-    "21:9": "1920x823",
-    "9:21": "823x1920",
+    "16:9": "1536x864",
+    "9:16": "864x1536",
+    "1:1": "1024x1024",
+    "4:3": "1280x960",
+    "3:2": "1440x960",
+    "2:3": "960x1440",
+    "21:9": "1536x658",
+    "9:21": "658x1536",
 }
 
-# High-quality fallback (1536px base) — for final output / archive / large display
+# High-quality fallback (same pixel-safe constraints as default)
+# Agnes Image API rejects sizes beyond ~1.3-1.5MP with 500 error,
+# so HQ uses the same pixel-count-safe dimensions.
 ASPECT_TO_SIZE_HQ = {
     "16:9": "1536x864",
     "9:16": "864x1536",
-    "1:1": "1536x1536",
-    "4:3": "1536x1152",
-    "3:2": "1536x1024",
-    "2:3": "1024x1536",
+    "1:1": "1152x1152",
+    "4:3": "1280x960",
+    "3:2": "1440x960",
+    "2:3": "960x1440",
     "21:9": "1536x658",
     "9:21": "658x1536",
 }
@@ -605,6 +609,7 @@ def cmd_smoke_test(args: argparse.Namespace) -> None:
     validate_size(args.image_size, "image-size")
     validate_video_args(
         argparse.Namespace(
+            seconds=None,
             num_frames=args.video_num_frames,
             frame_rate=args.video_frame_rate,
             height=args.video_height,
@@ -733,7 +738,7 @@ def build_parser() -> argparse.ArgumentParser:
     video.add_argument("--image", action="append", help="Input image URL or local file path. Repeat for multi-image or keyframes. Local files are auto-converted to base64.")
     video.add_argument("--mode", choices=("ti2vid", "keyframes"))
     video.add_argument("--aspect", help="Aspect ratio shorthand, e.g. 16:9, 9:16, 1:1. Overridden by explicit --width/--height.")
-    video.add_argument("--seconds", type=int, help="Target video duration in seconds (1-30). Auto-calculates optimal num_frames.")
+    video.add_argument("--seconds", type=int, help="Target video duration in seconds (1-15). Auto-calculates optimal num_frames.")
     video.add_argument("--height", type=int)
     video.add_argument("--width", type=int)
     video.add_argument("--num-frames", type=int, default=None)

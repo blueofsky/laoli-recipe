@@ -212,6 +212,7 @@ __marimo__/
 .output
 .plugins-cache.json
 .laoli-recipe
+.workbuddy
 
 # Obsidian
 .obsidian/

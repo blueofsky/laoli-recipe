@@ -34,6 +34,7 @@ Image generation:
 # 使用像素尺寸
 python scripts/agnes_api.py image --prompt "A luminous floating city above a misty canyon at sunrise, cinematic realism" --size 1024x768
 # 使用宽高比（16:9 横屏 / 9:16 竖屏 / 1:1 方形）
+# ⚠️ 注意：图片请勿使用 1080x1920 等超过 ~1.3MP 的尺寸，否则 API 返回 500 错误
 python scripts/agnes_api.py image --prompt "一位穿汉服的少女在樱花树下" --size 9:16
 python scripts/agnes_api.py image --prompt "壮丽的山脉日落全景" --size 16:9
 ```
@@ -125,10 +126,11 @@ python scripts/agnes_api.py smoke-test --video-case text-to-video
   - ❌ 旧兼容：`video-get <task_id>` → `GET /v1/videos/{task_id}`
   - `--poll` 模式已自动使用 video_id 方式轮询
 - **Aspect ratio support**: `image --size` 和 `video --aspect` 都支持 `16:9`、`9:16`、`1:1`、`4:3`、`3:2`、`21:9` 等常用宽高比。
-  - 图片默认（高效）：`--size 9:16` → **1080x1920**（1080p，匹配抖音/快手/YouTube Shorts）
-  - 图片高清：`--size 9:16 --hq` → **864x1536**（1536px 基准，适合高质量存档）
+  - 图片默认：`--size 9:16` → **864x1536**（1536px 基准，~1.3MP，避免 API 500 错误）
+  - 图片高清（`--hq`）：与默认相同像素约束，部分比例使用更大尺寸（如 `1:1` 从 1024→1152）
   - 视频：`--aspect 9:16` → 自动设为宽 648 高 1152（长边 1152px）。也可再通过 `--width` / `--height` 单独覆盖。
-  - 也可直接传像素尺寸如 `--size 1920x1080` 或 `--size 1080x1920` 精确指定
+  - ⚠️ 注意：Agnes Image API 不支持超过 ~1.3MP 的尺寸（如 `1080x1920`、`1536x1536` 会导致 500 InternalServerError），建议使用 `864x1536`、`768x1024`、`1024x1024` 等尺寸。
+  - 也可直接传像素尺寸如 `--size 1536x864` 或 `--size 864x1536` 精确指定
 - **Local image support**: `--image` 同时支持公网 URL 和本地文件路径。本地图片会自动转为 base64 数据 URL 发送。支持的格式：`.jpg`, `.jpeg`, `.png`, `.webp`, `.gif`, `.bmp`。
 - **Parameter isolation**: Pure text-to-image (`agnes-image-2.1-flash`) **must NOT** send `extra_body` with image/edit parameters, otherwise it errors with `UnsupportedParamsError`.
 - **Video URL field**: The video API returns the video URL in `remixed_from_video_id`, not `video_url`. Code must handle both field names.
