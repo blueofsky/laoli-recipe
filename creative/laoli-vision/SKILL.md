@@ -118,4 +118,3 @@ laoli vision --input large.mp4 --prompt "描述" --mode url
 - Base64 编码传入时：编码后字符串 ≤ 50MB（原始文件约 ≤ 36.5MB）
 - `--fps` 和 `--media-resolution` 仅对视频有效，图片模式下忽略
 - 所有命令支持 `--help` 查看最新参数
-- Skills 文档请移步 [laoli-recipe](https://github.com/blueofsky/laoli-recipe)
