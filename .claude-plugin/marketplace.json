@@ -13,6 +13,11 @@
       "name": "recipe",
       "description": "内容插件",
       "source": "."
+    },
+    {
+      "name": "creative",
+      "description": "AI 创意工具集",
+      "source": "."
     }
   ]
 }
