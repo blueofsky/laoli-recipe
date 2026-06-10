@@ -46,14 +46,18 @@
     {
       "name": "tools",
       "description": "效率工具",
-      "source": "./skills/tools",
+      "source": ".",
       "category": "tools",
-      "strict": false,      
+      "strict": false,                 
+      "commands": [
+        "./.claude/commands/gitship.md",
+        "./.claude/commands/wpr.md"
+      ],
       "skills": [
-        "./laoli-compress-image", 
-        "./laoli-gc", 
-        "./laoli-picgo", 
-        "./laoli-sync"
+        "./skills/tools/laoli-compress-image", 
+        "./skills/tools/laoli-gc", 
+        "./skills/tools/laoli-picgo", 
+        "./skills/tools/laoli-sync"
       ]
     },
     {
