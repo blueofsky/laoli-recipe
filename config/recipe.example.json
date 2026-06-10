@@ -1,0 +1,152 @@
+{
+  "version": 1,
+
+  "skills": {
+    "laoli-article-illustrator": {
+      "version": 1,
+      "watermark": {
+        "enabled": false,
+        "content": "",
+        "position": "bottom-right",
+        "opacity": 0.7
+      },
+      "preferred_style": {
+        "name": null,
+        "description": ""
+      },
+      "preferred_palette": null,
+      "language": "zh",
+      "default_output_dir": "imgs-subdir",
+      "custom_styles": [
+        {
+          "name": "corporate",
+          "description": "Professional B2B style",
+          "color_palette": {
+            "primary": ["#1E3A5F", "#4A90D9"],
+            "background": "#F5F7FA",
+            "accents": ["#00B4D8", "#48CAE4"]
+          },
+          "visual_elements": "Clean lines, subtle gradients, geometric shapes",
+          "typography": "Modern sans-serif, professional",
+          "best_for": "Business, SaaS, enterprise"
+        }
+      ]
+    },
+
+    "laoli-cover-image": {
+      "version": 3,
+      "watermark": {
+        "enabled": false,
+        "content": "",
+        "position": "bottom-right",
+        "opacity": 0.7
+      },
+      "preferred_type": null,
+      "preferred_palette": "warm",
+      "preferred_rendering": null,
+      "preferred_text": "title-only",
+      "preferred_mood": "balanced",
+      "default_aspect": "16:9",
+      "quick_mode": false,
+      "language": "zh",
+      "default_output_dir": "independent",
+      "custom_palettes": [
+        {
+          "name": "custom-tech",
+          "description": "科技感配色",
+          "colors": {
+            "primary": ["#0A192F", "#64FFDA"],
+            "background": "#112240",
+            "accents": ["#8892B0"]
+          },
+          "decorative_hints": "Geometric patterns, glowing accents",
+          "best_for": "Tech articles, developer blogs"
+        }
+      ]
+    },
+
+    "laoli-url-to-markdown": {
+      "download_media": "ask",
+      "default_output_dir": ""
+    },
+
+    "laoli-comic": {
+      "version": 2,
+      "watermark": {
+        "enabled": false,
+        "content": "",
+        "position": "bottom-right",
+        "opacity": 0.5
+      },
+      "preferred_art": "ligne-claire",
+      "preferred_tone": "neutral",
+      "preferred_layout": "standard",
+      "preferred_aspect": null,
+      "language": "zh",
+      "character_presets": [
+        {
+          "name": "default-trio",
+          "roles": {
+            "learner": "好奇的年轻人，总是提问",
+            "mentor": "智慧长者，善于用比喻解释",
+            "challenge": "生活中的具体困境",
+            "support": "幽默伙伴，缓解紧张气氛"
+          }
+        }
+      ]
+    },
+
+    "laoli-image-cards": {
+      "version": 1,
+      "watermark": {
+        "enabled": true,
+        "content": "@laoli",
+        "position": "bottom-right",
+        "opacity": 0.7
+      },
+      "preferred_style": {
+        "name": "cute",
+        "description": ""
+      },
+      "preferred_layout": "balanced",
+      "language": "zh",
+      "custom_styles": [
+        {
+          "name": "corporate",
+          "description": "Professional B2B style",
+          "color_palette": {
+            "primary": ["#1E3A5F", "#4A90D9"],
+            "background": "#F5F7FA",
+            "accents": ["#00B4D8", "#48CAE4"]
+          },
+          "visual_elements": "Clean lines, subtle gradients, geometric shapes",
+          "typography": "Modern sans-serif, professional",
+          "best_for": "Business, SaaS, enterprise"
+        }
+      ]
+    },
+
+    "laoli-infographic": {
+      "version": 1,
+      "preferred_layout": "bento-grid",
+      "preferred_style": "corporate-memphis",
+      "preferred_aspect": "landscape",
+      "language": "zh",
+      "custom_styles": [
+        {
+          "name": "tech-blueprint",
+          "description": "技术蓝图风格",
+          "prompt_fragment": "Blueprint aesthetic with cyan and white lines on deep navy background, grid overlays, technical annotations"
+        }
+      ]
+    },
+
+    "laoli-compress-image": {
+      "default_format": "webp",
+      "default_quality": 80,
+      "keep_original": false
+    }
+  },
+
+  "mcp": {}
+}

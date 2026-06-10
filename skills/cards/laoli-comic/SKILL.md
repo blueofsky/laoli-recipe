@@ -141,7 +141,7 @@ Output directory: `comic/{topic-slug}/`
 
 **Detection Priority**:
 1. `--lang` flag (explicit)
-2. EXTEND.md `language` setting
+2. Config `language` setting
 3. User's conversation language
 4. Source content language
 
@@ -160,8 +160,8 @@ Technical terms remain in English.
 ```
 Comic Progress:
 - [ ] Step 1: Setup & Analyze
-  - [ ] 1.1 Preferences (EXTEND.md) ⛔ BLOCKING
-    - [ ] Found → load preferences → continue
+  - [ ] 1.1 Configuration ⛔ BLOCKING
+    - [ ] Found → load config → continue
     - [ ] Not found → run first-time setup → MUST complete before other steps
   - [ ] 1.2 Analyze, 1.3 Check existing
 - [ ] Step 2: Confirmation - Style & options ⚠️ REQUIRED
@@ -179,11 +179,11 @@ Comic Progress:
 ### Flow
 
 ```
-Input → [Preferences] ─┬─ Found → Continue
-                       │
-                       └─ Not found → First-Time Setup ⛔ BLOCKING
-                                      │
-                                      └─ Complete setup → Save EXTEND.md → Continue
+Input → [Config] ─┬─ Found → Continue
+                   │
+                   └─ Not found → First-Time Setup ⛔ BLOCKING
+                                  │
+                                  └─ Complete setup → Save config → Continue
                                                                               │
         ┌─────────────────────────────────────────────────────────────────────┘
         ↓
@@ -194,7 +194,7 @@ Analyze → [Check Existing?] → [Confirm: Style + Reviews] → Storyboard → 
 
 | Step | Action | Key Output |
 |------|--------|------------|
-| 1.1 | Load EXTEND.md preferences ⛔ BLOCKING if not found | Config loaded |
+| 1.1 | Load config ⛔ BLOCKING if not found | Config loaded |
 | 1.2 | Analyze content | `analysis.md` |
 | 1.3 | Check existing directory | Handle conflicts |
 | 2 | Confirm style, focus, audience, reviews | User preferences |
@@ -227,21 +227,23 @@ Analyze → [Check Existing?] → [Confirm: Style + Reviews] → Storyboard → 
 
 Full step-by-step workflow (analysis, storyboard, review gates, regeneration variants): [references/workflow.md](references/workflow.md).
 
-### EXTEND.md Paths ⛔ BLOCKING
+### Configuration Loading ⛔ BLOCKING
 
-If EXTEND.md is not found, first-time setup is **blocking** — complete it before any content analysis or style/tone questions.
+Load configuration via CLI:
 
-| Priority | Path | Scope |
-|----------|------|-------|
-| 1 | `.laoli-recipe/laoli-comic/EXTEND.md` | Project |
-| 2 | `$HOME/.laoli-recipe/laoli-comic/EXTEND.md` | User home |
+```bash
+laoli recipe get --skill laoli-comic
+```
 
-| Result | Action |
-|--------|--------|
-| Found | Read, parse, display summary → continue |
-| Not found | ⛔ Run first-time setup ([references/config/first-time-setup.md](references/config/first-time-setup.md)) → save EXTEND.md → continue |
+If no config exists, run an interactive setup using `AskUserQuestion` from `references/config/first-time-setup.md`, then save via `laoli recipe set`.
 
-**EXTEND.md supports**: watermark, preferred art/tone/layout, custom style definitions, character presets, language preference. Schema: [references/config/preferences-schema.md](references/config/preferences-schema.md).
+View config schema:
+
+```bash
+laoli recipe schema --skill laoli-comic
+```
+
+**Supported**: watermark, preferred art/tone/layout, custom style definitions, character presets, language preference.
 
 ## References
 
@@ -263,7 +265,6 @@ If EXTEND.md is not found, first-time setup is **blocking** — complete it befo
 - [partial-workflows.md](references/partial-workflows.md) - Partial workflow options
 
 **Config**:
-- [config/preferences-schema.md](references/config/preferences-schema.md) - EXTEND.md schema
 - [config/first-time-setup.md](references/config/first-time-setup.md) - First-time setup
 - [config/watermark-guide.md](references/config/watermark-guide.md) - Watermark configuration
 
@@ -287,4 +288,4 @@ If EXTEND.md is not found, first-time setup is **blocking** — complete it befo
 - **Steps 4/6 conditional** - only if user requested in Step 2
 - **Step 7.1 character sheet** - recommended for multi-page comics, optional for simple presets
 - **Step 7.2 character reference** - use `--ref` if sheet exists; compress/convert on failure; fall back to prompt-only
-- Watermark/language configured once in EXTEND.md
+- Watermark/language configured once in config

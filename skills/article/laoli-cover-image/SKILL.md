@@ -110,7 +110,7 @@ Output directory per `default_output_dir` preference:
 
 ```
 Cover Image Progress:
-- [ ] Step 0: Check preferences (EXTEND.md) ⛔ BLOCKING
+- [ ] Step 0: Check preferences (config) ⛔ BLOCKING
 - [ ] Step 1: Analyze content + save refs + determine output dir
 - [ ] Step 2: Confirm options (6 dimensions) ⚠️ unless --quick
 - [ ] Step 3: Create prompt
@@ -121,27 +121,29 @@ Cover Image Progress:
 ### Flow
 
 ```
-Input → [Step 0: Preferences] ─┬─ Found → Continue
-                               └─ Not found → First-Time Setup ⛔ BLOCKING → Save EXTEND.md → Continue
+Input → [Step 0: Config] ─┬─ Found → Continue
+                           └─ Not found → First-Time Setup ⛔ BLOCKING → Save config → Continue
         ↓
 Analyze + Save Refs → [Output Dir] → [Confirm: 6 Dimensions] → Prompt → Generate → Complete
                                               ↓
                                      (skip if --quick or all specified)
 ```
 
-### Step 0: Load Preferences ⛔ BLOCKING
+### Step 0: Load Configuration ⛔ BLOCKING
 
-Check EXTEND.md in priority order — the first one found wins:
+Load configuration via CLI:
 
-| Priority | Path | Scope |
-|----------|------|-------|
-| 1 | `.laoli-recipe/laoli-cover-image/EXTEND.md` | Project |
-| 3 | `$HOME/.laoli-recipe/laoli-cover-image/EXTEND.md` | User home |
+```bash
+laoli recipe get --skill laoli-cover-image
+```
 
-| Result | Action |
-|--------|--------|
-| Found | Load, display summary → Continue |
-| Not found | ⛔ Run first-time setup ([references/config/first-time-setup.md](references/config/first-time-setup.md)) → Save → Continue |
+If no config exists, run an interactive setup using `AskUserQuestion` from `references/config/first-time-setup.md`, then save via `laoli recipe set`.
+
+View config schema:
+
+```bash
+laoli recipe schema --skill laoli-cover-image
+```
 
 **CRITICAL**: If not found, complete setup BEFORE any other steps or questions.
 
@@ -151,7 +153,7 @@ Check EXTEND.md in priority order — the first one found wins:
 2. **Save source content** (if pasted, save to `source.md`)
 3. **Analyze content**: topic, tone, keywords, visual metaphors
 4. **Deep analyze references** ⚠️: Extract specific, concrete elements (see reference-images.md)
-5. **Detect language**: Compare source, user input, EXTEND.md preference
+5. **Detect language**: Compare source, user input, config language preference
 6. **Determine output directory**: Per File Structure rules
 
 **⚠️ People in Reference Images:**
@@ -231,11 +233,9 @@ Files:
 
 ## Extension Support
 
-Custom configurations via EXTEND.md. See **Step 0** for paths.
+Custom configurations via `laoli recipe` CLI. See **Step 0** for commands.
 
 Supports: Watermark | Preferred dimensions | Default aspect/output | Quick mode | Custom palettes | Language
-
-Schema: [references/config/preferences-schema.md](references/config/preferences-schema.md)
 
 ## References
 

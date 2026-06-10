@@ -34,31 +34,18 @@ Input → Preferences → Analyze → [Check Existing?] → [Confirm 1: Style + 
 
 ## Step 1: Setup & Analyze
 
-### 1.1 Load Preferences (EXTEND.md)
+### 1.1 Load Configuration
 
-Check EXTEND.md existence (priority order):
+Load configuration via CLI:
 
 ```bash
-# macOS, Linux, WSL, Git Bash
-test -f .laoli-recipe/laoli-comic/EXTEND.md && echo "project"
-test -f "$HOME/.laoli-recipe/laoli-comic/EXTEND.md" && echo "user"
+laoli recipe get --skill laoli-comic
 ```
 
-```powershell
-# PowerShell (Windows)
-if (Test-Path .laoli-recipe/laoli-comic/EXTEND.md) { "project" }
-if (Test-Path "$HOME/.laoli-recipe/laoli-comic/EXTEND.md") { "user" }
-```
-
-| Path | Location |
-|------|----------|
-| `.laoli-recipe/laoli-comic/EXTEND.md` | Project directory |
-| `$HOME/.laoli-recipe/laoli-comic/EXTEND.md` | User home |
-
-**When EXTEND.md Found** → Read, parse, **output summary to user**:
+**When Config Found** → Output summary to user:
 
 ```
-📋 Loaded preferences from [full path]
+📋 Loaded preferences
 ├─ Watermark: [enabled/disabled] [content if enabled]
 ├─ Art Style: [style name or "auto-select"]
 ├─ Tone: [tone name or "auto-select"]
@@ -69,18 +56,14 @@ if (Test-Path "$HOME/.laoli-recipe/laoli-comic/EXTEND.md") { "user" }
 
 **MUST output this summary** so user knows their current configuration. Do not skip or silently load.
 
-**When EXTEND.md Not Found** → First-time setup:
+**When Config Not Found** → First-time setup:
 
 1. Inform user: "No preferences found. Let's set up your defaults."
 2. Use AskUserQuestion to collect preferences (see `config/first-time-setup.md`)
-3. Create EXTEND.md at user-chosen location
-4. Confirm: "✓ Preferences saved to [path]"
+3. Save via `laoli recipe set --skill laoli-comic --key <key> --value <value>`
+4. Confirm: "✓ Preferences saved"
 
-**EXTEND.md Supports**: Watermark | Preferred art/tone/layout | Custom style definitions | Character presets | Language preference
-
-Schema: `config/preferences-schema.md`
-
-**Important**: Once EXTEND.md exists, watermark, language, and style defaults are NOT asked again in Confirmation 1 or 2. These are session-persistent settings.
+**Important**: Once config exists, watermark, language, and style defaults are NOT asked again in Confirmation 1 or 2. These are session-persistent settings.
 
 ### 1.2 Analyze Content → `analysis.md`
 
@@ -99,7 +82,7 @@ Read source content, save it if needed, and perform deep analysis.
    - Key figures and their story arcs
 4. Detect source language
 5. **Determine language**:
-   - If EXTEND.md has `language` → use it
+   - If config has `language` → use it
    - Else if `--lang` option provided → use it
    - Else → use detected source language
 6. Determine recommended page count:
@@ -149,14 +132,14 @@ Save result and handle accordingly:
 
 **Purpose**: Select visual style + decide whether to review outline before generation. **Do NOT skip.**
 
-**Note**: Watermark and language already configured in EXTEND.md (Step 1).
+**Note**: Watermark and language already configured (Step 1).
 
 **Display summary**:
 - Content type + topic identified
 - Key figures extracted
 - Time span detected
 - Recommended page count
-- Language: [from EXTEND.md or detected]
+- Language: [from config or detected]
 - **Recommended style**: [art] + [tone] (based on content signals)
 
 **Use AskUserQuestion** for:

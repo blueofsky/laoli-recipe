@@ -55,7 +55,7 @@ Reference Style Extracted (no file):
 
 | Input | Output Directory | Next |
 |-------|------------------|------|
-| File path | EXTEND.md `default_output_dir` (default: `imgs-subdir`). If not configured, confirm in 1.2. | → 1.2 |
+| File path | Config `default_output_dir` (default: `imgs-subdir`). If not configured, confirm in 1.2. | → 1.2 |
 | Pasted content | `illustrations/{topic-slug}/` | → 1.4 |
 
 **Backup rule for pasted content**: If `source.md` exists in target directory, rename to `source-backup-YYYYMMDD-HHMMSS.md` before saving.
@@ -68,7 +68,7 @@ Check preferences and existing state, then ask ALL needed questions in ONE AskUs
 
 | Question | When to Ask | Options |
 |----------|-------------|---------|
-| Output directory | No `default_output_dir` in EXTEND.md | `{article-dir}/imgs/` (Recommended), `{article-dir}/`, `{article-dir}/illustrations/`, `illustrations/{topic-slug}/` |
+| Output directory | No `default_output_dir` in config | `{article-dir}/imgs/` (Recommended), `{article-dir}/`, `{article-dir}/illustrations/`, `illustrations/{topic-slug}/` |
 | Existing images | Target dir has `.png/.jpg/.webp` files | `supplement`, `overwrite`, `regenerate` |
 | Article update | Always (file path input) | `update`, `copy` |
 
@@ -81,26 +81,18 @@ Check preferences and existing state, then ask ALL needed questions in ONE AskUs
 | `illustrations-subdir` | `{article-dir}/illustrations/` |
 | `independent` | `illustrations/{topic-slug}/` |
 
-### 1.5 Load Preferences (EXTEND.md) ⛔ BLOCKING
+### 1.5 Load Configuration ⛔ BLOCKING
 
-**CRITICAL**: If EXTEND.md not found, MUST complete first-time setup before ANY other questions or steps. Do NOT proceed to reference images, do NOT ask about content, do NOT ask about type/style — ONLY complete the preferences setup first.
+**CRITICAL**: If config not found, MUST complete first-time setup before ANY other questions or steps. Do NOT proceed to reference images, do NOT ask about content, do NOT ask about type/style — ONLY complete the preferences setup first.
 
 ```bash
-# macOS, Linux, WSL, Git Bash
-test -f .laoli-recipe/laoli-article-illustrator/EXTEND.md && echo "project"
-test -f "$HOME/.laoli-recipe/laoli-article-illustrator/EXTEND.md" && echo "user"
-```
-
-```powershell
-# PowerShell (Windows)
-if (Test-Path .laoli-recipe/laoli-article-illustrator/EXTEND.md) { "project" }
-if (Test-Path "$HOME/.laoli-recipe/laoli-article-illustrator/EXTEND.md") { "user" }
+laoli recipe get --skill laoli-article-illustrator
 ```
 
 | Result | Action |
 |--------|--------|
-| Found | Read, parse, display summary → Continue |
-| Not found | ⛔ **BLOCKING**: Run first-time setup ONLY ([config/first-time-setup.md](config/first-time-setup.md)) → Complete and save EXTEND.md → Then continue |
+| Found | Read, display summary → Continue |
+| Not found | ⛔ **BLOCKING**: Run first-time setup ONLY ([config/first-time-setup.md](config/first-time-setup.md)) → Save via `laoli recipe set` → Then continue |
 
 **Supports**: Watermark | Preferred type/style | Custom styles | Language | Output directory
 
@@ -184,7 +176,7 @@ Based on Step 2 content analysis, recommend a preset first (sets both type & sty
 
 ### Q3: Style ⚠️ REQUIRED (skip if preset chosen in Q1)
 
-If EXTEND.md has `preferred_style`:
+If config has `preferred_style`:
 - [Custom style name + brief description] (Recommended)
 - [Top compatible core style 1]
 - [Top compatible core style 2]
@@ -219,17 +211,17 @@ If preset did not specify a palette, and the user may benefit from a palette ove
 - `warm` — warm earth tones, no cool colors
 - `neon` — vibrant neon on dark backgrounds
 
-**Skip if**: preset already resolved palette, or `preferred_palette` set in EXTEND.md.
+**Skip if**: preset already resolved palette, or `preferred_palette` set in config.
 
 See Palette Gallery in [styles.md](styles.md#palette-gallery) and full specs in `palettes/<palette>.md`.
 
-### Q5: Image Text Language ⚠️ REQUIRED when article language ≠ EXTEND.md `language`
+### Q5: Image Text Language ⚠️ REQUIRED when article language ≠ config `language`
 
-Detect article language from content. If different from EXTEND.md `language` setting, MUST ask:
+Detect article language from content. If different from config `language` setting, MUST ask:
 - Article language (match article content) (Recommended)
-- EXTEND.md language (user's general preference)
+- Config language (user's general preference)
 
-**Skip only if**: Article language matches EXTEND.md `language`, or EXTEND.md has no `language` setting.
+**Skip only if**: Article language matches config `language`, or config has no `language` setting.
 
 ### Display Reference Usage (if references detected in Step 1.0)
 

@@ -183,23 +183,23 @@ Slug: 2-4 words kebab-case from topic. Conflict: append `-YYYYMMDD-HHMMSS`.
 
 ### Step 1: Setup & Analyze
 
-**1.1 Load Preferences (EXTEND.md)**
+**1.1 Load Configuration**
 
-Check EXTEND.md in priority order — the first one found wins:
+Load configuration via CLI:
 
-| Priority | Path | Scope |
-|----------|------|-------|
-| 1 | `.laoli-recipe/laoli-infographic/EXTEND.md` | Project |
-| 2 | `$HOME/.laoli-recipe/laoli-infographic/EXTEND.md` | User home |
+```bash
+laoli recipe get --skill laoli-infographic
+```
 
-| Result | Action |
-|--------|--------|
-| Found | Read, parse, display a one-line summary |
-| Not found | Ask the user with `AskUserQuestion` (see `references/config/first-time-setup.md`) |
+If no config exists, ask the user with `AskUserQuestion` (see `references/config/first-time-setup.md`) and save via `laoli recipe set`.
 
-**EXTEND.md supports**: preferred layout/style, default aspect ratio, custom style definitions, language preference.
+View config schema:
 
-Schema: `references/config/preferences-schema.md`
+```bash
+laoli recipe schema --skill laoli-infographic
+```
+
+**Supported**: preferred layout/style, default aspect ratio, custom style definitions, language preference.
 
 **1.2 Analyze Content → `analysis.md`**
 
@@ -283,4 +283,4 @@ Report: topic, layout, style, aspect, language, output path, files created.
 
 ## Extension Support
 
-Custom configurations via EXTEND.md. See **Step 1.1** for paths and supported options.
+Custom configurations via `laoli recipe` CLI. See **Step 1.1** for commands.

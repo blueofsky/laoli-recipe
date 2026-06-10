@@ -1,0 +1,268 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://laoli-recipe.dev/recipe.schema.json",
+  "title": "Laoli Recipe - Configuration Schema",
+  "description": "统一配置 Schema，包含项目级配置、Skill 配置、以及预留扩展节点。CLI 只做 CRUD 不校验字段含义。",
+  "type": "object",
+  "properties": {
+    "version": { "type": "integer", "default": 1, "description": "Schema 版本号。新增/修改字段时递增。" },
+
+    "skills": {
+      "type": "object",
+      "description": "Skill 配置集合",
+      "properties": {
+        "laoli-article-illustrator": {
+          "type": "object",
+          "description": "文章插图技能配置",
+          "properties": {
+            "version": { "type": "integer", "default": 1, "description": "Schema 版本号" },
+            "watermark": {
+              "type": "object",
+              "description": "水印设置",
+              "properties": {
+                "enabled": { "type": "boolean", "default": false, "description": "是否启用水印" },
+                "content": { "type": "string", "default": "", "description": "水印文字（@用户名或自定义）" },
+                "position": { "type": "string", "enum": ["bottom-right", "bottom-left", "bottom-center", "top-right"], "default": "bottom-right", "description": "水印位置" },
+                "opacity": { "type": "number", "default": 0.7, "description": "水印透明度" }
+              }
+            },
+            "preferred_style": {
+              "type": "object",
+              "description": "默认样式偏好",
+              "properties": {
+                "name": { "type": ["string", "null"], "default": null, "description": "样式名称（null=自动选择）" },
+                "description": { "type": "string", "default": "", "description": "样式覆盖/备注" }
+              }
+            },
+            "preferred_palette": { "type": ["string", "null"], "default": null, "description": "调色板：macaron/warm/neon" },
+            "language": { "type": ["string", "null"], "default": null, "description": "输出语言：zh/en/ja/ko/auto" },
+            "default_output_dir": { "type": ["string", "null"], "default": "imgs-subdir", "description": "输出目录：imgs-subdir/same-dir/illustrations-subdir/independent" },
+            "custom_styles": {
+              "type": "array",
+              "default": [],
+              "description": "用户自定义样式",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "description": "唯一样式标识（kebab-case）" },
+                  "description": { "type": "string", "description": "样式描述" },
+                  "color_palette": {
+                    "type": "object",
+                    "properties": {
+                      "primary": { "type": "array", "items": { "type": "string" } },
+                      "background": { "type": "string" },
+                      "accents": { "type": "array", "items": { "type": "string" } }
+                    }
+                  },
+                  "visual_elements": { "type": "string" },
+                  "typography": { "type": "string" },
+                  "best_for": { "type": "string" }
+                },
+                "required": ["name", "description"]
+              }
+            }
+          }
+        },
+
+        "laoli-cover-image": {
+          "type": "object",
+          "description": "文章封面图技能配置",
+          "properties": {
+            "version": { "type": "integer", "default": 3, "description": "Schema 版本号" },
+            "watermark": {
+              "type": "object",
+              "description": "水印设置",
+              "properties": {
+                "enabled": { "type": "boolean", "default": false },
+                "content": { "type": "string", "default": "" },
+                "position": { "type": "string", "enum": ["bottom-right", "bottom-left", "bottom-center", "top-right"], "default": "bottom-right" },
+                "opacity": { "type": "number", "default": 0.7 }
+              }
+            },
+            "preferred_type": { "type": ["string", "null"], "default": null, "description": "封面类型：hero/conceptual/typography/metaphor/scene/minimal" },
+            "preferred_palette": { "type": ["string", "null"], "default": null, "description": "调色板：warm/elegant/cool/dark/earth/vivid/pastel/mono/retro/duotone/macaron" },
+            "preferred_rendering": { "type": ["string", "null"], "default": null, "description": "渲染风格：flat-vector/hand-drawn/painterly/digital/pixel/chalk" },
+            "preferred_text": { "type": "string", "default": "title-only", "description": "文字密度：none/title-only/title-subtitle/text-rich" },
+            "preferred_mood": { "type": "string", "default": "balanced", "description": "情绪强度：subtle/balanced/bold" },
+            "default_aspect": { "type": "string", "default": "2.35:1", "description": "默认宽高比：2.35:1/16:9/1:1/3:4" },
+            "quick_mode": { "type": "boolean", "default": false, "description": "跳过确认步骤" },
+            "language": { "type": ["string", "null"], "default": null, "description": "输出语言：zh/en/ja/ko/auto" },
+            "default_output_dir": { "type": "string", "default": "independent", "description": "输出目录：independent/same-dir/imgs-subdir" },
+            "custom_palettes": {
+              "type": "array",
+              "default": [],
+              "description": "用户自定义调色板",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "description": { "type": "string" },
+                  "colors": {
+                    "type": "object",
+                    "properties": {
+                      "primary": { "type": "array", "items": { "type": "string" } },
+                      "background": { "type": "string" },
+                      "accents": { "type": "array", "items": { "type": "string" } }
+                    }
+                  },
+                  "decorative_hints": { "type": "string" },
+                  "best_for": { "type": "string" }
+                },
+                "required": ["name", "description"]
+              }
+            }
+          }
+        },
+
+        "laoli-url-to-markdown": {
+          "type": "object",
+          "description": "网页转 Markdown 技能配置",
+          "properties": {
+            "download_media": { "type": "string", "default": "ask", "description": "媒体下载策略：ask/1/0" },
+            "default_output_dir": { "type": "string", "default": "", "description": "默认输出目录（空=./url-to-markdown/）" }
+          }
+        },
+
+        "laoli-comic": {
+          "type": "object",
+          "description": "知识漫画生成技能配置",
+          "properties": {
+            "version": { "type": "integer", "default": 2, "description": "Schema 版本号" },
+            "watermark": {
+              "type": "object",
+              "description": "水印设置",
+              "properties": {
+                "enabled": { "type": "boolean", "default": false },
+                "content": { "type": "string", "default": "" },
+                "position": { "type": "string", "enum": ["bottom-right", "bottom-left", "bottom-center", "top-right"], "default": "bottom-right" },
+                "opacity": { "type": "number", "default": 0.5 }
+              }
+            },
+            "preferred_art": { "type": ["string", "null"], "default": null, "description": "艺术风格：ligne-claire/manga/realistic/ink-brush/chalk/minimalist" },
+            "preferred_tone": { "type": ["string", "null"], "default": null, "description": "色调情绪：neutral/warm/dramatic/romantic/energetic/vintage/action" },
+            "preferred_layout": { "type": ["string", "null"], "default": null, "description": "布局：standard/cinematic/dense/splash/mixed/webtoon/four-panel" },
+            "preferred_aspect": { "type": ["string", "null"], "default": null, "description": "宽高比：3:4/4:3/16:9" },
+            "language": { "type": ["string", "null"], "default": null, "description": "输出语言：zh/en/ja/ko/auto" },
+            "character_presets": {
+              "type": "array",
+              "default": [],
+              "description": "预设角色列表",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "roles": {
+                    "type": "object",
+                    "properties": {
+                      "learner": { "type": "string" },
+                      "mentor": { "type": "string" },
+                      "challenge": { "type": "string" },
+                      "support": { "type": "string" }
+                    }
+                  }
+                },
+                "required": ["name"]
+              }
+            }
+          }
+        },
+
+        "laoli-image-cards": {
+          "type": "object",
+          "description": "图片卡片系列生成技能配置",
+          "properties": {
+            "version": { "type": "integer", "default": 1, "description": "Schema 版本号" },
+            "watermark": {
+              "type": "object",
+              "description": "水印设置",
+              "properties": {
+                "enabled": { "type": "boolean", "default": false },
+                "content": { "type": "string", "default": "" },
+                "position": { "type": "string", "enum": ["bottom-right", "bottom-left", "bottom-center", "top-right"], "default": "bottom-right" },
+                "opacity": { "type": "number", "default": 0.7 }
+              }
+            },
+            "preferred_style": {
+              "type": "object",
+              "description": "默认样式偏好",
+              "properties": {
+                "name": { "type": ["string", "null"], "default": null },
+                "description": { "type": "string", "default": "" }
+              }
+            },
+            "preferred_layout": { "type": ["string", "null"], "default": null, "description": "布局：sparse/balanced/dense/list/comparison/flow" },
+            "language": { "type": ["string", "null"], "default": null, "description": "输出语言：zh/en/ja/ko/auto" },
+            "custom_styles": {
+              "type": "array",
+              "default": [],
+              "description": "用户自定义样式",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "description": { "type": "string" },
+                  "color_palette": {
+                    "type": "object",
+                    "properties": {
+                      "primary": { "type": "array", "items": { "type": "string" } },
+                      "background": { "type": "string" },
+                      "accents": { "type": "array", "items": { "type": "string" } }
+                    }
+                  },
+                  "visual_elements": { "type": "string" },
+                  "typography": { "type": "string" },
+                  "best_for": { "type": "string" }
+                },
+                "required": ["name", "description"]
+              }
+            }
+          }
+        },
+
+        "laoli-infographic": {
+          "type": "object",
+          "description": "信息图生成技能配置",
+          "properties": {
+            "version": { "type": "integer", "default": 1, "description": "Schema 版本号" },
+            "preferred_layout": { "type": ["string", "null"], "default": null, "description": "预设布局（21种之一）" },
+            "preferred_style": { "type": ["string", "null"], "default": null, "description": "预设样式（21种之一）" },
+            "preferred_aspect": { "type": ["string", "null"], "default": null, "description": "默认宽高比：landscape/portrait/square/自定义W:H" },
+            "language": { "type": ["string", "null"], "default": null, "description": "输出语言：zh/en/ja/ko" },
+            "custom_styles": {
+              "type": "array",
+              "default": [],
+              "description": "用户自定义样式",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "description": { "type": "string" },
+                  "prompt_fragment": { "type": "string", "description": "注入到 prompt 中的样式特征" }
+                },
+                "required": ["name", "description", "prompt_fragment"]
+              }
+            }
+          }
+        },
+
+        "laoli-compress-image": {
+          "type": "object",
+          "description": "图片压缩技能配置",
+          "properties": {
+            "default_format": { "type": "string", "default": "webp", "description": "默认输出格式：webp/png" },
+            "default_quality": { "type": "number", "default": 80, "description": "默认质量 0-100" },
+            "keep_original": { "type": "boolean", "default": false, "description": "是否保留原始文件" }
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+
+    "mcp": {
+      "type": "object",
+      "description": "MCP 服务配置（预留扩展）",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

@@ -16,18 +16,19 @@ Scripts in `scripts/` subdirectory. `{baseDir}` = this SKILL.md's directory path
 |--------|---------|
 | `scripts/main.ts` | Image compression CLI |
 
-## Preferences (EXTEND.md)
+## Configuration
 
-Check EXTEND.md in priority order — the first one found wins:
+Configuration is managed via `laoli recipe` CLI:
 
-| Priority | Path | Scope |
-|----------|------|-------|
-| 1 | `.laoli-recipe/laoli-compress-image/EXTEND.md` | Project |
-| 3 | `$HOME/.laoli-recipe/laoli-compress-image/EXTEND.md` | User home |
+```bash
+laoli recipe get --skill laoli-compress-image          # Get current config
+laoli recipe set --skill laoli-compress-image --key default_format --value webp
+laoli recipe set --skill laoli-compress-image --key default_quality --value 80
+laoli recipe set --skill laoli-compress-image --key keep_original --value false
+laoli recipe schema --skill laoli-compress-image       # View config schema
+```
 
-If none found, use defaults.
-
-**EXTEND.md supports**: Default format, default quality, keep-original preference.
+If no config exists, built-in defaults are used automatically.
 
 ## Usage
 
@@ -70,4 +71,4 @@ image.png → image.webp (245KB → 89KB, 64% reduction)
 
 ## Extension Support
 
-Custom configurations via EXTEND.md. See **Preferences** section for paths and supported options.
+Custom configurations via `laoli recipe` CLI. See **Configuration** section for commands.

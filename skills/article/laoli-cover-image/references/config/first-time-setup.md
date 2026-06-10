@@ -7,7 +7,7 @@ description: First-time setup flow for laoli-cover-image preferences
 
 ## Overview
 
-When no EXTEND.md is found, guide user through preference setup.
+When no config exists for this skill, guide user through preference setup.
 
 **⛔ BLOCKING OPERATION**: This setup MUST complete before ANY other workflow steps. Do NOT:
 - Ask about reference images
@@ -15,12 +15,12 @@ When no EXTEND.md is found, guide user through preference setup.
 - Ask about dimensions (type, palette, rendering)
 - Proceed to content analysis
 
-ONLY ask the questions in this setup flow, save EXTEND.md, then continue.
+ONLY ask the questions below, then save via `laoli recipe set`, then continue.
 
 ## Setup Flow
 
 ```
-No EXTEND.md found
+No config found
         │
         ▼
 ┌─────────────────────┐
@@ -29,9 +29,9 @@ No EXTEND.md found
 └─────────────────────┘
         │
         ▼
-┌─────────────────────┐
-│ Create EXTEND.md    │
-└─────────────────────┘
+┌─────────────────────────────┐
+│ Save via laoli recipe set   │
+└─────────────────────────────┘
         │
         ▼
     Continue to Step 1
@@ -50,7 +50,7 @@ header: "Watermark"
 question: "Watermark text for generated cover images?"
 options:
   - label: "No watermark (Recommended)"
-    description: "Clean covers, can enable later in EXTEND.md"
+    description: "Clean covers, can enable later via laoli recipe set"
 ```
 
 ### Question 2: Preferred Type
@@ -143,60 +143,20 @@ options:
     description: "Skip confirmation, use auto-selection"
 ```
 
-### Question 8: Save Location
-
-```yaml
-header: "Save"
-question: "Where to save preferences?"
-options:
-  - label: "Project (Recommended)"
-    description: ".laoli-recipe/ (this project only)"
-  - label: "User"
-    description: "~/.laoli-recipe/ (all projects)"
-```
-
-## Save Locations
-
-| Choice | Path | Scope |
-|--------|------|-------|
-| Project | `.laoli-recipe/laoli-cover-image/EXTEND.md` | Current project |
-| User | `~/.laoli-recipe/laoli-cover-image/EXTEND.md` | All projects |
-
 ## After Setup
 
-1. Create directory if needed
-2. Write EXTEND.md with frontmatter
-3. Confirm: "Preferences saved to [path]"
-4. Continue to Step 1
-
-## EXTEND.md Template
-
-```yaml
----
-version: 3
-watermark:
-  enabled: [true/false]
-  content: "[user input or empty]"
-  position: bottom-right
-  opacity: 0.7
-preferred_type: [selected type or null]
-preferred_palette: [selected palette or null]
-preferred_rendering: [selected rendering or null]
-preferred_text: title-only
-preferred_mood: balanced
-default_aspect: [16:9/2.35:1/1:1/3:4]
-default_output_dir: [independent/same-dir/imgs-subdir]
-quick_mode: [true/false]
-language: null
-custom_palettes: []
----
-```
+1. Save each answer via `laoli recipe set --skill laoli-cover-image --key <key> --value <value>`
+2. Confirm: "Preferences saved"
+3. Continue to Step 1
 
 ## Modifying Preferences Later
 
-Users can edit EXTEND.md directly or run setup again:
-- Delete EXTEND.md to trigger setup
-- Edit YAML frontmatter for quick changes
-- Full schema: `preferences-schema.md`
+Users can modify config anytime via:
 
-**EXTEND.md Supports**: Watermark | Preferred type | Preferred palette | Preferred rendering | Preferred text | Preferred mood | Default aspect ratio | Default output directory | Quick mode | Custom palette definitions | Language preference
+```bash
+laoli recipe set --skill laoli-cover-image --key <key> --value <value>
+laoli recipe get --skill laoli-cover-image
+laoli recipe schema --skill laoli-cover-image
+```
+
+**Supports**: Watermark | Preferred type | Preferred palette | Preferred rendering | Preferred text | Preferred mood | Default aspect ratio | Default output directory | Quick mode | Custom palette definitions | Language preference

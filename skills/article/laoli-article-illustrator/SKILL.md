@@ -71,7 +71,7 @@ See [references/styles.md](references/styles.md) for Core Styles, full gallery, 
 ## Workflow
 
 ```
-- [ ] Step 1: Pre-check (EXTEND.md, references, config)
+- [ ] Step 1: Pre-check (config, references)
 - [ ] Step 2: Analyze content
 - [ ] Step 3: Confirm settings (AskUserQuestion)
 - [ ] Step 4: Generate outline
@@ -81,19 +81,21 @@ See [references/styles.md](references/styles.md) for Core Styles, full gallery, 
 
 ### Step 1: Pre-check
 
-**1.5 Load Preferences (EXTEND.md) ⛔ BLOCKING**
+**1.5 Load Configuration**
 
-Check EXTEND.md in priority order — the first one found wins:
+Load configuration via CLI:
 
-| Priority | Path | Scope |
-|----------|------|-------|
-| 1 | `.laoli-recipe/laoli-article-illustrator/EXTEND.md` | Project |
-| 3 | `$HOME/.laoli-recipe/laoli-article-illustrator/EXTEND.md` | User home |
+```bash
+laoli recipe get --skill laoli-article-illustrator
+```
 
-| Result | Action |
-|--------|--------|
-| Found | Read, parse, display summary |
-| Not found | ⛔ Run [first-time-setup](references/config/first-time-setup.md) |
+If no config exists, run an interactive setup using `AskUserQuestion` from `references/config/first-time-setup.md`, then save via `laoli recipe set`.
+
+View config schema:
+
+```bash
+laoli recipe schema --skill laoli-article-illustrator
+```
 
 Full procedures: [references/workflow.md](references/workflow.md#step-1-pre-check)
 
@@ -120,7 +122,7 @@ Full procedures: [references/workflow.md](references/workflow.md#step-2-setup--a
 | **Q2: Density** | minimal (1-2), balanced (3-5), per-section (Recommended), rich (6+) |
 | **Q3: Style** | [Recommended], minimal-flat, sci-fi, hand-drawn, editorial, scene, poster, Other — **skip if preset chosen** |
 | Q4: Palette | Default (style colors), macaron, warm, neon — **skip if preset includes palette or preferred_palette set** |
-| Q5: Language | When article language ≠ EXTEND.md setting |
+| Q5: Language | When article language ≠ config language setting |
 
 Full procedures: [references/workflow.md](references/workflow.md#step-3-confirm-settings-)
 
@@ -150,7 +152,7 @@ Full template: [references/workflow.md](references/workflow.md#step-4-generate-o
 6. Select the backend via the `## Image Generation Tools` rule at the top: use whatever is available; if multiple, ask the user once. Do this once per session before any generation.
 7. **Execution strategy**: When multiple illustrations have saved prompt files and the task is now plain generation, prefer the chosen backend's batch interface (if it offers one) over spawning subagents. Use subagents only when each image still needs separate prompt iteration or creative exploration. If the backend has no batch interface, generate sequentially.
 8. Process references (`direct`/`style`/`palette`) per prompt frontmatter
-9. Apply watermark if EXTEND.md enabled
+9. Apply watermark if config enabled
 10. Generate from saved prompt files; retry once on failure
 
 Full procedures: [references/workflow.md](references/workflow.md#step-5-generate-images)
@@ -167,7 +169,7 @@ Images: X/N generated
 
 ## Output Directory
 
-Output directory is determined by `default_output_dir` in EXTEND.md (set during first-time setup):
+Output directory is determined by `default_output_dir` in config (set during setup):
 
 | `default_output_dir` | Output Path | Markdown Insert Path |
 |----------------------|-------------|----------------------|

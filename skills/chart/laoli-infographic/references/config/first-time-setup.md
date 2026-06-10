@@ -7,19 +7,19 @@ description: First-time setup flow for laoli-infographic preferences
 
 ## Overview
 
-When no EXTEND.md is found, guide the user through preference setup before generating any infographic.
+When no config exists for this skill, guide the user through preference setup before generating any infographic.
 
 **⛔ BLOCKING OPERATION**: This setup MUST complete before ANY other workflow steps. Do NOT:
 - Ask about source content or topic
 - Ask about layout, style, or aspect
 - Begin Step 1.2 content analysis
 
-ONLY ask the questions in this setup flow, save EXTEND.md, then continue to Step 1.2.
+ONLY ask the questions below, then save via `laoli recipe set`, then continue to Step 1.2.
 
 ## Setup Flow
 
 ```
-No EXTEND.md found
+No config found
         │
         ▼
 ┌─────────────────────┐
@@ -28,9 +28,9 @@ No EXTEND.md found
 └─────────────────────┘
         │
         ▼
-┌─────────────────────┐
-│ Create EXTEND.md    │
-└─────────────────────┘
+┌─────────────────────────────┐
+│ Save via laoli recipe set   │
+└─────────────────────────────┘
         │
         ▼
     Continue to Step 1.2
@@ -104,50 +104,18 @@ options:
     description: "English"
 ```
 
-### Question 5: Save Location
-
-```
-header: "Save"
-question: "Where to save preferences?"
-options:
-  - label: "Project"
-    description: ".laoli-recipe/ (this project only)"
-  - label: "User"
-    description: "~/.laoli-recipe/ (all projects)"
-```
-
-## Save Locations
-
-| Choice | Path | Scope |
-|--------|------|-------|
-| Project | `.laoli-recipe/laoli-infographic/EXTEND.md` | Current project |
-| User | `~/.laoli-recipe/laoli-infographic/EXTEND.md` | All projects |
-
-XDG path (`${XDG_CONFIG_HOME:-$HOME/.config}/laoli-recipe/laoli-infographic/EXTEND.md`) is also recognized at read time but not offered as a save target during first-time setup.
-
 ## After Setup
 
-1. Create the directory if needed
-2. Write EXTEND.md with frontmatter (see template below)
-3. Confirm: "Preferences saved to [path]"
-4. Continue to Step 1.2
-
-## EXTEND.md Template
-
-```yaml
----
-version: 1
-preferred_layout: [selected layout or null]
-preferred_style: [selected style or null]
-preferred_aspect: [landscape|portrait|square|null]
-language: [selected language or null]
-custom_styles: []
----
-```
+1. Save each answer via `laoli recipe set --skill laoli-infographic --key <key> --value <value>`
+2. Confirm: "Preferences saved"
+3. Continue to Step 1.2
 
 ## Modifying Preferences Later
 
-Users can edit EXTEND.md directly or trigger setup again:
-- Delete EXTEND.md to re-trigger setup
-- Edit YAML frontmatter for quick changes
-- Full schema: `references/config/preferences-schema.md`
+Users can modify config anytime via:
+
+```bash
+laoli recipe set --skill laoli-infographic --key <key> --value <value>
+laoli recipe get --skill laoli-infographic
+laoli recipe schema --skill laoli-infographic
+```

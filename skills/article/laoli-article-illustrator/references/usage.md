@@ -47,7 +47,7 @@
 | `illustrations-subdir` | `{article-dir}/illustrations/` |
 | `independent` | `illustrations/{topic-slug}/` |
 
-Configure in EXTEND.md: `default_output_dir: illustrations-subdir`
+Configure via: `laoli recipe set --skill laoli-article-illustrator --key default_output_dir --value illustrations-subdir`
 
 ## Examples
 

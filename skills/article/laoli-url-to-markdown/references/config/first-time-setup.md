@@ -7,19 +7,19 @@ description: First-time setup flow for laoli-url-to-markdown preferences
 
 ## Overview
 
-When no EXTEND.md is found, guide user through preference setup.
+When no config exists for this skill, guide user through preference setup.
 
 **BLOCKING OPERATION**: This setup MUST complete before ANY other workflow steps. Do NOT:
 - Start converting URLs
 - Ask about URLs or output paths
 - Proceed to any conversion
 
-ONLY ask the questions in this setup flow, save EXTEND.md, then continue.
+ONLY ask the questions below, then save via `laoli recipe set`, then continue.
 
 ## Setup Flow
 
 ```
-No EXTEND.md found
+No config found
         |
         v
 +---------------------+
@@ -28,9 +28,9 @@ No EXTEND.md found
 +---------------------+
         |
         v
-+---------------------+
-| Create EXTEND.md    |
-+---------------------+
++-----------------------------+
+| Save via laoli recipe set   |
++-----------------------------+
         |
         v
     Continue conversion
@@ -68,39 +68,18 @@ options:
 
 Note: User will likely choose "Other" to type a custom path.
 
-### Question 3: Save Location
-
-```yaml
-header: "Save"
-question: "Where to save preferences?"
-options:
-  - label: "User (Recommended)"
-    description: "~/.laoli-recipe/ (all projects)"
-  - label: "Project"
-    description: ".laoli-recipe/ (this project only)"
-```
-
-## Save Locations
-
-| Choice | Path | Scope |
-|--------|------|-------|
-| User | `~/.laoli-recipe/laoli-url-to-markdown/EXTEND.md` | All projects |
-| Project | `.laoli-recipe/laoli-url-to-markdown/EXTEND.md` | Current project |
-
 ## After Setup
 
-1. Create directory if needed
-2. Write EXTEND.md
-3. Confirm: "Preferences saved to [path]"
-4. Continue with conversion using saved preferences
-
-## EXTEND.md Template
-
-```md
-download_media: [ask/1/0]
-default_output_dir: [path or empty]
-```
+1. Save each answer via `laoli recipe set --skill laoli-url-to-markdown --key <key> --value <value>`
+2. Confirm: "Preferences saved"
+3. Continue with conversion using saved preferences
 
 ## Modifying Preferences Later
 
-Users can edit EXTEND.md directly or delete it to trigger setup again.
+Users can modify config anytime via:
+
+```bash
+laoli recipe set --skill laoli-url-to-markdown --key <key> --value <value>
+laoli recipe get --skill laoli-url-to-markdown
+laoli recipe schema --skill laoli-url-to-markdown
+```

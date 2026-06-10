@@ -41,7 +41,7 @@ Every technical concept MUST be visualized as a metaphor:
 
 ### Character Roles (Required)
 
-**DEFAULT: Use Doraemon characters** unless user explicitly specifies `--characters` or has character presets in EXTEND.md.
+**DEFAULT: Use Doraemon characters** unless user explicitly specifies `--characters` or has character presets in config.
 
 | Role | Default Character | Visual | Traits |
 |------|-------------------|--------|--------|
@@ -52,7 +52,7 @@ Every technical concept MUST be visualized as a metaphor:
 
 **IMPORTANT**: These Doraemon characters ARE the default for ohmsha preset. Generate character definitions using these exact characters unless user requests otherwise.
 
-To use custom characters: `--characters "Student:小明,Mentor:教授"` or define in EXTEND.md.
+To use custom characters: `--characters "Student:小明,Mentor:教授"` or define via `laoli recipe set --skill laoli-comic --key character_presets`. Available character_presets field in `laoli recipe schema --skill laoli-comic`.
 
 ### Page Title Convention
 

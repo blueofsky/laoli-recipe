@@ -32,58 +32,17 @@ dependencies:
 |--------|---------|
 | `scripts/main.ts` | CLI entry point for URL fetching |
 
-## Preferences (EXTEND.md)
+## Configuration
 
-Use Bash to check EXTEND.md existence (priority order):
+Configuration is managed via `laoli recipe` CLI:
 
 ```bash
-# Check project-level first
-test -f .laoli-recipe/laoli-url-to-markdown/EXTEND.md && echo "project"
-
-# Then user-level (cross-platform: $HOME works on macOS/Linux/WSL)
-test -f "$HOME/.laoli-recipe/laoli-url-to-markdown/EXTEND.md" && echo "user"
+laoli recipe get --skill laoli-url-to-markdown         # Get current config
+laoli recipe set --skill laoli-url-to-markdown --key download_media --value ask
+laoli recipe set --skill laoli-url-to-markdown --key default_output_dir --value ""
+laoli recipe schema --skill laoli-url-to-markdown       # View config schema
 ```
 
-┌────────────────────────────────────────────────────────┬───────────────────┐
-│                          Path                          │     Location      │
-├────────────────────────────────────────────────────────┼───────────────────┤
-│ .laoli-recipe/laoli-url-to-markdown/EXTEND.md     │ Project directory │
-├────────────────────────────────────────────────────────┼───────────────────┤
-│ $HOME/.laoli-recipe/laoli-url-to-markdown/EXTEND.md │ User home         │
-└────────────────────────────────────────────────────────┴───────────────────┘
-
-┌───────────┬───────────────────────────────────────────────────────────────────────────┐
-│  Result   │                                  Action                                   │
-├───────────┼───────────────────────────────────────────────────────────────────────────┤
-│ Found     │ Read, parse, apply settings                                               │
-├───────────┼───────────────────────────────────────────────────────────────────────────┤
-│ Not found │ **MUST** use `AskUserQuestion` to ask the user for their preferences before creating EXTEND.md. **NEVER** create EXTEND.md with defaults without asking. This is a **BLOCKING** operation — do NOT proceed with any conversion until setup is complete. │
-└───────────┴───────────────────────────────────────────────────────────────────────────┘
-
-**EXTEND.md Supports**: Download media by default | Default output directory | Default capture mode | Timeout settings
-
-### First-Time Setup (BLOCKING)
-
-**CRITICAL**: When EXTEND.md is not found, you **MUST use `AskUserQuestion`** to ask the user for their preferences before creating EXTEND.md. **NEVER** create EXTEND.md with defaults without asking. This is a **BLOCKING** operation — do NOT proceed with any conversion until setup is complete.
-
-Use `AskUserQuestion` with ALL questions in ONE call:
-
-**Question 1** — header: "Media", question: "How to handle images and videos in pages?"
-- "Ask each time (Recommended)" — After saving markdown, ask whether to download media
-- "Always download" — Always download media to local assets/ and videos/ directories
-- "Never download" — Keep original remote URLs in markdown
-
-**Question 2** — header: "Output", question: "Default output directory?"
-- "common/reference (Recommended)" — Save to ./common/reference/{slug}/
-- (User may choose "Other" to type a custom path)
-
-**Question 3** — header: "Save", question: "Where to save preferences?"
-- "User (Recommended)" — ~/.laoli-recipe/ (all projects)
-- "Project" — .laoli-recipe/ (this project only)
-
-After user answers, create EXTEND.md at the chosen location, confirm "Preferences saved to [path]", then continue.
-
-Full reference: [references/config/first-time-setup.md](references/config/first-time-setup.md)
 
 ### Supported Keys
 
@@ -94,7 +53,7 @@ Full reference: [references/config/first-time-setup.md](references/config/first-
 
 **Value priority**:
 1. CLI arguments (`--download-media`, `-o`)
-2. EXTEND.md
+2. Config (`laoli recipe get --skill laoli-url-to-markdown`)
 3. Skill defaults
 
 ## Features
@@ -176,7 +135,7 @@ When `--download-media` is enabled:
 
 ## Media Download Workflow
 
-Based on `download_media` setting in EXTEND.md:
+Based on `download_media` config setting:
 
 | Setting | Behavior |
 |---------|----------|
@@ -207,4 +166,4 @@ Based on `download_media` setting in EXTEND.md:
 
 ## Extension Support
 
-Custom configurations via EXTEND.md. See **Preferences** section for paths and supported options.
+Custom configurations via `laoli recipe` CLI. See **Configuration** section for commands.

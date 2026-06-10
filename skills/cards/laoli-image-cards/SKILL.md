@@ -41,7 +41,7 @@ Respond in the user's language across questions, progress, errors, and completio
 | `--palette <name>` | Color override: macaron / warm / neon |
 | `--preset <name>` | Style + layout + optional palette shorthand (see Presets below; per-preset prompt fragments in `references/style-presets.md`) |
 | `--ref <files...>` | Reference images applied to image 1 as the series anchor |
-| `--yes` | Non-interactive: skip all confirmations, use EXTEND.md or built-in defaults, auto-confirm recommended plan (Path A) |
+| `--yes` | Non-interactive: skip all confirmations, use config or built-in defaults, auto-confirm recommended plan (Path A) |
 
 ## Dimensions
 
@@ -255,35 +255,30 @@ image-cards/{topic-slug}/
 ## Workflow
 
 ```
-- [ ] Step 0: Load EXTEND.md ⛔ BLOCKING (MUST execute in all modes)
+- [ ] Step 0: Load config ⛔ BLOCKING (MUST execute in all modes)
 - [ ] Step 1: Analyze content → analysis.md
 - [ ] Step 2: Smart Confirm ⚠️ REQUIRED (Path A / B / C)
 - [ ] Step 3: Generate images
 - [ ] Step 4: Completion report
 ```
 
-### Step 0: Load EXTEND.md ⛔ BLOCKING
+### Step 0: Load Configuration ⛔ BLOCKING
 
 ⚠️ **MUST execute in ALL modes** (interactive, CLI, agent, --yes, etc.).
 
-This is a hard prerequisite — never skip this step or proceed to Step 1 without completing EXTEND.md check.
+This is a hard prerequisite — never skip this step or proceed to Step 1 without completing config check.
 
-**Check EXTEND.md existence**:
+Load configuration via CLI:
 
-| Path | Scope |
-|------|-------|
-| `.laoli-recipe/laoli-image-cards/EXTEND.md` | Project |
-| `$HOME/.laoli-recipe/laoli-image-cards/EXTEND.md` | User home |
+```bash
+laoli recipe get --skill laoli-image-cards
+```
 
-**Decision table**:
+If no config exists, run an interactive setup using `AskUserQuestion` from `references/config/first-time-setup.md`, then save via `laoli recipe set`.
 
-| Status | Action |
-|--------|--------|
-| Found | Read, parse, print summary (style/layout/watermark/language), continue to Step 1 |
-| Not found + `--yes` flag | Skip setup, use built-in defaults, continue to Step 1 |
-| Not found (all other cases) | **⛔ MUST run first-time setup** (see `references/config/first-time-setup.md`) → create EXTEND.md → confirm → continue to Step 1 |
+Under `--yes` flag: skip setup, use built-in defaults, continue to Step 1.
 
-**EXTEND.md keys**: watermark, preferred style/layout, custom style definitions, language preference. Schema: `references/config/preferences-schema.md`.
+**Config keys**: watermark, preferred style/layout, custom style definitions, language preference.
 
 ### Step 1: Analyze Content → `analysis.md`
 
@@ -339,7 +334,7 @@ For each image (cover, content, ending):
    - Backup rule applies to the PNG files.
 3. Report progress after each image.
 
-**Watermark** (if enabled in EXTEND.md): append to the generation prompt:
+**Watermark** (if enabled in config): append to the generation prompt:
 
 ```
 Include a subtle watermark "[content]" positioned at [position].
@@ -348,7 +343,7 @@ The watermark should be legible but not distracting.
 
 See `references/config/watermark-guide.md`.
 
-**Backend selection**: per the Image Generation Tools rule at the top — use whatever is available, ask once if multiple, before any generation. Under `--yes`, use the EXTEND.md preference and fall back to the first available backend. Prompt files MUST exist before invoking any backend.
+**Backend selection**: per the Image Generation Tools rule at the top — use whatever is available, ask once if multiple, before any generation. Under `--yes`, use the config preference and fall back to the first available backend. Prompt files MUST exist before invoking any backend.
 
 **Session ID** (if the backend supports `--sessionId`): use `cards-{topic-slug}-{timestamp}` for every image; combined with the ref chain this gives maximum consistency.
 
@@ -411,7 +406,6 @@ Always update the prompt file before regenerating — it's the source of truth a
 | `references/workflows/analysis-framework.md` | Content analysis framework |
 | `references/workflows/outline-template.md` | Outline template with layout guide |
 | `references/workflows/prompt-assembly.md` | Prompt assembly guide |
-| `references/config/preferences-schema.md` | EXTEND.md schema |
 | `references/config/first-time-setup.md` | First-time setup flow |
 | `references/config/watermark-guide.md` | Watermark configuration |
 
@@ -421,4 +415,4 @@ Always update the prompt file before regenerating — it's the source of truth a
 - For sensitive public figures, use stylized cartoon alternatives.
 - Smart Confirm (Step 2) is required; Detailed mode adds a second confirmation (2a + 2c).
 
-Custom configurations via EXTEND.md. See Step 0 for paths and schema.
+Custom configurations via `laoli recipe` CLI. See Step 0 for commands.

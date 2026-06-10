@@ -67,6 +67,6 @@ Art Style × Tone combinations work best when matched appropriately:
 ## Priority Order
 
 1. User-specified options (`--art`, `--tone`, `--style`)
-2. EXTEND.md defaults
+2. Config defaults
 3. Content signal analysis → auto-selection
 4. Fallback: ligne-claire + neutral + standard
