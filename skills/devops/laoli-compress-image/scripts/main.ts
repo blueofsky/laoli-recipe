@@ -1,7 +1,8 @@
 #!/usr/bin/env bun
-import { existsSync, statSync, readdirSync, renameSync } from "fs";
+import { existsSync, statSync, readdirSync, renameSync, readFileSync } from "fs";
 import { basename, dirname, extname, join, resolve } from "path";
 import { spawn } from "child_process";
+import { homedir } from "os";
 
 type Compressor = "sips" | "cwebp" | "imagemagick" | "sharp";
 type Format = "webp" | "png" | "jpeg";
@@ -42,11 +43,13 @@ async function commandExists(cmd: string): Promise<boolean> {
 async function detectCompressor(format: Format): Promise<Compressor> {
   if (format === "webp") {
     if (await commandExists("cwebp")) return "cwebp";
-    if (await commandExists("convert")) return "imagemagick";
+    if (await commandExists("magick")) return "imagemagick";
+    if (process.platform !== "win32" && await commandExists("convert")) return "imagemagick";
     return "sharp";
   }
   if (process.platform === "darwin") return "sips";
-  if (await commandExists("convert")) return "imagemagick";
+  if (await commandExists("magick")) return "imagemagick";
+  if (process.platform !== "win32" && await commandExists("convert")) return "imagemagick";
   return "sharp";
 }
 
@@ -177,25 +180,63 @@ function collectFiles(dir: string, recursive: boolean): string[] {
   return files;
 }
 
+const RECIPES_FILE = join(homedir(), ".laoli", "recipes.json");
+
+function loadRecipeConfig(): Partial<Options> {
+  try {
+    if (!existsSync(RECIPES_FILE)) return {};
+    const content = readFileSync(RECIPES_FILE, "utf-8");
+    const recipes = JSON.parse(content);
+    const cfg = recipes.skills?.["laoli-compress-image"];
+    if (!cfg) return {};
+    return {
+      format: cfg.default_format || "webp",
+      quality: cfg.default_quality ?? 80,
+      keep: cfg.keep_original ?? true,
+    };
+  } catch {}
+  return {};
+}
+
 function printHelp() {
+  const cfg = loadRecipeConfig();
+  const fmt = cfg.format || "webp";
+  const q = cfg.quality ?? 80;
+  const k = cfg.keep ?? true;
+
   console.log(`Usage: bun main.ts <input> [options]
 
 Options:
   -o, --output <path>   Output path
-  -f, --format <fmt>    Output format: webp, png, jpeg (default: webp)
-  -q, --quality <n>     Quality 0-100 (default: 80)
+  -f, --format <fmt>    Output format: webp, png, jpeg (default: ${fmt})
+  -q, --quality <n>     Quality 0-100 (default: ${q})
   -k, --keep            Keep original file
   -r, --recursive       Process directories recursively
       --json            JSON output
-  -h, --help            Show help`);
+  -h, --help            Show help
+
+Default values from laoli recipe config (~/.laoli/recipes.json).`);
+
+  if (existsSync(RECIPES_FILE)) {
+    try {
+      const content = readFileSync(RECIPES_FILE, "utf-8");
+      const recipe = JSON.parse(content).skills?.["laoli-compress-image"];
+      if (recipe) {
+        console.log(`Current config:
+  format: ${recipe.default_format || "webp"}
+  quality: ${recipe.default_quality ?? 80}
+  keep: ${recipe.keep_original ?? true}`);
+      }
+    } catch {}
+  }
 }
 
-function parseArgs(args: string[]): Options | null {
+function parseArgs(args: string[], configDefaults: Partial<Options> = {}): Options | null {
   const opts: Options = {
     input: "",
-    format: "webp",
-    quality: 80,
-    keep: false,
+    format: configDefaults.format || "webp",
+    quality: configDefaults.quality ?? 80,
+    keep: configDefaults.keep ?? true,
     recursive: false,
     json: false,
   };
@@ -244,7 +285,11 @@ function parseArgs(args: string[]): Options | null {
 
 async function main() {
   const args = process.argv.slice(2);
-  const opts = parseArgs(args);
+
+  // Load config from laoli recipe (silent fallback to hardcoded defaults)
+  const config = loadRecipeConfig();
+
+  const opts = parseArgs(args, config);
   if (!opts) process.exit(1);
 
   const input = resolve(opts.input);
