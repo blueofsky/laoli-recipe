@@ -10,7 +10,7 @@
     "typecheck": "bun run tsc --noEmit",
     "url-to-markdown": "bun run skills/article/laoli-url-to-markdown/scripts/main.ts",
     "diagram": "bun run skills/chart/laoli-diagram/scripts/main.ts",
-    "compress-image": "bun run skills/devops/laoli-compress-image/scripts/main.ts",
+    "compress-image": "bun run skills/tools/laoli-compress-image/scripts/main.ts",
     "merge-to-pdf": "bun run skills/cards/laoli-comic/scripts/merge-to-pdf.ts"
   },
   "dependencies": {

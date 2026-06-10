@@ -44,20 +44,16 @@
       ]
     },
     {
-      "name": "devops",
-      "description": "开发运维",
-      "source": ".",
-      "category": "devops",
+      "name": "tools",
+      "description": "效率工具",
+      "source": "./skills/tools",
+      "category": "tools",
       "strict": false,      
-      "commands": [
-        "./.claude/commands/gitship.md",
-        "./.claude/commands/wpr.md"
-      ],
       "skills": [
-        "./skills/devops/laoli-compress-image", 
-        "./skills/devops/laoli-gc", 
-        "./skills/devops/laoli-picgo", 
-        "./skills/devops/laoli-sync"
+        "./laoli-compress-image", 
+        "./laoli-gc", 
+        "./laoli-picgo", 
+        "./laoli-sync"
       ]
     },
     {
