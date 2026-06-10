@@ -1,5 +1,11 @@
 import { JSDOM } from "jsdom";
-import { Defuddle } from "defuddle";
+import { Readability } from "@mozilla/readability";
+import TurndownService from "turndown";
+
+const turndown = new TurndownService({
+  headingStyle: "atx",
+  codeBlockStyle: "fenced",
+});
 
 export interface PageMetadata {
   url: string;
@@ -60,19 +66,43 @@ export const absolutizeUrlsScript = String.raw`
 
 export async function extractContent(html: string, url: string, pageTitle?: string): Promise<ConversionResult> {
   const dom = new JSDOM(html, { url });
-  const result = await new Defuddle(dom, url, { markdown: true });
+
+  // Try Readability for article extraction
+  let content: string | null = null;
+  let title = pageTitle || "";
+
+  try {
+    const reader = new Readability(dom.window.document);
+    const article = reader.parse();
+    if (article && article.content) {
+      title = article.title || title;
+      content = turndown.turndown(article.content);
+    }
+  } catch (e) {
+    // Readability failed, fall through
+  }
+
+  // Fallback: extract from body directly
+  if (!content) {
+    try {
+      const body = dom.window.document.body;
+      if (body) {
+        // Remove scripts, styles, nav, header, footer
+        for (const sel of ["script", "style", "nav", "header", "footer", "aside"]) {
+          body.querySelectorAll(sel).forEach(el => el.remove());
+        }
+        content = turndown.turndown(body.innerHTML);
+      }
+    } catch {}
+  }
 
   const metadata: PageMetadata = {
     url,
-    title: pageTitle || result.title || "",
-    description: result.description || undefined,
-    author: result.author || undefined,
-    published: result.published || undefined,
-    coverImage: result.image || undefined,
+    title: title || "",
     captured_at: new Date().toISOString(),
   };
 
-  return { metadata, markdown: result.content || "" };
+  return { metadata, markdown: content || "" };
 }
 
 export function formatMetadataYaml(meta: PageMetadata): string {
@@ -82,7 +112,6 @@ export function formatMetadataYaml(meta: PageMetadata): string {
   }
   lines.push("");
   if (meta.url) {
-    // 从 URL 推断来源，如为微信公众号则标注
     const u = new URL(meta.url);
     const source = u.hostname.includes("weixin.qq.com")
       ? "微信公众号"
