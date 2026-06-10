@@ -258,6 +258,7 @@ image-cards/{topic-slug}/
 - [ ] Step 0: Load config ⛔ BLOCKING (MUST execute in all modes)
 - [ ] Step 1: Analyze content → analysis.md
 - [ ] Step 2: Smart Confirm ⚠️ REQUIRED (Path A / B / C)
+- [ ] Step 2.5: Save preferences → `laoli recipe set`
 - [ ] Step 3: Generate images
 - [ ] Step 4: Completion report
 ```
@@ -318,6 +319,18 @@ Then ask one question — three paths. Verbatim option copy: `references/confirm
 - *Step 2a — Content understanding*: ask selling points (multi-select), audience, style preference (authentic / professional / aesthetic / auto), optional context. Update `analysis.md`.
 - *Step 2b — Three outline variants*: generate `outline-strategy-a.md`, `outline-strategy-b.md`, `outline-strategy-c.md`. Each MUST have a different structure AND a different recommended style — include `style_reason` in the frontmatter. Page-count heuristic: A ~4-6, B ~3-5, C ~3-4. Template: `references/workflows/outline-template.md`; frontmatter example in `references/confirmation.md`.
 - *Step 2c — Selection*: ask three questions (outline A/B/C/Combined, style, visual elements). Save selected/merged outline to `outline.md` → Step 3.
+
+### Step 2.5: Save Preferences
+
+After user confirms, save their choices to config:
+
+```bash
+laoli recipe set --skill laoli-image-cards --key preferred_style.name --value <style>
+laoli recipe set --skill laoli-image-cards --key preferred_layout --value <layout>
+laoli recipe set --skill laoli-image-cards --key language --value <language>
+```
+
+This ensures future runs use these preferences.
 
 ### Step 3: Generate Images
 

@@ -165,6 +165,7 @@ Comic Progress:
     - [ ] Not found → run first-time setup → MUST complete before other steps
   - [ ] 1.2 Analyze, 1.3 Check existing
 - [ ] Step 2: Confirmation - Style & options ⚠️ REQUIRED
+- [ ] Step 2.5: Save preferences → `laoli recipe set`
 - [ ] Step 3: Generate storyboard + characters
 - [ ] Step 4: Review outline (conditional)
 - [ ] Step 5: Generate prompts
@@ -187,7 +188,7 @@ Input → [Config] ─┬─ Found → Continue
                                                                               │
         ┌─────────────────────────────────────────────────────────────────────┘
         ↓
-Analyze → [Check Existing?] → [Confirm: Style + Reviews] → Storyboard → [Review?] → Prompts → [Review?] → Images → PDF → Complete
+Analyze → [Check Existing?] → [Confirm: Style + Reviews] → [Save Preferences] → Storyboard → [Review?] → Prompts → [Review?] → Images → PDF → Complete
 ```
 
 ### Step Summary
@@ -198,6 +199,7 @@ Analyze → [Check Existing?] → [Confirm: Style + Reviews] → Storyboard → 
 | 1.2 | Analyze content | `analysis.md` |
 | 1.3 | Check existing directory | Handle conflicts |
 | 2 | Confirm style, focus, audience, reviews | User preferences |
+| 2.5 | Save preferences via `laoli recipe set` | Config saved |
 | 3 | Generate storyboard + characters | `storyboard.md`, `characters/` |
 | 4 | Review outline (if requested) | User approval |
 | 5 | Generate prompts | `prompts/*.md` |
@@ -206,6 +208,19 @@ Analyze → [Check Existing?] → [Confirm: Style + Reviews] → Storyboard → 
 | 7.2 | Generate pages (with character ref if available) | `*.png` files |
 | 8 | Merge to PDF | `{slug}.pdf` |
 | 9 | Completion report | Summary |
+
+### Step 2.5: Save Preferences
+
+After user confirms style and options, save their choices to config:
+
+```bash
+laoli recipe set --skill laoli-comic --key preferred_art --value <art>
+laoli recipe set --skill laoli-comic --key preferred_tone --value <tone>
+laoli recipe set --skill laoli-comic --key preferred_layout --value <layout>
+laoli recipe set --skill laoli-comic --key language --value <language>
+```
+
+This ensures future runs use these preferences.
 
 ### Step 7: Image Generation
 

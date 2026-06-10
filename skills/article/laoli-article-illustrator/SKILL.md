@@ -126,6 +126,18 @@ Full procedures: [references/workflow.md](references/workflow.md#step-2-setup--a
 
 Full procedures: [references/workflow.md](references/workflow.md#step-3-confirm-settings-)
 
+### Step 3.5: Save Preferences
+
+After user confirms, save their choices to config:
+
+```bash
+laoli recipe set --skill laoli-article-illustrator --key preferred_style.name --value <style>
+laoli recipe set --skill laoli-article-illustrator --key preferred_palette --value <palette>
+laoli recipe set --skill laoli-article-illustrator --key language --value <language>
+```
+
+This ensures future runs use these preferences.
+
 ### Step 4: Generate Outline
 
 Save `outline.md` with frontmatter (type, density, style, palette, image_count) and entries:

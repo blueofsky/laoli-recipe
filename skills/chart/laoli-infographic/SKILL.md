@@ -245,6 +245,19 @@ Ask the user to confirm the questions below following the [User Input Tools](#us
 | 2 | **Aspect** | Always | Named presets (landscape/portrait/square) or custom W:H ratio (e.g., 3:4, 4:3, 2.35:1) |
 | 3 | **Language** | Only if source ≠ user language | Language for text content |
 
+### Step 4.5: Save Preferences
+
+After user confirms, save their choices to config:
+
+```bash
+laoli recipe set --skill laoli-infographic --key preferred_layout --value <layout>
+laoli recipe set --skill laoli-infographic --key preferred_style --value <style>
+laoli recipe set --skill laoli-infographic --key preferred_aspect --value <aspect>
+laoli recipe set --skill laoli-infographic --key language --value <language>
+```
+
+This ensures future runs use these preferences.
+
 ### Step 5: Generate Prompt → `prompts/infographic.md`
 
 **Backup rule**: If `prompts/infographic.md` exists, rename to `prompts/infographic-backup-YYYYMMDD-HHMMSS.md`

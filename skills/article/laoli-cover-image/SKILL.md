@@ -176,6 +176,21 @@ Full confirmation flow and question format: [references/workflow/confirm-options
 | `--quick` or `quick_mode: true` | 6 dimensions | Aspect ratio (unless `--aspect`) |
 | All 6 + `--aspect` specified | All | None |
 
+### Step 2.5: Save Preferences
+
+After user confirms, save their choices to config:
+
+```bash
+laoli recipe set --skill laoli-cover-image --key preferred_type --value <type>
+laoli recipe set --skill laoli-cover-image --key preferred_palette --value <palette>
+laoli recipe set --skill laoli-cover-image --key preferred_rendering --value <style>
+laoli recipe set --skill laoli-cover-image --key preferred_text --value <text>
+laoli recipe set --skill laoli-cover-image --key preferred_mood --value <mood>
+laoli recipe set --skill laoli-cover-image --key language --value <lang>
+```
+
+This ensures future runs use these preferences.
+
 ### Step 3: Create Prompt
 
 Save to `prompts/cover.md`. Template: [references/workflow/prompt-template.md](references/workflow/prompt-template.md)
