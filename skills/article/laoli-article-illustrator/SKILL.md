@@ -114,6 +114,8 @@ Full procedures: [references/workflow.md](references/workflow.md#step-2-setup--a
 
 ### Step 3: Confirm Settings ⚠️
 
+If config already has `preferred_style.name` set → **skip Q3-Q4**, use existing config for style/palette.
+
 **ONE AskUserQuestion, max 4 Qs. Q1-Q2 REQUIRED. Q3 required unless preset chosen.**
 
 | Q | Options |

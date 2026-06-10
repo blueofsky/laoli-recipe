@@ -167,6 +167,8 @@ See [reference-images.md](references/workflow/reference-images.md) for full deci
 
 ### Step 2: Confirm Options ⚠️
 
+If config already has preferred dimensions (type, palette, rendering, text, mood, font all set) → **skip confirmation**, use existing config, go to Step 3.
+
 **MUST use `AskUserQuestion` tool** to present options as interactive selection — NOT plain text tables. Present up to 4 questions in a single `AskUserQuestion` call (Type, Palette, Rendering, Font + Settings). Each question shows the recommended option first with reason, followed by alternatives.
 
 Full confirmation flow and question format: [references/workflow/confirm-options.md](references/workflow/confirm-options.md)

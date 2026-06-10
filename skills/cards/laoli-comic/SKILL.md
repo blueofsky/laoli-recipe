@@ -164,7 +164,7 @@ Comic Progress:
     - [ ] Found → load config → continue
     - [ ] Not found → run first-time setup → MUST complete before other steps
   - [ ] 1.2 Analyze, 1.3 Check existing
-- [ ] Step 2: Confirmation - Style & options ⚠️ REQUIRED
+- [ ] Step 2: Confirmation - Style & options ⚠️ REQUIRED (skip if config has preferred_art/tone/layout)
 - [ ] Step 2.5: Save preferences → `laoli recipe set`
 - [ ] Step 3: Generate storyboard + characters
 - [ ] Step 4: Review outline (conditional)
