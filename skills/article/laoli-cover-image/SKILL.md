@@ -167,7 +167,7 @@ See [reference-images.md](references/workflow/reference-images.md) for full deci
 
 ### Step 2: Confirm Options ⚠️
 
-If config already has preferred dimensions (type, palette, rendering, text, mood, font all set) → **skip confirmation**, use existing config, go to Step 3.
+If config has `preferred_type`, `preferred_palette`, and `preferred_rendering` set (not null) → **skip confirmation**, use existing config, go to Step 3. Language defaults to `null` (= auto-detect from content).
 
 **MUST use `AskUserQuestion` tool** to present options as interactive selection — NOT plain text tables. Present up to 4 questions in a single `AskUserQuestion` call (Type, Palette, Rendering, Font + Settings). Each question shows the recommended option first with reason, followed by alternatives.
 

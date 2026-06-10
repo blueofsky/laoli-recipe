@@ -114,7 +114,7 @@ Full procedures: [references/workflow.md](references/workflow.md#step-2-setup--a
 
 ### Step 3: Confirm Settings ⚠️
 
-If config already has `preferred_style.name` set → **skip Q3-Q4**, use existing config for style/palette.
+If config has `preferred_style.name` set (not null) → **skip Q3-Q4**, use existing config for style/palette. Language defaults to `null` (= auto-detect from article), so Q5 still asked when article language differs.
 
 **ONE AskUserQuestion, max 4 Qs. Q1-Q2 REQUIRED. Q3 required unless preset chosen.**
 

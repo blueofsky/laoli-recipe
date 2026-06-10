@@ -237,7 +237,7 @@ See `references/structured-content-template.md` for detailed format.
 
 ### Step 4: Confirm Options
 
-If config already has all preferences set (`preferred_layout`, `preferred_style`, `preferred_aspect` are non-null) → **skip confirmation**, use existing config, go to Step 5.
+If config has `preferred_layout` and `preferred_style` set (not null) → **skip confirmation**, use existing config, go to Step 5. `language` and `preferred_aspect` default to `null` (= auto-detect), so they don't block skipping.
 
 Otherwise, ask the user for missing preferences. Follow the [User Input Tools](#user-input-tools) rule at the top of this file (batch into one call if the runtime supports multiple questions; otherwise ask one at a time in priority order).
 

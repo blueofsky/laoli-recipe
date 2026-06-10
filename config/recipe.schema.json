@@ -35,7 +35,7 @@
               }
             },
             "preferred_palette": { "type": ["string", "null"], "default": null, "description": "调色板：macaron/warm/neon" },
-            "language": { "type": ["string", "null"], "default": null, "description": "输出语言：zh/en/ja/ko/auto" },
+            "language": { "type": ["string", "null"], "default": null, "description": "输出语言：zh/en/ja/ko/auto。null=自动检测" },
             "default_output_dir": { "type": ["string", "null"], "default": "imgs-subdir", "description": "输出目录：imgs-subdir/same-dir/illustrations-subdir/independent" },
             "custom_styles": {
               "type": "array",
@@ -80,13 +80,13 @@
               }
             },
             "preferred_type": { "type": ["string", "null"], "default": null, "description": "封面类型：hero/conceptual/typography/metaphor/scene/minimal" },
-            "preferred_palette": { "type": ["string", "null"], "default": null, "description": "调色板：warm/elegant/cool/dark/earth/vivid/pastel/mono/retro/duotone/macaron" },
-            "preferred_rendering": { "type": ["string", "null"], "default": null, "description": "渲染风格：flat-vector/hand-drawn/painterly/digital/pixel/chalk" },
-            "preferred_text": { "type": "string", "default": "title-only", "description": "文字密度：none/title-only/title-subtitle/text-rich" },
-            "preferred_mood": { "type": "string", "default": "balanced", "description": "情绪强度：subtle/balanced/bold" },
-            "default_aspect": { "type": "string", "default": "2.35:1", "description": "默认宽高比：2.35:1/16:9/1:1/3:4" },
-            "quick_mode": { "type": "boolean", "default": false, "description": "跳过确认步骤" },
-            "language": { "type": ["string", "null"], "default": null, "description": "输出语言：zh/en/ja/ko/auto" },
+        "preferred_palette": { "type": ["string", "null"], "default": null, "description": "调色板：warm/elegant/cool/dark/earth/vivid/pastel/mono/retro/duotone/macaron" },
+        "preferred_rendering": { "type": ["string", "null"], "default": null, "description": "渲染风格：flat-vector/hand-drawn/painterly/digital/pixel/chalk" },
+        "preferred_text": { "type": "string", "default": "title-only", "description": "文字密度：none/title-only/title-subtitle/text-rich" },
+        "preferred_mood": { "type": "string", "default": "balanced", "description": "情绪强度：subtle/balanced/bold" },
+        "default_aspect": { "type": "string", "default": "2.35:1", "description": "默认宽高比：2.35:1/16:9/1:1/3:4" },
+        "quick_mode": { "type": "boolean", "default": false, "description": "跳过确认步骤" },
+        "language": { "type": ["string", "null"], "default": null, "description": "输出语言：zh/en/ja/ko/auto。null=自动检测" },
             "default_output_dir": { "type": "string", "default": "independent", "description": "输出目录：independent/same-dir/imgs-subdir" },
             "custom_palettes": {
               "type": "array",
@@ -142,7 +142,7 @@
             "preferred_tone": { "type": ["string", "null"], "default": null, "description": "色调情绪：neutral/warm/dramatic/romantic/energetic/vintage/action" },
             "preferred_layout": { "type": ["string", "null"], "default": null, "description": "布局：standard/cinematic/dense/splash/mixed/webtoon/four-panel" },
             "preferred_aspect": { "type": ["string", "null"], "default": null, "description": "宽高比：3:4/4:3/16:9" },
-            "language": { "type": ["string", "null"], "default": null, "description": "输出语言：zh/en/ja/ko/auto" },
+            "language": { "type": ["string", "null"], "default": null, "description": "输出语言：zh/en/ja/ko/auto。null=自动检测" },
             "character_presets": {
               "type": "array",
               "default": [],
@@ -191,7 +191,7 @@
               }
             },
             "preferred_layout": { "type": ["string", "null"], "default": null, "description": "布局：sparse/balanced/dense/list/comparison/flow" },
-            "language": { "type": ["string", "null"], "default": null, "description": "输出语言：zh/en/ja/ko/auto" },
+            "language": { "type": ["string", "null"], "default": null, "description": "输出语言：zh/en/ja/ko/auto。null=自动检测" },
             "custom_styles": {
               "type": "array",
               "default": [],
@@ -227,7 +227,7 @@
             "preferred_layout": { "type": ["string", "null"], "default": null, "description": "预设布局（21种之一）" },
             "preferred_style": { "type": ["string", "null"], "default": null, "description": "预设样式（21种之一）" },
             "preferred_aspect": { "type": ["string", "null"], "default": null, "description": "默认宽高比：landscape/portrait/square/自定义W:H" },
-            "language": { "type": ["string", "null"], "default": null, "description": "输出语言：zh/en/ja/ko" },
+            "language": { "type": ["string", "null"], "default": null, "description": "输出语言：zh/en/ja/ko。null=自动检测" },
             "custom_styles": {
               "type": "array",
               "default": [],

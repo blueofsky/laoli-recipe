@@ -291,7 +291,7 @@ Under `--yes` flag: skip setup, use built-in defaults, continue to Step 1.
 
 ### Step 2: Smart Confirm ⚠️ REQUIRED
 
-If config already has `preferred_style.name` and `preferred_layout` set → **skip confirmation**, use existing config, go to Step 3.
+If config has `preferred_style.name` and `preferred_layout` set (not null) → **skip confirmation**, use existing config, go to Step 3. Language defaults to `null` (= auto-detect from content).
 
 Goal: present the auto-recommended plan and let the user confirm or adjust. Skip this step entirely under `--yes` — proceed with Path A using the analysis and any CLI overrides.
 
