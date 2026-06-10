@@ -217,5 +217,10 @@ __marimo__/
 # Obsidian
 .obsidian/
 
+# Bun
+node_modules/
+bun.lock
+*.tgz
+
 # Git
 .worktree

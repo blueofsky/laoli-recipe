@@ -10,14 +10,81 @@
   },
   "plugins": [
     {
-      "name": "recipe",
-      "description": "内容插件",
-      "source": "."
+      "name": "article",
+      "description": "文章处理",
+      "source": "./skills/article",
+      "category": "article",
+      "strict": false,
+      "skills": [
+        "./laoli-article-illustrator", 
+        "./laoli-cover-image",
+        "./laoli-url-to-markdown"
+      ]
     },
     {
-      "name": "creative",
-      "description": "AI 创意工具集",
-      "source": "."
+      "name": "cards",
+      "description": "卡片与漫画创作",
+      "source": "./skills/cards",
+      "category": "cards",
+      "strict": false,
+      "skills": [
+        "./laoli-comic", 
+        "./laoli-image-cards"
+      ]
+    },
+    {
+      "name": "chart",
+      "description": "图表创作",
+      "source": "./skills/chart",
+      "category": "chart",
+      "strict": false,
+      "skills": [
+        "./laoli-diagram", 
+        "./laoli-infographic"
+      ]
+    },
+    {
+      "name": "devops",
+      "description": "开发运维",
+      "source": ".",
+      "category": "devops",
+      "strict": false,      
+      "commands": [
+        "./.claude/commands/gitship.md",
+        "./.claude/commands/wpr.md"
+      ],
+      "skills": [
+        "./skills/devops/laoli-compress-image", 
+        "./skills/devops/laoli-gc", 
+        "./skills/devops/laoli-picgo", 
+        "./skills/devops/laoli-sync"
+      ]
+    },
+    {
+      "name": "media",
+      "description": "多媒体创作",
+      "source": "./skills/media",
+      "category": "media",
+      "strict": false,
+      "skills": [
+        "./laoli-asr", 
+        "./laoli-image", 
+        "./laoli-music", 
+        "./laoli-tts", 
+        "./laoli-video", 
+        "./laoli-vision"
+      ]
+    },
+    {
+      "name": "studio",
+      "description": "视频制作",
+      "source": ".",
+      "category": "studio",
+      "strict": false,
+      "agents": ["./.claude/agents/laoli-lens-reviewer.md"],
+      "skills": [
+        "./.claude/skills/laoli-lens"
+      ]
     }
   ]
 }

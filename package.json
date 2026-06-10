@@ -1,0 +1,27 @@
+{
+  "name": "laoli-recipe",
+  "version": "1.0.0",
+  "private": true,
+  "description": "老李的 AI Agent Skill 仓库 —— 给 AI 助手准备的烹饪配方",
+  "author": "Laoli",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "typecheck": "bun run tsc --noEmit",
+    "url-to-markdown": "bun run skills/article/laoli-url-to-markdown/scripts/main.ts",
+    "diagram": "bun run skills/chart/laoli-diagram/scripts/main.ts",
+    "compress-image": "bun run skills/devops/laoli-compress-image/scripts/main.ts",
+    "merge-to-pdf": "bun run skills/cards/laoli-comic/scripts/merge-to-pdf.ts"
+  },
+  "dependencies": {
+    "defuddle": "^0.1.0",
+    "jsdom": "^25.0.0",
+    "pdf-lib": "^1.17.1",
+    "sharp": "^0.33.0"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^28.0.3",
+    "bun-types": "^1.3.14",
+    "typescript": "^6.0.3"
+  }
+}

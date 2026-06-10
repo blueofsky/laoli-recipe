@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    // 运行环境
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+
+    // Bun 运行时特性
+    "types": ["bun-types"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+
+    // 模块解析
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+
+    // 严格模式
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+
+    // 路径
+    "rootDir": "."
+  },
+  "include": ["skills/**/*.ts", "src/types/**/*.d.ts"],
+  "exclude": ["node_modules"]
+}
