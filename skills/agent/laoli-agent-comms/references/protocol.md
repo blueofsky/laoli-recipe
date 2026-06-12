@@ -1,30 +1,72 @@
-# Agent 间通信协议 v1.1
+# Agent 间通信协议 v1.2
+
+## 自然语言触发
+
+对 Agent 说自然语言即可触发 skill：
+
+| 意图 | 自然语言示例 |
+|------|-------------|
+| 发送消息 | "参考 laoli-agent-comms skill，给workbuddy发消息：内容是XXX" |
+| 检查信箱 | "参考 laoli-agent-comms skill，检查一下有没有其他agent发来的消息" |
+| 检查特定 Agent | "参考 laoli-agent-comms skill，检查有没有hermes发来的消息" |
+
+**注意**：当前版本需要在指令中包含"参考 laoli-agent-comms skill"来确保 skill 加载。未来版本可能支持自动触发。
 
 ## 基本规则
 
 | 项目 | 规则 |
 |------|------|
-| **发送** | `memory_signal_send(from="<自己的agentId>", to="<对方agentId>", content="...")` |
+| **发送** | `memory_signal_send(from="<自己的agentId>", to="<对方agentId>", content="...", expiresInMs=<过期时间>)` |
 | **接收** | `memory_signal_read(agentId="<自己的agentId>")` |
 | **显示时间** | UTC 存储，显示时 +8 转北京时间 |
-| **清理策略** | 读完即删，信箱只保留未读消息 |
-| **轮询频率** | cron job 每 5 分钟检查一次（可配置） |
+| **清理策略** | 自动过期 + 手动 ack 后删除 |
+| **过期时间** | 必须设置，默认 24 小时 |
 
-## 示例：Hermes ↔ WorkBuddy
+## 过期时间规范
+
+**必须设置 expiresInMs**，否则消息永不过期，信箱会无限增长。
+
+**最长 1 小时**，按消息类型设置：
+
+| 消息类型 | expiresInMs | 说明 |
+|---------|-------------|------|
+| `info` | 3600000（1小时） | 一般通知 |
+| `request` | 3600000（1小时） | 等待响应 |
+| `response` | 3600000（1小时） | 终结消息 |
+| `alert` | 3600000（1小时） | 紧急通知 |
+
+## 消息类型
+
+| type | 含义 | 需要回复 | 说明 |
+|------|------|---------|------|
+| `info` | 一般通知 | ❌ | 单向通知，无需回复 |
+| `request` | 请求协助 | ✅ → response | 需要对方响应 |
+| `response` | 回复请求 | ❌ | 终结消息，不回复 |
+| `alert` | 紧急通知 | ❌ | 单向通知，高优先级 |
+
+**防止死循环规则**：
+- 只有 `request` 需要回复 `response`
+- `response`、`info`、`alert` 收到后直接处理并等待过期，**不回复**
+- 消息清理靠 `expiresInMs` 自动过期，**不需要 ack**
+
+## 请求-响应流程（两步）
 
 ```
-# Hermes 发送
-memory_signal_send(from="hermes", to="workbuddy", content="...")
-
-# WorkBuddy 接收
-memory_signal_read(agentId="workbuddy")
-
-# WorkBuddy 回复
-memory_signal_send(from="workbuddy", to="hermes", content="...")
-
-# Hermes 接收
-memory_signal_read(agentId="hermes")
+Agent A                          Agent B
+   │                                │
+   │── request(sig_001) ───────────→│
+   │                                │ 处理中...
+   │←── response(sig_002) ─────────│  ← replyTo: sig_001
+   │                                │
+   │ 双方等待 expiresInMs 自动过期    │
+   │                                │
+   ▼ 完成                            ▼ 完成
 ```
+
+**为什么不需要 ack？**
+- `readAt` 已经标记消息已读
+- `expiresInMs` 自动清理过期消息
+- 减少消息数量，降低复杂度
 
 ## 消息类型
 

@@ -1,7 +1,7 @@
 ---
 name: laoli-agent-memory
 description: 'AgentMemory 知识共享管理：多个 Agent 通过共享 AgentMemory 实例存储和检索知识。写入时必须打来源标签，搜索时不限来源。'
-version: 1.1.0
+version: 1.2.0
 license: MIT
 allowed-tools: MCP AgentMemory
 triggers:
@@ -25,22 +25,28 @@ triggers:
 
 ## 快速使用
 
-### 写入共享知识
+### 自然语言触发（推荐）
 
+对 Agent 说自然语言即可：
+
+**写入知识**：
+```
+参考 laoli-agent-memory skill，把这条经验存到AgentMemory：内容是"XXX"
+```
+
+**搜索知识**：
+```
+参考 laoli-agent-memory skill，搜索一下AgentMemory里有没有关于XXX的记录
+```
+
+### API 调用（Agent 内部使用）
+
+**写入共享知识**：
 ```
 memory_save(
   content="知识内容",
   type="workflow|fact|decision|bug|pattern",
   concepts="<自己的agentId>,标签1,标签2"  # 必须包含来源标签
-)
-```
-
-**示例**（Hermes 写入）：
-```
-memory_save(
-  content="Docker 部署流程：...",
-  type="workflow",
-  concepts="hermes,运维,部署"
 )
 ```
 
@@ -154,7 +160,7 @@ memory_save(content="新内容", type="fact", concepts="hermes,更新")
 
 | Skill | 职责 | 与本 skill 的关系 |
 |-------|------|------------------|
-| `laoli-agent-comms` | 实时通信（Signal API） | 互补：comms 管消息，memory 管知识 |
+| `laoli-agent-comms` | Agent 间消息收发（Signal API） | 互补：comms 管通信，memory 管知识 |
 | `hermes-maintenance` | 系统维护 | memory 可存储维护经验 |
 
 ## 参考文档
