@@ -152,8 +152,34 @@ Agent A                          Agent B
   "type": "info",
   "content": "消息内容",
   "expiresInMs": 3600000,
-  "threadId": "thr_xxx（可选，用于关联对话）"
+  "threadId": "thr_xxx（可选，用于关联对话）",
+  "replyTo": "sig_xxx（可选，回复某条消息）"
 }
+```
+
+## 消息内容规范
+
+| 项目 | 规范 |
+|------|------|
+| **格式** | 纯文本（string），可传 JSON、Markdown 等任意文本 |
+| **大小限制** | 无显式限制，建议不超过 10KB |
+| **内容要求** | 非空即可，会自动 trim |
+| **大内容** | 超过 10KB 用 Obsidian 知识库，Signal 只传简短消息 |
+
+**示例**：
+```
+# 简短通知
+content: "知识库已更新"
+
+# 请求协助
+content: "帮我查一下 Docker 部署步骤"
+
+# 回复
+content: "查到了：1) docker build 2) docker push 3) docker-compose up"
+
+# JSON 格式（可选）
+content: "{\"action\": \"update\", \"file\": \"config.yaml\"}"
+```
 ```
 
 ## 清理规则

@@ -68,6 +68,29 @@ Agent A                          Agent B
 - `expiresInMs` 自动清理过期消息
 - 减少消息数量，降低复杂度
 
+## 消息格式
+
+```json
+{
+  "from": "hermes",
+  "to": "workbuddy",
+  "type": "info",
+  "content": "消息内容",
+  "expiresInMs": 3600000,
+  "threadId": "thr_xxx（可选）",
+  "replyTo": "sig_xxx（可选）"
+}
+```
+
+## 消息内容规范
+
+| 项目 | 规范 |
+|------|------|
+| **格式** | 纯文本（string），可传 JSON、Markdown 等任意文本 |
+| **大小限制** | 无显式限制，建议不超过 10KB |
+| **内容要求** | 非空即可，会自动 trim |
+| **大内容** | 超过 10KB 用 Obsidian 知识库，Signal 只传简短消息 |
+
 ## 消息类型
 
 | type | 含义 | 优先级 | 举例 |
