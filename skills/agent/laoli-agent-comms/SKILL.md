@@ -1,38 +1,49 @@
 ---
 name: laoli-agent-comms
-description: 'Agent 间直接通信：通过 AgentMemory Signal API 实现 Hermes ↔ WorkBuddy 消息收发。支持手动触发和 cron 定时轮询，解决多 Agent 协作的信息同步问题。'
-version: 1.0.0
+description: 'Agent 间直接通信：通过 AgentMemory Signal API 实现任意两个 Agent 之间的消息收发。支持手动触发和 cron 定时轮询，解决多 Agent 协作的信息同步问题。'
+version: 1.1.0
 license: MIT
 allowed-tools: MCP AgentMemory
 triggers:
   - 收发消息
   - 检查信箱
   - agent通信
-  - workbuddy消息
   - 直连通信
+  - 信号通信
 ---
 
 # Agent 间直接通信
 
 ## Overview
 
-通过 AgentMemory 的 Signal API 实现 Hermes ↔ WorkBuddy 直接通信，无需人工中转。
+通过 AgentMemory 的 Signal API 实现任意两个 Agent 之间的直接通信，无需人工中转。
 
 **核心价值**：
 - 解决 cron task 不及时的问题（手动触发即时收发）
 - 支持定时轮询（cron 自动检查信箱）
 - 读完即删，无消息堆积
+- 通用设计，任何 Agent 都能接入
 
 ## 快速使用
 
-### 发送消息给 WorkBuddy
+### 发送消息
 
 ```
-memory_signal_send(from="hermes", to="workbuddy", content="你的消息")
+memory_signal_send(from="<自己的agentId>", to="<对方agentId>", content="你的消息")
+```
+
+**示例**（Hermes 发给 WorkBuddy）：
+```
+memory_signal_send(from="hermes", to="workbuddy", content="知识库已更新")
 ```
 
 ### 检查自己的信箱
 
+```
+memory_signal_read(agentId="<自己的agentId>", unreadOnly=true)
+```
+
+**示例**（Hermes 检查信箱）：
 ```
 memory_signal_read(agentId="hermes", unreadOnly=true)
 ```
@@ -57,9 +68,9 @@ memory_governance_delete(memoryIds="信号ID")
 | 场景 | 发送方 | 消息内容示例 |
 |------|--------|-------------|
 | 知识库更新 | 更新方 | `info`: "Obsidian 知识库新增了 XXX 文档" |
-| 发现 bug | 发现方 | `alert`: "Desktop update 后起不来，现象是..." |
-| 需要协助 | 请求方 | `request`: "帮我查一下回滚步骤" |
-| 回复协助 | 响应方 | `response`: "查到了：git reset --hard ..." |
+| 发现 bug | 发现方 | `alert`: "XXX 功能出问题，现象是..." |
+| 需要协助 | 请求方 | `request`: "帮我查一下 YYY" |
+| 回复协助 | 响应方 | `response`: "查到了：结果是..." |
 | 配置变更 | 变更方 | `info`: "XXX 配置已修改为 YYY" |
 | 定时状态 | 各自 | 每天一次 `info`: "当前状态正常/异常" |
 
@@ -68,9 +79,9 @@ memory_governance_delete(memoryIds="信号ID")
 ### 手动触发（即时收发）
 
 ```
-1. 检查信箱：memory_signal_read(agentId="hermes", unreadOnly=true)
+1. 检查信箱：memory_signal_read(agentId="<自己的agentId>", unreadOnly=true)
 2. 处理消息
-3. 回复（如需要）：memory_signal_send(from="hermes", to="workbuddy", content="...")
+3. 回复（如需要）：memory_signal_send(from="<自己>", to="<对方>", content="...")
 4. 清理：memory_governance_delete(memoryIds="...")
 ```
 

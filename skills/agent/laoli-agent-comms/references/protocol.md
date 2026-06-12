@@ -1,14 +1,30 @@
-# Hermes ↔ WorkBuddy 通信协议 v1.0
+# Agent 间通信协议 v1.1
 
 ## 基本规则
 
 | 项目 | 规则 |
 |------|------|
-| **发送** | `memory_signal_send(from="hermes", to="workbuddy", content="...")` |
-| **接收** | `memory_signal_read(agentId="hermes")` |
+| **发送** | `memory_signal_send(from="<自己的agentId>", to="<对方agentId>", content="...")` |
+| **接收** | `memory_signal_read(agentId="<自己的agentId>")` |
 | **显示时间** | UTC 存储，显示时 +8 转北京时间 |
 | **清理策略** | 读完即删，信箱只保留未读消息 |
 | **轮询频率** | cron job 每 5 分钟检查一次（可配置） |
+
+## 示例：Hermes ↔ WorkBuddy
+
+```
+# Hermes 发送
+memory_signal_send(from="hermes", to="workbuddy", content="...")
+
+# WorkBuddy 接收
+memory_signal_read(agentId="workbuddy")
+
+# WorkBuddy 回复
+memory_signal_send(from="workbuddy", to="hermes", content="...")
+
+# Hermes 接收
+memory_signal_read(agentId="hermes")
+```
 
 ## 消息类型
 
@@ -95,13 +111,13 @@ content: "每日状态：[系统名称] 正常/异常，[关键指标]"
 
 ## Cron Job 配置示例
 
-### Hermes 轮询 Job
+### 轮询 Job（通用模板）
 
 ```yaml
 schedule: "*/5 * * * *"  # 每 5 分钟
 prompt: |
-  检查 AgentMemory 信箱是否有 WorkBuddy 发来的消息：
-  1. 调用 memory_signal_read(agentId="hermes", unreadOnly=true)
+  检查 AgentMemory 信箱是否有其他 Agent 发来的消息：
+  1. 调用 memory_signal_read(agentId="<自己的agentId>", unreadOnly=true)
   2. 如果有消息，逐条处理：
      - type=info: 记录到知识库或通知用户
      - type=request: 执行请求并回复
@@ -112,9 +128,23 @@ deliver: local
 enabled_toolsets: ["mcp"]
 ```
 
-### WorkBuddy 轮询 Job
+### 使用示例
 
-同上，但 agentId 改为 "workbuddy"。
+**Hermes 的轮询 Job**：
+```yaml
+prompt: |
+  检查 AgentMemory 信箱是否有 WorkBuddy 发来的消息：
+  1. 调用 memory_signal_read(agentId="hermes", unreadOnly=true)
+  ...
+```
+
+**WorkBuddy 的轮询 Job**：
+```yaml
+prompt: |
+  检查 AgentMemory 信箱是否有 Hermes 发来的消息：
+  1. 调用 memory_signal_read(agentId="workbuddy", unreadOnly=true)
+  ...
+```
 
 ## 消息生命周期
 
