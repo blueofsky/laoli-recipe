@@ -23,7 +23,7 @@
 1. **解析参数** → 提取 `项目`、`步骤`、`skill_dir`、`projects_dir`
 2. **前置校验** → 校验项目目录存在，否则返回 `项目「{项目名}」不存在，请确认。`
 3. **加载步骤参考** → `read_file("{skill_dir}/references/steps/0N-xxx.md")`，获取本步输出物路径定义
-4. **加载检查清单** → `read_file("{skill_dir}/references/checklists/0N-xxx.md")`
+4. **加载检查清单** → `read_file("{skill_dir}/references/reviewer/checklists/0N-xxx.md")`
 5. **加载方案配置** → 读取 `{项目目录}/文案/创作底本.md` 开头区域的 `> 方案：<方案名>` 和 `> 亚型：<亚型名>`；如不存在方案名则由主管线在参数中补充，加载 `read_file("{skill_dir}/references/profiles/<方案名>.md")`。亚型用于方案铁律合规检查中区分执行强度。
 6. **确定评审级别** → 根据「附录：评审级别定义」映射表确定默认级别（可升级不可降级）
 7. **检查产出物** → 按清单逐项检查，输出物路径从步骤参考中读取。涉及视觉产出物时：
