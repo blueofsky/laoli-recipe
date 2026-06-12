@@ -8,7 +8,18 @@
     "description": "Skills shared by Laoli for improving daily work efficiency",
     "version": "1.0.0"
   },
-  "plugins": [
+  "plugins": [    
+    {
+      "name": "agent",
+      "description": "Agent 能力",
+      "source": "./skills/agent",
+      "category": "agent",
+      "strict": false,
+      "skills": [
+        "./laoli-agent-comms",
+        "./laoli-agent-memory"
+      ]
+    },
     {
       "name": "article",
       "description": "文章处理",
