@@ -14,6 +14,11 @@ triggers:
 
 > 核心理念：**台词与画面同步设计，视觉指令为AI生图模型定制，不是导演笔记。**
 
+## 参考文档
+
+- `references/docs/creative-proposal-format.md` — 创意方案输入格式（第1步的用户输入规范）
+- `references/models/agnes-reference.md` — Agnes 模型已知陷阱和 API 限制
+
 ## 制作管线
 
 ### 管线总览

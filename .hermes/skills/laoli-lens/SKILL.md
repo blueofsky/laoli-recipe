@@ -17,6 +17,7 @@ triggers:
 ## 参考文档
 
 - `references/docs/creative-proposal-format.md` — 创意方案输入格式（第1步的用户输入规范）
+- `references/models/agnes-reference.md` — Agnes 模型已知陷阱和 API 限制
 
 ## 制作管线
 
