@@ -136,6 +136,5 @@ laoli image batch --batchfile batch.json --jobs 3
 
 - 支持格式：PNG、JPG、WebP
 - 参考图片支持本地文件和 URL
-- **Agnes RPM限制**：每分钟20次免费请求。批量生成或连续调用时需控制频率，避免503错误。建议每张图片生成间隔至少3秒
 - 日志文件位于 `~/.laoli/logs/`
 - 所有命令支持 `--help` 查看最新参数

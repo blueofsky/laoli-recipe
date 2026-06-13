@@ -156,7 +156,6 @@ laoli video batch --batchfile tasks.json
 ## 注意事项
 
 - agnes 免费但生成慢，建议 `--poll-interval 8000` 避免限流
-- **Agnes RPM限制**：每分钟20次免费请求。批量生成或连续调用时需控制频率，避免503错误。建议每段视频生成间隔至少3秒
 - **视频时长**：必须显式指定，不能使用默认值5秒
   - 逐个生成模式：使用 `--seconds` 参数
   - batch模式：在batch.json中指定 `"seconds": 10` 字段
