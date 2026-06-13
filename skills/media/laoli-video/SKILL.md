@@ -88,10 +88,12 @@ batch.json 内容：
     "provider": "agnes",
     "size": "9:16",
     "seconds": 9,
-    "ref": "../图片/scene01_警报响起.jpg"
+    "ref": ["../图片/scene01_警报响起.jpg"]
   }
 ]
 ```
+
+**`ref` 字段**：字符串或数组格式均可，推荐数组格式。
 
 **路径规则**：
 - `output`：相对于当前工作目录（即 `素材/视频/`），所以写 `原始/xxx.mp4` → 最终路径 `素材/视频/原始/xxx.mp4`
@@ -103,7 +105,7 @@ batch.json 内容：
 |------|------|
 | `--batchfile <path>` | JSON 批处理文件路径（必填） |
 | `--async` | 仅提交，不等待下载 |
-| `--jobs <count>` | 并发数（默认 2） |
+| `--jobs <count>` | 下载并发数（默认 2），提交阶段始终串行 |
 
 ### 其他管理命令
 
@@ -158,6 +160,6 @@ laoli video batch --batchfile tasks.json
 - **视频时长**：必须显式指定，不能使用默认值5秒
   - 逐个生成模式：使用 `--seconds` 参数
   - batch模式：在batch.json中指定 `"seconds": 10` 字段
-- 参考图片本地文件自动通过 picgo 上传图床
+- 参考图片本地文件自动上传图床
 - 日志文件位于 `~/.laoli/logs/`
 - 所有命令支持 `--help` 查看最新参数
