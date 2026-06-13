@@ -8,7 +8,14 @@
 - **角色参考图**：按每个分镜的「角色参考图」字段列表，传入对应的 `素材/定妆/ref_角色ID.jpg`（定妆照步骤生成），提升角色一致性
 - **输出**：`素材/图片/scene0x_描述.jpg`，按命名规范生成
 
-**批量模式说明**：多个分镜 agent 会走 `laoli-image` 的 batch 模式。请将  `batch.json` 生成到 `素材/图片/` 目录下（而非项目根目录），使得 `promptFiles`、`image`、`ref` 等路径自然以 `素材/图片/` 为基准解析。如果分镜脚本配套的 prompt 文件较多，也请放在 `素材/图片/` 中。
+**批量生成**：
+- 优先使用逐个生成模式（`laoli image generate`）
+- 若使用batch模式，详见 `laoli-image` skill 的 batch.json 格式说明
+- batch.json中的路径是相对于batch.json所在目录的
+
+**图片分析**（生成完成后）：
+- 使用 `laoli vision --input <图片路径> --prompt "描述图片内容，检查是否与分镜Prompt匹配"` 分析关键分镜图
+- 检查项：内容与Prompt匹配、角色外貌与定妆照一致、构图合理、无明显瑕疵
 
 ---
 ## ✅ 本步完成条件

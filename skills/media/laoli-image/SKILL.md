@@ -70,6 +70,42 @@ laoli image batch --batchfile <path> [options]
 | `--json` | JSON 输出 |
 | `--quiet` | 抑制非必要输出 |
 
+**batch.json 格式**（JSON 数组，非对象）：
+
+**必须从 batch.json 所在目录运行命令**，output 和 ref 路径都相对于当前工作目录。
+
+假设项目结构如下：
+```
+项目/彼得罗夫事件/素材/图片/batch.json    ← batch.json 放在这里
+项目/彼得罗夫事件/素材/定妆/ref_PET01.jpg ← 参考图片在这里
+项目/彼得罗夫事件/素材/图片/scene01_警报响起.jpg  ← 输出到这里
+```
+
+运行命令：
+```bash
+cd 项目/彼得罗夫事件/素材/图片
+laoli image batch --batchfile batch.json
+```
+
+batch.json 内容：
+```json
+[
+  {
+    "prompt": "Soviet military officer staring at radar screen...",
+    "output": "scene01_警报响起.jpg",
+    "provider": "agnes",
+    "aspect-ratio": "9:16",
+    "ref": ["../定妆/ref_PET01.jpg"]
+  }
+]
+```
+
+**路径规则**：
+- `output`：相对于当前工作目录（即 `素材/图片/`），所以直接写文件名 → 最终路径 `素材/图片/xxx.jpg`
+- `ref`：相对于当前工作目录，向上一级用 `../`，所以 `../定妆/ref_PET01.jpg` → 最终路径 `素材/定妆/ref_PET01.jpg`
+- **不要用绝对路径**，用相对路径即可
+- **必须 cd 到 batch.json 所在目录再运行命令**
+
 ## 工作流程
 
 1. **确认需求**：文生图还是图生图？是否批量？
@@ -98,5 +134,6 @@ laoli image batch --batchfile batch.json --jobs 3
 
 - 支持格式：PNG、JPG、WebP
 - 参考图片支持本地文件（自动上传图床）和 URL
+- **Agnes RPM限制**：每分钟20次免费请求。批量生成或连续调用时需控制频率，避免503错误。建议每张图片生成间隔至少3秒
 - 日志文件位于 `~/.laoli/logs/`
 - 所有命令支持 `--help` 查看最新参数

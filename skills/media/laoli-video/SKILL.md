@@ -62,13 +62,42 @@ laoli video generate --prompt "<描述>" --output <path> [options]
 laoli video batch --batchfile <path>
 ```
 
-batchfile JSON 格式：
+batchfile JSON 格式（JSON 数组，非对象）：
+
+**必须从 batch.json 所在目录运行命令**，output 和 ref 路径都相对于当前工作目录。
+
+假设项目结构如下：
+```
+项目/彼得罗夫事件/素材/视频/batch.json    ← batch.json 放在这里
+项目/彼得罗夫事件/素材/图片/scene01_警报响起.jpg ← 参考图片在这里
+项目/彼得罗夫事件/素材/视频/原始/scene01_警报响起.mp4 ← 输出到这里
+```
+
+运行命令：
+```bash
+cd 项目/彼得罗夫事件/素材/视频
+laoli video batch --batchfile batch.json
+```
+
+batch.json 内容：
 ```json
 [
-  { "prompt": "a cat", "output": "cat.mp4" },
-  { "prompt": "a dog", "output": "dog.mp4", "provider": "tuzi" }
+  {
+    "prompt": "Slow zoom in on radar screen...",
+    "output": "原始/scene01_警报响起.mp4",
+    "provider": "agnes",
+    "size": "9:16",
+    "seconds": 9,
+    "ref": "../图片/scene01_警报响起.jpg"
+  }
 ]
 ```
+
+**路径规则**：
+- `output`：相对于当前工作目录（即 `素材/视频/`），所以写 `原始/xxx.mp4` → 最终路径 `素材/视频/原始/xxx.mp4`
+- `ref`：相对于当前工作目录，向上一级用 `../`，所以 `../图片/xxx.jpg` → 最终路径 `素材/图片/xxx.jpg`
+- **不要用绝对路径**，用相对路径即可
+- **必须 cd 到 batch.json 所在目录再运行命令**
 
 | 选项 | 说明 |
 |------|------|
@@ -125,6 +154,10 @@ laoli video batch --batchfile tasks.json
 ## 注意事项
 
 - agnes 免费但生成慢，建议 `--poll-interval 8000` 避免限流
+- **Agnes RPM限制**：每分钟20次免费请求。批量生成或连续调用时需控制频率，避免503错误。建议每段视频生成间隔至少3秒
+- **视频时长**：必须显式指定，不能使用默认值5秒
+  - 逐个生成模式：使用 `--seconds` 参数
+  - batch模式：在batch.json中指定 `"seconds": 10` 字段
 - 参考图片本地文件自动通过 picgo 上传图床
 - 日志文件位于 `~/.laoli/logs/`
 - 所有命令支持 `--help` 查看最新参数
