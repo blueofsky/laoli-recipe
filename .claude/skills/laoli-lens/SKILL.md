@@ -10,7 +10,7 @@ triggers:
   - lens
 ---
 
-> ⚠️ **禁止修改本文件**：SKILL.md 是 skill 的定义文件，执行过程中不得添加、删除或修改任何内容。如有经验或陷阱需要记录，请写入独立文件（如 `references/lessons-learned.md`），不要修改 SKILL.md。
+> ⚠️ **禁止修改本文件**：SKILL.md 是 skill 的定义文件，执行过程中不得添加、删除或修改任何内容。如有经验或陷阱需要记录，请写入 `references/docs/lessons-learned.md`，不要修改 SKILL.md。
 
 # 短视频制作
 

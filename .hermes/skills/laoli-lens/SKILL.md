@@ -10,7 +10,18 @@ triggers:
   - lens
 ---
 
-> ⚠️ **禁止修改本文件**：SKILL.md 是 skill 的定义文件，执行过程中不得添加、删除或修改任何内容。如有经验或陷阱需要记录，请写入独立文件（如 `references/lessons-learned.md`），不要修改 SKILL.md。
+> ⚠️ **禁止修改本文件**：SKILL.md 是 skill 的定义文件，执行过程中不得添加、删除或修改任何内容。如有经验或陷阱需要记录，请写入 `references/docs/lessons-learned.md`，不要修改 SKILL.md。
+
+## 制作规范速查（agnes 模型）
+
+| 参数 | 规范值 |
+|------|--------|
+| 分镜段数 | 6-12段 |
+| 台词总字数 | 300-600字 |
+| 单分镜台词 | 20-80字 |
+| 单镜头生成时长 | 3-15秒 |
+| 画面比例 | 9:16竖版 |
+| 预估配音时长公式 | `台词字数 / (3.5 × speed)`，向上取整，3-15秒 |
 
 # 短视频制作
 
@@ -20,6 +31,7 @@ triggers:
 
 - `references/docs/creative-proposal-format.md` — 创意方案输入格式（第1步的用户输入规范）
 - `references/models/agnes-reference.md` — Agnes 模型已知陷阱和 API 限制
+- `references/lessons-learned.md` — 执行过程中的关键发现和修正
 
 ## 制作管线
 
