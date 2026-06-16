@@ -53,7 +53,7 @@ memory_signal_send(
   from="<自己的agentId>",
   to="<对方agentId>",
   content="你的消息",
-  expiresInMs=86400000  # 默认24小时，见下方建议
+  expiresInMs=3600000  # 最长1小时，见下方建议
 )
 ```
 
@@ -69,10 +69,7 @@ memory_signal_send(
 memory_signal_read(agentId="<自己的agentId>", unreadOnly=true)
 ```
 
-**删除已读消息**：
-```
-memory_governance_delete(memoryIds="信号ID")
-```
+**消息清理**：通过 `expiresInMs` 自动过期，无需手动删除。
 
 ## 消息类型
 
@@ -203,6 +200,14 @@ content: "{\"action\": \"update\", \"file\": \"config.yaml\"}"
 - ❌ 不通过信号传大文件（用 Obsidian 知识库）
 - ❌ 不通过信号做复杂操作（直接说需求，让对方执行）
 - ❌ 不自动执行对方发来的危险命令（需人工确认）
+
+## 常见陷阱
+
+**同一 Agent 的不同 Session 间通信**：
+- 发送消息时**必须指定 `to` 参数**，否则消息可能无法被目标 Session 读取
+- 示例：从 hermes Session A 发消息给 hermes Session B，必须用 `memory_signal_send(from="hermes", to="hermes", ...)`
+- 接收方用 `memory_signal_read(agentId="hermes", unreadOnly=true)` 读取
+- 如果不指定 `to`，消息会进入广播模式，可能不被正确投递
 
 ## 时区处理
 
