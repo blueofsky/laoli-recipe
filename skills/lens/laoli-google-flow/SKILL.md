@@ -16,7 +16,8 @@ description: >
 | 任务 | 推荐工具 | 理由 |
 |------|---------|------|
 | 图片创意迭代 | Flow (Nano Banana Pro) | 实时调整，免费 |
-| 图片批量生成 | API (agnes/tuzi) | 自动化，可编程 |
+| 图片批量变体 | Flow Agent（一次4张） | 快速对比不同视觉方向 |
+| 图片批量生成 | API (agnes/tuzi) | 全自动化，可编程 |
 | 视频多素材融合/迭代编辑 | Flow (Omni Flash) | 对话式编辑，角色一致 |
 | 视频最高画质关键镜头 | Flow (Veo 3.1) | 4K级画质 |
 | 视频批量/自定义时长 | API (agnes) | 3-15秒可调，免费 |
@@ -32,8 +33,8 @@ description: >
 ### 关键技巧
 
 1. **具体特征前置**：AI 可能不认识特定型号，需要把外形特征写死
-   - ❌ `"A Concorde aircraft"`
-   - ✅ `"An Airbus Concorde supersonic aircraft with needle-like fuselage, delta wings, droop nose"`
+   - ❌ `"A supersonic aircraft"`
+   - ✅ `"A supersonic aircraft with needle-like fuselage, delta wings, droop nose"`
 
 2. **风格后缀统一**：同一项目的所有图片使用相同风格后缀，确保视觉一致性
 
@@ -170,11 +171,77 @@ description: >
 
 ## 实用技巧
 
+### Flow Agent 模式
+
+Flow 有两种输入模式：
+- **Agent 模式（默认）：** 对话式，可以头脑风暴、优化 prompt、获取创意建议
+- **标准模式：** 关闭 Agent 后回到传统 prompt 输入框
+
+Agent 模式下可设置全局指令（Agent Instructions），保持整个项目的行为一致性。会话（Sessions）按项目保存，可重命名/删除。
+
+**Agent Instructions 设置方法：** 展开 Agent 面板 → 点击设置图标 → 输入全局指令。示例：
+- `"Always use cinematic lighting and 16:9 aspect ratio"`
+- `"Keep character consistent across all scenes"`
+- `"Generate in dark, moody tones with high contrast"`
+
+#### Agent 批量生成能力
+
+Agent 模式支持批量操作，不需要逐个 prompt：
+
+| 能力 | 用法 | 示例 |
+|------|------|------|
+| **批量图片** | 一次生成 4 张变体 | `"Generate 4 variations of a futuristic cityscape"` |
+| **场景变体** | 一个 prompt 生成 16 个场景变体 | `"Create 16 scene variations for this storyboard"` |
+| **批量编辑** | 同时修改多个素材 | `"Apply warm color grade to all clips tagged DAYTIME"` |
+| **批量整理** | 自动重命名/标签/归档 | `"Rename all clips with scene number prefix"` |
+| **分镜生成** | 从脚本自动生成分镜网格 | `"Generate a visual storyboard grid from this script"` |
+
+**⚠️ 注意事项：**
+- 内容审核严格，敏感题材（暴力/儿童/政治）可能触发失败，失败仍扣 credits
+- Agent 没有项目记忆，每次对话需要重新描述风格/偏好
+- 批量生成变体不等于解决了"选哪个"的问题，筛选成本仍在
+
+> 深度教程：[The Complete Guide to Flow Agent Mode](https://www.youtube.com/watch?v=YrIMD9KJC14) — 覆盖 brainstorming、storyboards、references、batch generation、batch edit、agent instructions
+
 ### Flow 界面操作
 
 - **切换模型：** 视频生成界面顶部有模型选择器，可切换 Omni Flash / Veo 3.1
 - **上传参考图：** 在输入框旁的附件按钮上传，支持图片/视频/音频
 - **对话式编辑：** 生成视频后，直接在输入框输入修改指令即可，不需要重新开始
+- **多选操作：** Shift + 点击 或 拖框选择多个生成物，可批量创建 Collection
+- **错误提示：** 出现 "Pending" 或错误卡片时，看右上角系统通知
+
+### 图片编辑功能
+
+| 功能 | 说明 |
+|------|------|
+| **历史版本** | 编辑不丢失原图，History 面板可回溯所有版本和对应 prompt |
+| **局部编辑** | 用 Nano Banana 模型选区编辑（框选区域 + 文字指令） |
+| **保存版本** | 历史版本需手动保存到项目，才能在后续 prompt 中作为 @引用 |
+
+### 视频编辑功能
+
+**⚠️ Extend 限制：** 只能 Extend Veo 生成的视频，Omni Flash 生成的不能 Extend。规划时长时要注意这点。
+
+| 功能 | 说明 |
+|------|------|
+| **Extend** | 在已有视频末尾追加片段 |
+| **Scenebuilder** | 多个片段拼接成场景序列，可拖拽重排 |
+| **保存帧** | 从视频中提取单帧保存为图片，可作为 ingredient/start/end frame |
+| **Refine** | 用 Omni Flash 模型对已有视频做对话式精修（上传视频 → 输入修改指令） |
+
+### @ 引用系统
+
+Flow 的 `@` 语法是统一的引用入口：
+
+```
+@me                           → 引用自己（数字分身）
+@CharacterName                → 引用已创建的角色
+@Voice: Andrew                → 引用语音（需先上传 voice reference）
+@image                        → 引用项目中的图片（拖入 prompt 或 @图片名）
+```
+
+**最佳实践：** 角色参考图用纯色/干净背景拍摄，效果最好。
 
 ### 从 Flow 共享链接提取视频 URL
 
