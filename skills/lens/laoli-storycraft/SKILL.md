@@ -44,7 +44,9 @@ description: >
 - ❌ 不需要逐帧写IMAGE PROMPT（Google Flow手动迭代替代）
 
 **后续流程**：
-创意方案.md → laoli-google-flow生成图片 → laoli-google-flow生成视频 → laoli-minimax-web生成配音 → 剪映剪辑
+创意方案.md → laoli-google-flow生成图片 → laoli-minimax-web生成配音 → laoli-google-flow生成视频 → 剪映剪辑
+
+> ⚠️ 顺序很重要：先出图片确认视觉方向，再写配音文稿+录音，最后根据配音时长生成视频。配音决定视频时长，视频跟着配音走。
 
 ## 选题筛选标准（故事性优先）
 
