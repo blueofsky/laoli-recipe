@@ -161,33 +161,8 @@ description: >
 **[最终标题]**
 ```
 
-## 发布文稿模板
-
-```markdown
-# 发布材料草稿
-
-## 1. 发布标题
-**标题**：[6-16字]
-
-## 2. 视频描述
-[emoji] [钩子文案]
-
-**资料来源**: [历史/事实依据]
-
-[热门标签]
-```
-
 ## 适用场景
 
 - 历史短视频创意研发
 - 纪录片叙事设计
 - 任何需要"讲好一个故事"的内容创作
-
-## 与其他skill的关系
-
-| Skill | 关系 | 说明 |
-|-------|------|------|
-| laoli-lens | 旧版完整管线 | laoli-lens是12步线性管线，laoli-storycraft是其中创意部分的独立版本。新项目优先用storycraft |
-| laoli-lens-project | 项目管理 | storycraft负责创意，lens-project负责目录和流程管理 |
-| laoli-google-flow | 生成经验 | storycraft产出创意方案后，用google-flow的经验指导图片/视频生成 |
-| laoli-minimax-web | 配音经验 | storycraft产出配音文稿后，用minimax-web的经验指导配音生成 |
