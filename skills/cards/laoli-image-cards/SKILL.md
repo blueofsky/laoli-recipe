@@ -390,6 +390,15 @@ See `references/config/watermark-guide.md`.
 
 **Session ID** (if the backend supports `--sessionId`): use `cards-{topic-slug}-{timestamp}` for every image; combined with the ref chain this gives maximum consistency.
 
+**Provider quirks** (session-tested):
+
+| Provider + Model | 9:16 比例处理 | 备注 |
+|-----------------|--------------|------|
+| tuzi + gpt-image-2 | `--aspect-ratio` 被忽略（生成 1:1），必须用 `--size 1024x1792` | `laoli image generate --provider tuzi --model gpt-image-2 --size 1024x1792 --prompt "..." --output file.jpeg` |
+| agnes | 原生支持 `--aspect-ratio 9:16` | 直接传参即可 |
+
+**中文文字准确度**：`cinematic-story` + GPT Image 2 ≈ 80%；其他风格/模型几乎 100% 出错，需后期叠加。
+
 ### Step 4: Completion Report
 
 ```
