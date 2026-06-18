@@ -79,8 +79,10 @@
       "strict": false,
       "skills": [
         "./laoli-asr", 
+        "./laoli-audio",
         "./laoli-image", 
         "./laoli-music", 
+        "./laoli-music-search",
         "./laoli-tts", 
         "./laoli-video", 
         "./laoli-vision"

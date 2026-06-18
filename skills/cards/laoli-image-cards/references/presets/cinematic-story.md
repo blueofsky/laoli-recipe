@@ -72,7 +72,7 @@ decorations:
 
 ## Fixed 8-Card Structure
 
-This style enforces a rigid 8-card template (not variable count). Each slot has defined purpose, composition pattern, and text position.
+This style uses an 8-card template by default (recommended). Each slot has defined purpose, composition pattern, and text position. Can flexibly adjust to 7-9 cards based on content — merge slots 04+05 if素材较薄.
 
 | Slot | Name | Purpose | Composition Pattern | Light | Text Position |
 |------|------|---------|-------------------|-------|---------------|

@@ -29,7 +29,7 @@ hint: |
   Strategies: A Story-Driven (warm) | B Information-Dense (notion) | C Visual-First (screen-print)
   Styles: cute / fresh / warm / bold / minimal / retro / pop / notion / chalkboard / study-notes / screen-print / sketch-notes / cinematic-story
   Presets: knowledge-card / checklist / tutorial / poster / cinematic-series / hand-drawn-edu / ...
-  Note: cinematic-story enforces 8 cards, 9:16 ratio, fixed per-slot layout — ideal for historical narrative series
+  Note: cinematic-story recommends 8 cards (7-9 flexible), 9:16 ratio, per-slot layout — ideal for historical narrative series
 ```
 
 ```yaml

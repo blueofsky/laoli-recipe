@@ -56,7 +56,7 @@ Three independent knobs combine freely:
 
 Example: `--style notion --layout dense` makes an intellectual knowledge card; add `--palette macaron` to soften the colors without changing notion's rendering rules. A `--preset` is a shorthand for style + layout (+ optional palette).
 
-**Special case**: `cinematic-story` enforces a fixed 9:16 ratio, dark photorealistic film-still aesthetic, and a rigid 8-card structure (cover → context → protagonist → turning-point → climax → aftermath → quote → transition). Layout/palette flags are accepted but overridden by per-slot rules. See `references/presets/cinematic-story.md` for full specification.
+**Special case**: `cinematic-story` enforces a fixed 9:16 ratio, dark photorealistic film-still aesthetic, and a recommended 8-card structure (cover → context → protagonist → turning-point → climax → aftermath → quote → transition), flexibly adjustable to 7-9 cards. Layout/palette flags are accepted but overridden by per-slot rules. See `references/presets/cinematic-story.md` for full specification.
 
 **Palette behavior**: no `--palette` → style's built-in colors; `--palette <name>` → overrides colors only, rendering rules unchanged. Some styles declare a `default_palette` (e.g., sketch-notes defaults to macaron).
 
@@ -211,7 +211,7 @@ Compatibility scores (✓✓ highly recommended, ✓ works well, ✗ avoid). Use
 | sketch-notes | ✓  | ✓✓ | ✓✓ | ✓✓ | ✓  | ✓✓ | ✓✓ | ✓  |
 | cinematic-story | ✓✓ | — | — | — | ✓✓ | — | — | — |
 
-**`cinematic-story` note**: uses fixed per-slot layout (cover/quote = sparse, aftermath = comparison). Layout flag is accepted but overridden. Dashes (—) mean not applicable — this style's structure is position-defined, not user-selectable.
+**`cinematic-story` note**: uses per-slot layout (cover/quote = sparse, aftermath = comparison). Layout flag is accepted but overridden. Dashes (—) mean not applicable — this style's structure is position-defined, not user-selectable. Card count recommended 8, flexibly 7-9.
 
 ## Outline Strategies
 
@@ -422,7 +422,7 @@ Images: N total
 | Content (middle) | Core value per image | `balanced` / `dense` / `list` / `comparison` / `flow` |
 | Ending (last) | CTA / summary | `sparse` or `balanced` |
 
-**`cinematic-story` exception**: This style uses a **fixed 8-card structure** that does not follow the above general rules:
+**`cinematic-story` exception**: This style uses a **recommended 8-card structure** (flexibly 7-9) that does not follow the above general rules:
 
 | Slot | Name | Layout | Text Position |
 |------|------|--------|---------------|
