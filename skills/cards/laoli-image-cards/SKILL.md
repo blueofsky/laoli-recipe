@@ -41,6 +41,7 @@ Respond in the user's language across questions, progress, errors, and completio
 | `--palette <name>` | Color override: macaron / warm / neon |
 | `--preset <name>` | Style + layout + optional palette shorthand (see Presets below; per-preset prompt fragments in `references/style-presets.md`) |
 | `--ref <files...>` | Reference images applied to image 1 as the series anchor |
+| `--output-dir <path>` | Override output base directory (default: `image-cards/{topic-slug}/`; when set, outputs directly to `<path>/`, skipping the topic-slug subfolder) |
 | `--yes` | Non-interactive: skip all confirmations, use config or built-in defaults, auto-confirm recommended plan (Path A) |
 
 ## Dimensions
@@ -237,6 +238,8 @@ At generation time: verify files exist. Image 1 with `usage: direct` + backend t
 
 ## File Layout
 
+**Default** (no `--output-dir`):
+
 ```
 image-cards/{topic-slug}/
 ├── source-{slug}.{ext}
@@ -246,6 +249,15 @@ image-cards/{topic-slug}/
 ├── prompts/NN-{type}-{slug}.md
 ├── NN-{type}-{slug}.png
 └── refs/                          # only if --ref used
+```
+
+**With `--output-dir <path>`**: the base directory becomes `<path>/` instead of `image-cards/{topic-slug}/`. Internal structure (`prompts/`, `refs/`, etc.) remains the same. No topic-slug subfolder is created.
+
+```
+<output-dir>/
+├── source-{slug}.{ext}
+├── ...
+└── NN-{type}-{slug}.png
 ```
 
 **Slug**: 2-4 words, kebab-case. "AI 工具推荐" → `ai-tools-recommend`. On collision, append `-YYYYMMDD-HHMMSS`.
@@ -279,7 +291,7 @@ If no config exists, run an interactive setup using `AskUserQuestion` from `refe
 
 Under `--yes` flag: skip setup, use built-in defaults, continue to Step 1.
 
-**Config keys**: watermark, preferred style/layout, custom style definitions, language preference.
+**Config keys**: watermark, preferred style/layout, custom style definitions, language preference, default output-dir.
 
 ### Step 1: Analyze Content → `analysis.md`
 
@@ -338,14 +350,16 @@ This ensures future runs use these preferences.
 
 With confirmed outline + style + layout + palette:
 
+**Output base**: `--output-dir <path>` if provided, otherwise `image-cards/{topic-slug}/`. All files (prompts, images, analysis, refs) are written under this base directory.
+
 **Visual consistency — image-1 anchor chain**: character / mascot / color rendering drifts between calls unless you anchor them. Generate image 1 (cover) first WITHOUT `--ref`, then pass image 1 as `--ref` to every subsequent image. This is the single most important consistency trick for this skill — don't skip it even if the backend also supports a session ID.
 
 For each image (cover, content, ending):
 
-1. Write the full prompt to `prompts/NN-{type}-{slug}.md` in the user's preferred language (backup rule applies).
+1. Write the full prompt to `<base>/prompts/NN-{type}-{slug}.md` in the user's preferred language (backup rule applies).
 2. Generate:
    - **Image 1**: no `--ref` (establishes the anchor).
-   - **Images 2+**: add `--ref <path-to-image-01.png>`.
+   - **Images 2+**: add `--ref <base>/NN-01-{type}-{slug}.png`.
    - Backup rule applies to the PNG files.
 3. Report progress after each image.
 
@@ -373,7 +387,7 @@ Strategy: [A/B/C/Combined]
 Style: [name]
 Palette: [name or "default"]
 Layout: [name or "varies"]
-Location: [directory]
+Location: [output-dir or image-cards/{topic-slug}/]
 Images: N total
 
 ✓ analysis.md
