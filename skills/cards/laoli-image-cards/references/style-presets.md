@@ -27,6 +27,8 @@
 | `poster` | `screen-print` | `sparse` | |
 | `editorial` | `screen-print` | `balanced` | |
 | `cinematic` | `screen-print` | `comparison` | |
+| `cinematic-series` | `cinematic-story` | `fixed-8` | |
+| `cinematic-cover` | `cinematic-story` | `sparse` | |
 | `hand-drawn-edu` | `sketch-notes` | `flow` | `macaron` |
 | `sketch-card` | `sketch-notes` | `dense` | `macaron` |
 | `sketch-summary` | `sketch-notes` | `balanced` | `macaron` |

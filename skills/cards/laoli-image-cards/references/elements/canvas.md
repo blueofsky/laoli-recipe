@@ -7,10 +7,11 @@ Core canvas specifications and layout grids for Xiaohongshu infographics.
 | Name | Ratio | Pixels | Note |
 |------|-------|--------|------|
 | portrait-3-4 | 3:4 | 1242×1660 | Highest traffic on XHS (recommended) |
+| portrait-9-16 | 9:16 | 1080×1920 | Cinematic story / video-style vertical (used by `cinematic-story`) |
 | square | 1:1 | 1242×1242 | Second recommended |
 | portrait-2-3 | 2:3 | 1242×1863 | Taller format |
 
-**Default**: portrait-3-4 for maximum engagement.
+**Default**: portrait-3-4 for maximum engagement. Use **portrait-9-16** when style is `cinematic-story`.
 
 ## Safe Zones
 

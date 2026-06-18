@@ -1,6 +1,6 @@
 ---
 name: laoli-image-cards
-description: 图片卡片系列生成器，Generates infographic image card series with 12 visual styles, 8 layouts, and 3 color palettes. Breaks content into 1-10 cartoon-style image cards optimized for social media engagement. Use when user mentions "小红书图片", "小红书种草", "小绿书", "微信图文", "微信贴图", "image cards", "图片卡片", or wants social media infographic series.
+description: 图片卡片系列生成器，Generates infographic image card series with 13 visual styles, 8 layouts, and 3 color palettes. Breaks content into 1-10 cartoon-style image cards optimized for social media engagement. Use when user mentions "小红书图片", "小红书种草", "小绿书", "微信图文", "微信贴图", "image cards", "图片卡片", or wants social media infographic series.
 version: 1.56.1
 ---
 
@@ -50,15 +50,17 @@ Three independent knobs combine freely:
 
 | Dimension | Controls | Options |
 |-----------|----------|---------|
-| **Style** | Visual aesthetics (lines, decorations, rendering) | 12 styles (see Styles below) |
+| **Style** | Visual aesthetics (lines, decorations, rendering) | 13 styles (see Styles below) |
 | **Layout** | Information structure (density, arrangement) | 8 layouts (see Layouts below) |
 | **Palette** (optional) | Color override, replaces the style's default colors | macaron / warm / neon (see Palettes below) |
 
 Example: `--style notion --layout dense` makes an intellectual knowledge card; add `--palette macaron` to soften the colors without changing notion's rendering rules. A `--preset` is a shorthand for style + layout (+ optional palette).
 
+**Special case**: `cinematic-story` enforces a fixed 9:16 ratio, dark photorealistic film-still aesthetic, and a rigid 8-card structure (cover → context → protagonist → turning-point → climax → aftermath → quote → transition). Layout/palette flags are accepted but overridden by per-slot rules. See `references/presets/cinematic-story.md` for full specification.
+
 **Palette behavior**: no `--palette` → style's built-in colors; `--palette <name>` → overrides colors only, rendering rules unchanged. Some styles declare a `default_palette` (e.g., sketch-notes defaults to macaron).
 
-## Styles (12)
+## Styles (13)
 
 | Style | Description |
 |-------|-------------|
@@ -74,6 +76,7 @@ Example: `--style notion --layout dense` makes an intellectual knowledge card; a
 | `study-notes` | Realistic handwritten photo style, blue pen + red annotations + yellow highlighter |
 | `screen-print` | Bold poster art, halftone textures, limited colors, symbolic storytelling |
 | `sketch-notes` | Hand-drawn educational infographic, macaron pastels on warm cream, wobble lines |
+| `cinematic-story` | Cinematic photorealistic film-still, dark moody atmosphere, bold text overlay, 8-card fixed structure for historical narrative series |
 
 Per-style specifications: `references/presets/<style>.md`.
 
@@ -122,6 +125,13 @@ Quick-start combos, grouped by scenario. Use `--preset <name>` or recommend duri
 | `hand-drawn-edu` | sketch-notes | flow | 手绘教程、流程图解 |
 | `sketch-card` | sketch-notes | dense | 手绘知识卡 |
 | `sketch-summary` | sketch-notes | balanced | 手绘总结、图文笔记 |
+
+**Narrative & Storytelling**:
+
+| Preset | Style | Layout | Best For |
+|--------|-------|--------|----------|
+| `cinematic-series` | cinematic-story | fixed-8 | 历史叙事系列（一个瞬间）、人物传记故事 |
+| `cinematic-cover` | cinematic-story | sparse | 电影感封面（单独使用） |
 
 **Lifestyle & Sharing**:
 
@@ -179,6 +189,7 @@ Match content signals to the best combo. First row whose keywords appear wins; f
 | notes, handwritten, study guide, realistic | `study-notes` | dense/list/mindmap | `study-guide` |
 | movie, poster, opinion, editorial, cinematic | `screen-print` | sparse/comparison | `poster`, `editorial`, `cinematic` |
 | hand-drawn, infographic, workflow, 手绘, 图解 | `sketch-notes` | flow/balanced/dense | `hand-drawn-edu`, `sketch-card`, `sketch-summary` |
+| history, biography, 历史人物, 真实事件, 叙事, 一个瞬间 | `cinematic-story` | fixed-8 | `cinematic-series` |
 
 ## Style × Layout Matrix
 
@@ -198,6 +209,9 @@ Compatibility scores (✓✓ highly recommended, ✓ works well, ✗ avoid). Use
 | study-notes  | ✗  | ✓  | ✓✓ | ✓✓ | ✓  | ✓  | ✓✓ | ✓  |
 | screen-print | ✓✓ | ✓✓ | ✗  | ✓  | ✓✓ | ✓  | ✗  | ✓✓ |
 | sketch-notes | ✓  | ✓✓ | ✓✓ | ✓✓ | ✓  | ✓✓ | ✓✓ | ✓  |
+| cinematic-story | ✓✓ | — | — | — | ✓✓ | — | — | — |
+
+**`cinematic-story` note**: uses fixed per-slot layout (cover/quote = sparse, aftermath = comparison). Layout flag is accepted but overridden. Dashes (—) mean not applicable — this style's structure is position-defined, not user-selectable.
 
 ## Outline Strategies
 
@@ -303,7 +317,7 @@ Under `--yes` flag: skip setup, use built-in defaults, continue to Step 1.
 
 ### Step 2: Smart Confirm ⚠️ REQUIRED
 
-If config has `preferred_style.name` and `preferred_layout` set (not null) → **skip confirmation**, use existing config, go to Step 3. Language defaults to `null` (= auto-detect from content).
+**Config skip path**: If config has `preferred_style.name` and `preferred_layout` set (not null) → **skip confirmation**, use existing config. **Special case**: if `preferred_style` is `cinematic-story`, generate the outline using the **8-card fixed structure** (refer to `references/presets/cinematic-story.md` Per-Slot Prompt Template), NOT the A/B/C Outline Strategies — then save to `outline.md` → Step 3. Language defaults to `null` (= auto-detect from content).
 
 Goal: present the auto-recommended plan and let the user confirm or adjust. Skip this step entirely under `--yes` — proceed with Path A using the analysis and any CLI overrides.
 
@@ -324,14 +338,14 @@ Goal: present the auto-recommended plan and let the user confirm or adjust. Skip
 
 Then ask one question — three paths. Verbatim option copy: `references/confirmation.md`.
 
-**Path A — Quick confirm** (trust auto-recommendation): generate a single outline using the recommended strategy + style → save to `outline.md` → Step 3.
+**Path A — Quick confirm** (trust auto-recommendation): generate a single outline using the recommended strategy + style → save to `outline.md` → Step 3. **Exception**: if the confirmed style is `cinematic-story`, use the 8-card fixed structure instead of A/B/C strategies.
 
 **Path B — Customize**: ask five questions (strategy/style, layout, palette, count, optional notes) with the recommendation pre-filled — blanks keep the recommendation. Generate one outline with the user's choices → `outline.md` → Step 3. See `references/confirmation.md`.
 
 **Path C — Detailed mode**: two sub-confirmations.
 
 - *Step 2a — Content understanding*: ask selling points (multi-select), audience, style preference (authentic / professional / aesthetic / auto), optional context. Update `analysis.md`.
-- *Step 2b — Three outline variants*: generate `outline-strategy-a.md`, `outline-strategy-b.md`, `outline-strategy-c.md`. Each MUST have a different structure AND a different recommended style — include `style_reason` in the frontmatter. Page-count heuristic: A ~4-6, B ~3-5, C ~3-4. Template: `references/workflows/outline-template.md`; frontmatter example in `references/confirmation.md`.
+- *Step 2b — Three outline variants*: generate `outline-strategy-a.md`, `outline-strategy-b.md`, `outline-strategy-c.md`. Each MUST have a different structure AND a different recommended style — include `style_reason` in the frontmatter. Page-count heuristic: A ~4-6, B ~3-5, C ~3-4. Template: `references/workflows/outline-template.md`; frontmatter example in `references/confirmation.md`. **Exception**: if `cinematic-story` is among the recommended styles, the corresponding variant should use the 8-card fixed structure and state this explicitly in the outline.
 - *Step 2c — Selection*: ask three questions (outline A/B/C/Combined, style, visual elements). Save selected/merged outline to `outline.md` → Step 3.
 
 ### Step 2.5: Save Preferences
@@ -407,6 +421,21 @@ Images: N total
 | Cover (image 1) | Hook + visual impact | `sparse` |
 | Content (middle) | Core value per image | `balanced` / `dense` / `list` / `comparison` / `flow` |
 | Ending (last) | CTA / summary | `sparse` or `balanced` |
+
+**`cinematic-story` exception**: This style uses a **fixed 8-card structure** that does not follow the above general rules:
+
+| Slot | Name | Layout | Text Position |
+|------|------|--------|---------------|
+| 01 | Cover/Hook | sparse (symbol + title) | Upper-center |
+| 02 | Context | sparse (wide shot + fact) | Bottom |
+| 03 | Protagonist | sparse (portrait + caption) | Bottom |
+| 04 | Turning Point | sparse (action + stakes) | Bottom |
+| 05 | Climax | sparse (concept + text) | Center/bottom |
+| 06 | Aftermath | comparison (split-screen) | Bottom |
+| 07 | Quote/Punchline | sparse (minimalist) | Centered |
+| 08 | Transition/Series Card | sparse (3-part text) | Top/center/bottom |
+
+See `references/presets/cinematic-story.md` for full per-slot prompt templates and visual rules.
 
 For the style × layout compatibility matrix, see the **Style × Layout Matrix** above.
 
