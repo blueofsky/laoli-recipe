@@ -60,53 +60,84 @@ laoli image generate --prompt <text> --output <path> [options]
 ### 批量生成
 
 ```bash
-laoli image batch --batchfile <path> [options]
+laoli image batch (--param <json> | --batchfile <path>) [options]
 ```
 
 | 选项 | 说明 |
 |------|------|
-| `--batchfile <path>` | JSON 批处理文件路径（必填） |
+| `--param <json>` | 内联 JSON 数组（二选一） |
+| `--batchfile <path>` | JSON 批处理文件路径（二选一） |
 | `--jobs <count>` | 并发数（默认 4） |
 | `--json` | JSON 输出 |
 | `--quiet` | 抑制非必要输出 |
 
-**batch.json 格式**（JSON 数组，非对象）：
+**内联传参（`--param`）**：
 
-**必须从 batch.json 所在目录运行命令**，output 和 ref 路径都相对于当前工作目录。
-
-假设项目结构如下：
-```
-项目/彼得罗夫事件/素材/图片/batch.json    ← batch.json 放在这里
-项目/彼得罗夫事件/素材/定妆/ref_PET01.jpg ← 参考图片在这里
-项目/彼得罗夫事件/素材/图片/scene01_警报响起.jpg  ← 输出到这里
-```
-
-运行命令：
 ```bash
-cd 项目/彼得罗夫事件/素材/图片
+# 简洁场景：每个 item 只用 prompt + output
+laoli image batch --param '[{"prompt":"一只猫","output":"cat.png"},{"prompt":"一只狗","output":"dog.png"}]'
+
+# 图生图：每个 item 独立 ref
+laoli image batch --param '[{"prompt":"加个帽子","output":"with-hat.png","ref":"portrait.jpg"},{"prompt":"换个颜色","output":"recolor.png","ref":"portrait.jpg"}]'
+
+# 每个 item 可独立指定 provider、model、aspect-ratio 等
+laoli image batch --param '[{"prompt":"风景","output":"a.png","aspect-ratio":"16:9"},{"prompt":"人像","output":"b.png","aspect-ratio":"9:16","quality":"2k"}]'
+```
+
+**路径规则（两种传参方式通用）**：
+
+所有路径都基于**运行 `laoli` 命令时终端所在的目录**（可用 `pwd` 查看），而不是 batch.json 或脚本所在的目录。
+
+| 字段 | 解析方式 | 说明 |
+|------|---------|------|
+| `output` | 相对于**终端目录** | 建议直接写文件名，文件会生成在终端目录下 |
+| `ref` | 相对于**终端目录** | 支持 `../images/ref.png` 等相对路径，也支持绝对路径 |
+| `prompt_file` | 相对于 batch.json 所在目录 | ❌ **`--param` 模式下不支持**，仅 `--batchfile` 可用 |
+
+示例：假设终端在 `D:\项目\素材`，则：
+- `output: "cat.png"` → 生成到 `D:\项目\素材\cat.png`
+- `ref: "../refs/portrait.jpg"` → 指向 `D:\项目\refs\portrait.jpg`
+
+**`ref` 字段**：字符串或数组格式均可（如 `"../ref/image.jpg"` 或 `["../ref/image.jpg"]`）
+
+---
+
+**文件传参（`--batchfile`）示例**：
+
+终端在 `D:\项目\素材\图片` 下运行：
+
+```bash
+cd D:\项目\素材\图片
 laoli image batch --batchfile batch.json
 ```
 
-batch.json 内容：
+batch.json：
 ```json
 [
   {
     "prompt": "Soviet military officer staring at radar screen...",
-    "output": "scene01_警报响起.jpg",
-    "provider": "agnes",
-    "aspect-ratio": "9:16",
+    "output": "scene01.jpg",
     "ref": ["../定妆/ref_PET01.jpg"]
   }
 ]
 ```
 
-**路径规则**：
-- `output`：相对于当前工作目录（即 `素材/图片/`），所以直接写文件名 → 最终路径 `素材/图片/xxx.jpg`
-- `ref`：相对于当前工作目录，向上一级用 `../`，所以 `../定妆/ref_PET01.jpg` → 最终路径 `素材/定妆/ref_PET01.jpg`
-- **不要用绝对路径**，用相对路径即可
-- **必须 cd 到 batch.json 所在目录再运行命令**
+路径解析：
+- `output: "scene01.jpg"` → `D:\项目\素材\图片\scene01.jpg`
+- `ref: "../定妆/ref_PET01.jpg"` → `D:\项目\素材\定妆\ref_PET01.jpg`
 
-**`ref` 字段**：字符串或数组格式均可（如 `"../ref/image.jpg"` 或 `["../ref/image.jpg"]`）
+**内联传参（`--param`）示例**：
+
+终端在 `D:\项目` 下运行：
+
+```bash
+cd D:\项目
+laoli image batch --param '[{"prompt":"猫","output":"cat.png","ref":"refs/portrait.jpg"}]'
+```
+
+路径解析：
+- `output: "cat.png"` → `D:\项目\cat.png`
+- `ref: "refs/portrait.jpg"` → `D:\项目\refs\portrait.jpg`
 
 ## 工作流程
 
@@ -129,6 +160,8 @@ laoli image generate --prompt "Landscape" --aspect-ratio 16:9 --output landscape
 laoli image generate --prompt "Add a hat" --ref portrait.png --output portrait-hat.png
 
 # 批量生成
+
+laoli image batch --param '[{"prompt":"一只猫","output":"cat.png"},{"prompt":"一只狗","output":"dog.png"}]' --job 2
 laoli image batch --batchfile batch.json --jobs 3
 ```
 
