@@ -1,53 +1,10 @@
 #!/usr/bin/env bun
-import { existsSync, readFileSync } from "fs";
-import { join, resolve } from "path";
-import { homedir } from "os";
+import { getProvider, listProviders, ProviderName } from "./providers/index.js";
 
 // ─── Types ───────────────────────────────────────────────
 
-interface PlayableInfo {
-  listenId: string;
-  type: number;
-  title: string;
-  author: string;
-  cover: string;
-  duration: number;  // 毫秒
-  finderFeedId: string;
-  finderNonceId: string;
-}
-
-interface ListenItem {
-  playableInfo: PlayableInfo;
-  playable: number;
-  url: string;
-  lyric: string;
-  musicType: number;
-  recommendBuf: string;
-}
-
-interface BgmItem {
-  listenItem: ListenItem;
-}
-
-interface ApiResponse {
-  errCode?: number;
-  errMsg?: string;
-  data?: {
-    items?: BgmItem[];
-    lastBuffer?: string;
-    totalCount?: number;
-  };
-  // Legacy format fallback
-  result?: {
-    bgm_list?: any[];
-    has_more?: boolean;
-    last_buffer?: string;
-  };
-  ret?: number;
-  err_msg?: string;
-}
-
 interface Options {
+  provider: ProviderName;
   query?: string;
   type: 103 | 104;
   page: number;
@@ -55,108 +12,6 @@ interface Options {
   cookie?: string;
   json: boolean;
   instrumental: boolean;
-}
-
-// ─── Constants ───────────────────────────────────────────
-
-const API_URL =
-  "https://channels.weixin.qq.com/micro/content/cgi-bin/mmfinderassistant-bin/post/get_bgm_list";
-const AID = "fef6168d-6454-4ea4-9a1d-ce8e476a51a7";
-const PAGE_URL =
-  "https%3A%2F%2Fchannels.weixin.qq.com%2Fmicro%2Fcontent%2Fpost%2FfinderNewLifeCreate";
-const FINDER_UIN = "709044937";
-const FINDER_ID =
-  "v2_060000231003b20faec8c6e0881bc6d7cf0deb37b077a754641aaced3d6b09f0763f20858e28@finder";
-
-const COOKIE_FILE = join(
-  process.env.HOME || process.env.USERPROFILE || ".",
-  ".output",
-  "bgm_cookie.txt"
-);
-
-// ─── Cookie Loading ──────────────────────────────────────
-
-function loadCookie(explicit?: string): string | undefined {
-  if (explicit) return explicit;
-
-  // Try multiple locations
-  const candidates = [
-    COOKIE_FILE,
-    join(process.cwd(), ".output", "bgm_cookie.txt"),
-    join(process.cwd(), "bgm_cookie.txt"),
-  ];
-
-  for (const path of candidates) {
-    if (existsSync(path)) {
-      try {
-        const content = readFileSync(path, "utf-8").trim();
-        if (content) return content;
-      } catch {}
-    }
-  }
-
-  return undefined;
-}
-
-// ─── API Call ────────────────────────────────────────────
-
-function generateUuid(): string {
-  // Simple UUID v4 generator
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
-  });
-}
-
-async function searchBgm(opts: Options): Promise<ApiResponse> {
-  const cookie = loadCookie(opts.cookie);
-  if (!cookie) {
-    throw new Error(
-      "未找到 cookie。请通过 --cookie 参数提供，或保存到 .output/bgm_cookie.txt"
-    );
-  }
-
-  const rid = generateUuid();
-  const timestamp = String(Date.now());
-  const type = opts.query ? 104 : opts.type;
-
-  const body = {
-    currentPage: opts.page,
-    lastBuffer: "",
-    pageSize: opts.pageSize,
-    type,
-    ...(opts.query ? { query: opts.query } : {}),
-    recommendThumbUrlList: [],
-    timestamp,
-    _log_finder_uin: FINDER_UIN,
-    _log_finder_id: FINDER_ID,
-    rawKeyBuff: "",
-    pluginSessionId: null,
-    scene: 7,
-    reqScene: 7,
-  };
-
-  const url = `${API_URL}?_aid=${AID}&_rid=${rid}&_pageUrl=${PAGE_URL}`;
-
-  const resp = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Cookie: cookie,
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
-      Origin: "https://channels.weixin.qq.com",
-      Referer:
-        "https://channels.weixin.qq.com/micro/content/post/finderNewLifeCreate",
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!resp.ok) {
-    throw new Error(`API 请求失败: ${resp.status} ${resp.statusText}`);
-  }
-
-  return (await resp.json()) as ApiResponse;
 }
 
 // ─── Display ─────────────────────────────────────────────
@@ -169,9 +24,8 @@ function formatDuration(ms: number): string {
   return s > 0 ? `${m}:${String(s).padStart(2, "0")}` : `${m}:00`;
 }
 
-function displayResults(data: ApiResponse, opts: Options): void {
-  // Try new format first (data.items), then legacy (result.bgm_list)
-  const items = data.data?.items || data.result?.bgm_list;
+function displayResults(data: any, opts: Options): void {
+  const items = data.data?.items;
 
   if (!items || items.length === 0) {
     console.log("未找到匹配的 BGM");
@@ -184,7 +38,7 @@ function displayResults(data: ApiResponse, opts: Options): void {
   console.log("─".repeat(50));
 
   // Helper: check if a BGM is instrumental (纯音乐)
-  function isInstrumental(item: BgmItem): boolean {
+  function isInstrumental(item: any): boolean {
     const lyric = item.listenItem?.lyric || "";
     return (
       lyric.includes("此歌曲为没有填词的纯音乐") ||
@@ -201,10 +55,10 @@ function displayResults(data: ApiResponse, opts: Options): void {
     return;
   }
 
-  filtered.forEach((item, i) => {
+  filtered.forEach((item: any, i: number) => {
     const num = String(i + 1).padStart(2, " ");
     const info = item.listenItem?.playableInfo || item;
-    const url = item.listenItem?.url || (item as any).play_url || "";
+    const url = item.listenItem?.url || "";
     const dur = formatDuration(info.duration);
     const tag = isInstrumental(item) ? "♪" : "🎤";
     console.log(` ${num}. ${tag} ${info.title}    ${info.author}   ${dur}`);
@@ -222,34 +76,53 @@ function displayResults(data: ApiResponse, opts: Options): void {
 // ─── CLI ─────────────────────────────────────────────────
 
 function printHelp(): void {
+  const providers = listProviders();
+  
   console.log(`Usage: bun main.ts [options]
 
 Options:
-  -q, --query <text>   Search keyword (e.g. 悬疑, 温馨, 紧张)
-  -t, --type <103/104> 103=推荐浏览, 104=搜索 (default: 103)
-  -p, --page <n>       Page number (default: 1)
-  -s, --size <n>       Page size (default: 5)
-  -c, --cookie <text>  WeChat cookie string
-  -i, --instrumental   Only show instrumental (纯音乐, no vocals)
-      --json           JSON output
-  -h, --help           Show help
+  --provider <${providers.join('/')}>  BGM data source (default: weixin)
+  -q, --query <text>           Search keyword (e.g. 悬疑, 温馨, 紧张)
+  -t, --type <103/104>         103=推荐浏览, 104=搜索 (仅 weixin, default: 103)
+  -p, --page <n>               Page number (default: 1)
+  -s, --size <n>               Page size (default: 50)
+  -c, --cookie <text>          Cookie string
+  -i, --instrumental           Only show instrumental (纯音乐, no vocals)
+      --json                   JSON output
+  -h, --help                   Show help
 
+Providers:`);
+  
+  providers.forEach(name => {
+    const provider = getProvider(name);
+    console.log(`  ${name.padEnd(12)} - ${provider.providerInfo.description}`);
+  });
+
+  console.log(`
 Cookie:
-  优先使用 --cookie 参数，其次读取 .output/bgm_cookie.txt
+  优先使用 --cookie 参数，其次从 .output/<provider>.rest 文件中的 @cookie 变量读取`);
 
+  providers.forEach(name => {
+    const provider = getProvider(name);
+    console.log(`  - ${name}: .output/${name}.rest 中的 @cookie 变量`);
+  });
+
+  console.log(`
 Examples:
-  bun main.ts                        # 浏览推荐
-  bun main.ts -q "悬疑"              # 搜索关键词
-  bun main.ts -q "悬疑" -i           # 只搜纯音乐
-  bun main.ts -q "深沉" -p 2         # 搜索第2页
-  bun main.ts --json                 # JSON输出`);
+  bun main.ts --provider weixin                    # 微信视频号推荐
+  bun main.ts --provider weixin -q "悬疑"          # 微信视频号搜索
+  bun main.ts --provider jianying -q "史诗"        # 剪映搜索
+  bun main.ts -q "悬疑" -i                         # 只搜纯音乐
+  bun main.ts -q "深沉" -p 2                       # 搜索第2页
+  bun main.ts --json                               # JSON输出`);
 }
 
 function parseArgs(args: string[]): Options | null {
   const opts: Options = {
+    provider: "weixin",
     type: 103,
     page: 1,
-    pageSize: 50,
+    pageSize: 5,
     json: false,
     instrumental: false,
   };
@@ -259,6 +132,13 @@ function parseArgs(args: string[]): Options | null {
     if (arg === "-h" || arg === "--help") {
       printHelp();
       process.exit(0);
+    } else if (arg === "--provider") {
+      const provider = args[++i] as ProviderName;
+      if (!listProviders().includes(provider)) {
+        console.error(`provider 必须是 ${listProviders().join(' 或 ')}`);
+        return null;
+      }
+      opts.provider = provider;
     } else if (arg === "-q" || arg === "--query") {
       opts.query = args[++i];
     } else if (arg === "-t" || arg === "--type") {
@@ -292,7 +172,14 @@ async function main() {
   if (!opts) process.exit(1);
 
   try {
-    const data = await searchBgm(opts);
+    const provider = getProvider(opts.provider);
+    const data = await provider.search({
+      query: opts.query,
+      type: opts.type,
+      page: opts.page,
+      pageSize: opts.pageSize,
+      cookie: opts.cookie,
+    });
 
     if (opts.json) {
       console.log(JSON.stringify(data, null, 2));

@@ -83,7 +83,7 @@ laoli audio --input <path> --prompt <text> [options]
 
 ## 支持特性
 
-- **音频格式**：MP3、WAV、FLAC、M4A、OGG
+- **音频格式**：MP3、WAV、FLAC、OGG（M4A 需先转 MP3）
 - **文件大小**：Base64 模式编码后 ≤ 50MB（原始文件约 ≤ 36MB）
 - **输出**：文本内容（默认）或完整 JSON（`--json`）
 
@@ -116,7 +116,8 @@ laoli audio --input speech.mp3 --prompt "转写并总结" --json
 ## 注意事项
 
 - 当前仅 MiMo provider 支持音频理解
-- 音频格式支持：MP3、WAV、FLAC、M4A、OGG
+- 音频格式支持：MP3、WAV、FLAC、OGG
+- ⚠️ **M4A 不支持**：虽然文档列出 M4A，但 MiMo API 实际返回 400 错误。必须先转 MP3：`ffmpeg -i input.m4a -acodec libmp3lame -q:a 2 output.mp3`
 - Base64 编码传入时：编码后字符串 ≤ 50MB（原始文件约 ≤ 36MB）
 - 短音频效果最好，长音频建议先分段处理
 - prompt 越具体，回答越精确——不只是说"转写"，还可以要求"提取人名"、"识别情绪"等

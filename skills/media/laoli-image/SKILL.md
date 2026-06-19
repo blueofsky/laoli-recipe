@@ -171,3 +171,13 @@ laoli image batch --batchfile batch.json --jobs 3
 - 参考图片支持本地文件和 URL
 - 日志文件位于 `~/.laoli/logs/`
 - 所有命令支持 `--help` 查看最新参数
+
+## ⚠️ Provider 差异
+
+| Provider | aspect-ratio | size | 推荐用法 |
+|----------|-------------|------|----------|
+| agnes | ✅ 生效 | ✅ 生效 | 默认选择 |
+| tuzi (gpt-image-2) | ❌ **忽略** | ✅ 生效 | 用 `--size 1024x1792` 代替 `--aspect-ratio 9:16` |
+| apimart | ✅ 生效 | ✅ 生效 | - |
+
+**tuzi provider 坑**：`--aspect-ratio 9:16` 会被忽略，生成 1:1 图片。必须用 `--size 1024x1792`（9:16）或 `--size 1792x1024`（16:9）指定尺寸。

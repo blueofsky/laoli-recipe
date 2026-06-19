@@ -1,22 +1,20 @@
 # BGM 搜索配置
 
-## Cookie 文件位置
+## Cookie 来源
 
 `laoli-music-search` 脚本需要微信 cookie 才能调用视频号 BGM API。
 
-**默认 cookie 路径：**
-```
-D:\AI\AIGC\laoli-kitchen\laoli-lens\.output\bgm_cookie.txt
-```
+**现在 cookie 自动从 `.rest` 文件读取：**
+- 微信视频号：`.output/weixin.rest` 中的 `@cookie` 变量
+- 剪映：`.output/jianying.rest` 中的 `@cookie` 变量
 
 **使用方式：**
 ```bash
-# 方式1：用 --cookie 参数直接传入（读取文件内容）
-bun scripts/main.ts -q "悬疑" -i -c "$(cat D:/AI/AIGC/laoli-kitchen/laoli-lens/.output/bgm_cookie.txt)"
+# 直接使用，cookie 自动从 weixin.rest 读取
+bun scripts/main.ts --provider weixin -q "悬疑" -i
 
-# 方式2：先 cd 到脚本目录，cookie 文件放在 .output/ 下
-cd laoli-recipe/skills/media/laoli-music-search
-bun scripts/main.ts -q "悬疑" -i
+# 也可以通过 --cookie 参数直接传入
+bun scripts/main.ts --provider weixin -q "悬疑" -i -c "cookie字符串"
 ```
 
 ## Cookie 更新
@@ -24,7 +22,13 @@ bun scripts/main.ts -q "悬疑" -i
 cookie 有时效性，过期后需要重新获取：
 1. 在浏览器登录 video.weixin.qq.com
 2. 打开开发者工具 → Network → 找到任意请求的 Cookie
-3. 复制完整 cookie 字符串，覆盖到 `bgm_cookie.txt`
+3. 复制完整 cookie 字符串，更新到 `.output/weixin.rest` 文件中的 `@cookie` 变量
+
+**更新方法：**
+```bash
+# 编辑 weixin.rest 文件，替换 @cookie 变量的值
+@cookie = 新的cookie字符串
+```
 
 ## 搜索关键词建议
 
